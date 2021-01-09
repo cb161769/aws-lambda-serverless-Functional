@@ -1,0 +1,15 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+
+const {
+    routes: userRoutes,
+} = require('../routes/routes');
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+app.use('/IotDevice',userRoutes);
+
+
+module.exports = app;
