@@ -5,6 +5,9 @@ const {v4: uuidv4} = require('uuid');
 const routes = express.Router({
     mergeParams: true
 });
+/** 
+ * this method gets all the device readings
+ */
 
 routes.get("/getAllDeviceReadings", async (req, res) => {
     const params = {
@@ -17,8 +20,27 @@ routes.get("/getAllDeviceReadings", async (req, res) => {
       else{
         res.status(400).json({error: result});
       }
-    
 });
+routes.get("/getDeviceByUserName", async (req,res) => {
+  const data = req.body;
+  var userName = data.userName;
+  const params = {
+    TableName:"deviceTable",
+    KeyConditionExpression: `#usr = :letter1`,
+    ExpressionAttributeNames:{
+      "letter1":userName
+    }
+  };
+  try {
+    const result = await db.query(params).promise();
+    res.status(200).json({readings: result});
+    
+  } catch (error) {
+    res.status(400).json({error: error});
+  }
+
+});
+
 routes.post("/createDevice", async (req,res) => {
     const data = req.body;
   let creationDate = new Date();
