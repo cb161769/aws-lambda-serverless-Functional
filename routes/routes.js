@@ -21,9 +21,8 @@ routes.get("/getAllDeviceReadings", async (req, res) => {
         res.status(400).json({error: result});
       }
 });
-routes.get("/getDeviceByUserName", async (req,res) => {
-  const data = req.body;
-  var userName = data.userName;
+routes.get("/getDeviceByUserName/:userName", async (req,res) => {
+  var userName = req.param.userName;
   const params = {
     TableName:"deviceTable",
     KeyConditionExpression: `#usr = :letter1`,
@@ -42,7 +41,11 @@ routes.get("/getDeviceByUserName", async (req,res) => {
 });
 
 routes.post("/createDevice", async (req,res) => {
-    const data = req.body;
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Credentials': true,
+  }
+  const data = req.body;
   let creationDate = new Date();
   creationDate.now();
   const params = {
@@ -59,11 +62,11 @@ routes.post("/createDevice", async (req,res) => {
   }
   try {
     await db.put(params).promise();
-    res.status(201).json({message:"Dispositivo creado Satisfactoriamente"});
+    res.status(201).json({message:"Dispositivo creado Satisfactoriamente", headers: headers});
 
     
   } catch (error) {
-    res.status(400).json({AwsDynamoDB:error});
+    res.status(400).json({AwsDynamoDB:error, headers: headers});
   }
 });
 routes.patch("/UpdateDevice/:deviceId", async (req,res) => {
