@@ -22,12 +22,22 @@ routes.get("/getAllDeviceReadings", async (req, res) => {
       }
 });
 routes.get("/getDeviceByUserName/:userName", async (req,res) => {
-  var userName = req.param.userName;
+  var userName = req.body.userName;
+  var deviceId = req.body.deviceId;
   const params = {
     TableName:"deviceTable",
-    KeyConditionExpression: `#usr = :letter1`,
+    ExpressionAttributeValues:{
+      ":userName":{
+        S:userName
+      },
+      ":device":{
+        N:deviceId
+      },
+    },
+    KeyConditionExpression: `#user = :userName and #device = :device`,
     ExpressionAttributeNames:{
-      "letter1":userName
+      "#user": "userName",
+      "#device":"deviceId"
     }
   };
   try {
@@ -41,13 +51,13 @@ routes.get("/getDeviceByUserName/:userName", async (req,res) => {
 });
 
 routes.post("/createDevice", async (req,res) => {
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Credentials': true,
-  }
+  // const headers = {
+  //   'Access-Control-Allow-Origin': '*',
+  //   'Access-Control-Allow-Credentials': true,
+  // }
   const data = req.body;
   let creationDate = new Date();
-  creationDate.now();
+  creationDate.getDate();
   const params = {
     TableName:"deviceTable",
     Item:{
@@ -62,11 +72,11 @@ routes.post("/createDevice", async (req,res) => {
   }
   try {
     await db.put(params).promise();
-    res.status(201).json({message:"Dispositivo creado Satisfactoriamente", headers: headers});
+    res.status(201).json({message:"Dispositivo creado Satisfactoriamente"});
 
     
   } catch (error) {
-    res.status(400).json({AwsDynamoDB:error, headers: headers});
+    res.status(400).json({AwsDynamoDB:error});
   }
 });
 routes.patch("/UpdateDevice/:deviceId", async (req,res) => {
