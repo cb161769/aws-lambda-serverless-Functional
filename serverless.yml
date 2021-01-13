@@ -64,10 +64,10 @@ resources:
       Properties:
         TableName: "deviceTable"
         AttributeDefinitions:
-          - AttributeName: deviceId
+          - AttributeName: userName
             AttributeType: S
         KeySchema:
-          - AttributeName: deviceId
+          - AttributeName: userName
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 5

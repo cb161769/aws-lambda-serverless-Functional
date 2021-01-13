@@ -21,23 +21,17 @@ routes.get("/getAllDeviceReadings", async (req, res) => {
         res.status(400).json({error: result});
       }
 });
-routes.get("/getDeviceByUserName/:userName", async (req,res) => {
-  var userName = req.body.userName;
-  var deviceId = req.body.deviceId;
+routes.get("/getDeviceByUserName/:deviceId", async (req,res) => {
+
+  var userName = req.params.deviceId;
   const params = {
     TableName:"deviceTable",
     ExpressionAttributeValues:{
-      ":userName":{
-        S:userName
-      },
-      ":device":{
-        N:deviceId
-      },
+      ":userName":userName
     },
-    KeyConditionExpression: `#user = :userName and #device = :device`,
+    KeyConditionExpression: `#user = :userName`,
     ExpressionAttributeNames:{
-      "#user": "userName",
-      "#device":"deviceId"
+      "#user":"userName"
     }
   };
   try {
@@ -67,7 +61,10 @@ routes.post("/createDevice", async (req,res) => {
       deviceIp: data.deviceIp,
       deviceCreationDate: creationDate.toDateString(),
       deviceUpdateDate : '',
-      deviceStatus: "ACTIVE"
+      deviceStatus: "ACTIVE",
+      configuration:{
+        configuration: data.configuration
+      }
     }
   }
   try {
