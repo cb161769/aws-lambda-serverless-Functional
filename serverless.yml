@@ -111,7 +111,19 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5 
-
+    fareConfiguration: 
+      Type:  AWS::DynamoDB::Table
+      Properties:
+        TableName: "fareConfiguration"
+        AttributeDefinitions:
+          - AttributeName: fareConfigurationId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: fareConfigurationId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5 
     # cognito user pool
     CognitoUserPool:
       Type: "AWS::Cognito::UserPool"

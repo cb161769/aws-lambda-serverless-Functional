@@ -64,18 +64,24 @@ routes.post("/createDevice", async (req,res) => {
       deviceStatus: "ACTIVE",
       configuration:{
         configuration: data.configuration
+      },
+      relays:{
+        relay: data.relays
       }
     }
   }
   try {
     await db.put(params).promise();
-    res.status(201).json({message:"Dispositivo creado Satisfactoriamente"});
+    res.status(201).json({status:200,message:"Dispositivo creado Satisfactoriamente"});
 
     
   } catch (error) {
     res.status(400).json({AwsDynamoDB:error});
   }
 });
+/** 
+ * 
+ */
 routes.patch("/UpdateDevice/:deviceId", async (req,res) => {
     const data = req.body;
     const deviceId = req.params.deviceId;
@@ -100,7 +106,96 @@ routes.patch("/UpdateDevice/:deviceId", async (req,res) => {
       res.status(400).json({AwsDynamoDB:error});
     }
     
-  });
+});
+/** 
+ * 
+ */
+routes.get("/fareConfiguration/getFares", async (req,res) => {
+  const data = req.body;
+  let fareId = req.params.fareId;
+  const params = {
+    TableName: "",
+    ExpressionAttributeValues:{
+      ":fareId":fareId
+    },
+    KeyConditionExpression: `#fare = :fareId`,
+    ExpressionAttributeNames:{
+      "#fare":"fareConfigurationId"
+    }
+  }
+  try {
+    const result = await db.query(params).promise();
+    res.status(200).json({readings:result});
+    
+  } catch (error) {
+    res.status(400).json({error: error});
+  }
+
+
+});
+routes.post("/fareConfiguration/createFare",async (req,res) => {
+  const data = req.body;
+  let creationDate  = new Date();
+  creationDate.getDate();
+  const params = {
+    TableName:"fareConfiguration",
+    Item:{
+      fareCode: uuidv4(),
+      fareId: data.fareId,
+      fixedFee:{
+        FixedFeeId: data.fixedFee.fareId,
+        ConsumptionDescription: data.fixedFee.ConsumptionDescription,
+        fixedFeeCondition: data.fixedFee.fixedFeeCondition,
+        fixedFeeCalculated: data.fixedFee.fixedFeeCalculated,
+        fixedFeeApplied: data.fixedFee.fixedFeeApplied
+
+      },
+      energyConditions:{
+        conditions: {
+          energyCondition1 : {
+            minimumKilowatt: data.energyConditions.conditions.energyCondition1.minimumKilowatt,
+            maximumKilowatt:data.energyConditions.conditions.energyCondition1.maximumKilowatt,
+            fixedFeeCalculated :data.energyConditions.conditions.energyCondition1.fixedFeeCalculated,
+            fixedFeeApplied:data.energyConditions.conditions.energyCondition1.fixedFeeApplied
+
+          },
+          energyCondition2:{
+            minimumKilowatt: data.energyConditions.conditions.energyCondition2.minimumKilowatt,
+            maximumKilowatt:data.energyConditions.conditions.energyCondition2.maximumKilowatt,
+            fixedFeeCalculated :data.energyConditions.conditions.energyCondition2.fixedFeeCalculated,
+            fixedFeeApplied:data.energyConditions.conditions.energyCondition2.fixedFeeApplied
+
+          },
+          energyCondition3:{
+            minimumKilowatt: data.energyConditions.conditions.energyCondition3.minimumKilowatt,
+            maximumKilowatt:data.energyConditions.conditions.energyCondition3.maximumKilowatt,
+            fixedFeeCalculated :data.energyConditions.conditions.energyCondition3.fixedFeeCalculated,
+            fixedFeeApplied:data.energyConditions.conditions.energyCondition3.fixedFeeApplied
+
+          },
+          energyCondition4:{
+            minimumKilowatt: data.energyConditions.conditions.energyCondition4.minimumKilowatt,
+            maximumKilowatt:data.energyConditions.conditions.energyCondition4.maximumKilowatt,
+            fixedFeeCalculated :data.energyConditions.conditions.energyCondition4.fixedFeeCalculated,
+            fixedFeeApplied:data.energyConditions.conditions.energyCondition4.fixedFeeApplied
+
+          },
+        },
+      }
+
+    }
+  }
+  try {
+    await db.put(params).promise();
+    res.status(201).json({status:200,message:"Tarifas creadas satisfactoriamente"});
+    
+  } catch (error) {
+    res.status(400).json({status:400,AwsDynamoDB:error});
+  }
+
+
+});
+
   
 module.exports = {
     routes,
