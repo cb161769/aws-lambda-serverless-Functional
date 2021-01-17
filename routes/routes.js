@@ -114,7 +114,7 @@ routes.get("/fareConfiguration/getFares", async (req,res) => {
   const data = req.body;
   let fareId = req.params.fareId;
   const params = {
-    TableName: "",
+    TableName: "fareConfiguration",
     ExpressionAttributeValues:{
       ":fareId":fareId
     },
@@ -133,6 +133,18 @@ routes.get("/fareConfiguration/getFares", async (req,res) => {
 
 
 });
+routes.get("/fareConfiguration/getAllFares", async (req,res) =>{
+  const params = {
+    TableName:"fareConfiguration"
+
+  };
+  try {
+    const result = await db.scan(params).promise();
+    res.status(200).json({readings:result});
+  } catch (error) {
+    res.status(400).json({error:error});
+  }
+});
 routes.post("/fareConfiguration/createFare",async (req,res) => {
   const data = req.body;
   let creationDate  = new Date();
@@ -140,14 +152,22 @@ routes.post("/fareConfiguration/createFare",async (req,res) => {
   const params = {
     TableName:"fareConfiguration",
     Item:{
-      fareCode: uuidv4(),
+      fareConfigurationId: uuidv4(),
       fareId: data.fareId,
-      fixedFee:{
-        FixedFeeId: data.fixedFee.fareId,
-        ConsumptionDescription: data.fixedFee.ConsumptionDescription,
-        fixedFeeCondition: data.fixedFee.fixedFeeCondition,
-        fixedFeeCalculated: data.fixedFee.fixedFeeCalculated,
-        fixedFeeApplied: data.fixedFee.fixedFeeApplied
+      fixedFee1:{
+        FixedFeeId: data.fixedFee1.fareId,
+        ConsumptionDescription: data.fixedFee1.ConsumptionDescription,
+        fixedFeeCondition: data.fixedFee1.fixedFeeCondition,
+        fixedFeeCalculated: data.fixedFee1.fixedFeeCalculated,
+        fixedFeeApplied: data.fixedFee1.fixedFeeApplied
+
+      },
+      fixedFee2:{
+        FixedFeeId: data.fixedFee2.fareId,
+        ConsumptionDescription: data.fixedFee2.ConsumptionDescription,
+        fixedFeeCondition: data.fixedFee2.fixedFeeCondition,
+        fixedFeeCalculated: data.fixedFee2.fixedFeeCalculated,
+        fixedFeeApplied: data.fixedFee2.fixedFeeApplied
 
       },
       energyConditions:{
@@ -192,6 +212,62 @@ routes.post("/fareConfiguration/createFare",async (req,res) => {
   } catch (error) {
     res.status(400).json({status:400,AwsDynamoDB:error});
   }
+
+
+});
+/** 
+ * 
+ */
+routes.post("/configureDevice", async (req,res) => {
+  const data = req.body;
+  let updateDate = new Date();
+  updateDate.getDate();
+  var result;
+  let fareId = data.configuration.deviceTarifConfiguration.fareId;
+  const parameters = {
+    TableName: "fareConfiguration",
+    ExpressionAttributeValues:{
+      ":fareId":fareId
+    },
+    KeyConditionExpression: `#fare = :fareId`,
+    ExpressionAttributeNames:{
+      "#fare":"fareConfigurationId"
+    }
+  }
+  try {
+    result = await db.query(parameters).promise();
+  } catch (error) {
+    res.status(400).json({error: error});
+  }
+
+  const params = {
+    TableName:"deviceTable",
+    Item:{
+      deviceId: data.deviceId,
+      userName: data.userName,
+      deviceIp: data.deviceIp,
+      deviceUpdateDate: updateDate.toDateString(),
+      configuration:{
+      configuration: result.Items
+      },
+      relays:{
+      relay : data.relays
+      }
+
+    },
+    
+
+  };
+  try {
+    await db.put(params).promise();
+    res.status(200).json({status:200,message: "El Dispsitivo fue configurado Stisfactoriamente"});
+    
+  } catch (error) {
+
+    res.status(400).json({status:400, error:error});
+    
+  }
+
 
 
 });
