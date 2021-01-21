@@ -124,7 +124,100 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5 
-    # cognito user pool
+    deviceReadings:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: "deviceReadings"
+        AttributeDefinitions:
+          - AttributeName: "primarykey"
+            AttributeType: S
+          - AttributeName: "sortkey"
+            AttributeType: N
+        KeySchema:
+          - AttributeName: "primarykey"
+            KeyType: HASH
+          - AttributeName: "sortkey"
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TimeToLiveSpecification:
+          AttributeName: ttl
+          Enabled: true
+    iotRule:
+      Type: AWS::IoT::TopicRule
+      Properties:
+        TopicRulePayload:
+          Actions:
+            - 
+              DynamoDBv2:
+                PutItem:
+                  TableName: "deviceReadings"
+                RoleArn: !GetAtt [iotRuleAllowDynamoWrites, Arn]
+          AwsIotSqlVersion: "2016-03-23"
+          Description: "Forwards incoming sensor messages to DynamoDB for analysis"
+          RuleDisabled: false
+          Sql: >-
+            SELECT *, 
+                  'reading-' + clientid() as primarykey, 
+                  (timestamp() / 1000) as sortkey,
+                  ((timestamp() / 1000) + 2592000) as ttl   
+    iotPolicyForDevices:
+      Type: AWS::IoT::Policy
+      Properties:
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            -
+              Effect: "Allow"
+              Action:
+                - "iot:Connect"
+              Resource: "*"
+              Condition:
+                Bool:
+                  "iot:Connection.Thing.IsAttached": [true]
+            -
+              Effect: "Allow"
+              Action:
+                - "iot:Publish"
+              Resource: 
+                - Fn::Join:
+                   - ""
+                   - - "arn:aws:iot:"
+                     - Ref: AWS::Region
+                     - ":"
+                     - Ref: AWS::AccountId
+                     - ":topic/$aws/rules/"
+                     - Ref: iotRule
+    ### 
+    # Rol para el topico de la rol
+    ####
+    iotRuleAllowDynamoWrites:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument: 
+          Version: "2012-10-17"
+          Statement: 
+            - 
+              Effect: "Allow"
+              Principal: 
+                Service: 
+                  - "iot.amazonaws.com"
+              Action: 
+                - "sts:AssumeRole"
+        Path: "/"
+        Policies:
+          -
+            PolicyName: "Policy"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement: 
+                - Effect: "Allow"
+                  Action:
+                    - "dynamodb:PutItem"
+                  Resource: !GetAtt [deviceReadings, Arn]
+        # cognito user pool
+        ##
     CognitoUserPool:
       Type: "AWS::Cognito::UserPool"
       Properties:
