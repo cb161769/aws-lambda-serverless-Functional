@@ -60,7 +60,11 @@ module.exports.convertDynamoReadingsToJsonFormat = async(data) =>{
     }
     
 }
-
+/**
+ * 
+ * @param {*} tableName 
+ * @param {*} object 
+ */
 module.exports.writeToDynamoDBTable = async (tableName,object) =>{
     const {dynamoDBConnection} = require("../../connections");
     try {
@@ -74,6 +78,50 @@ module.exports.writeToDynamoDBTable = async (tableName,object) =>{
         console.log(error);
     }
 }
+/**
+ * 
+ * @param {*} deviceId 
+ * @param {*} startDate 
+ * @param {*} endDate 
+ */
 module.exports.getUsageDataFromDynamodbTable = async (deviceId,startDate,endDate) =>{
+    try {
+            const {dynamoDBConnection} = require("../../connections/connections");
+            const {config} = require('../../connections/config/config');
+            const data = await dynamoDBConnection.query({
+        tableName: config.dynamoBB.deviceReadings.name,
+        KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
+        ScanIndexForward: true,
+        ConsistentRead:false,
+        ExpressionAttributeNames:{
+            '#key': 'primarykey',
+            '#sortkey': 'sortkey',
 
+        },
+        ExpressionAttributeValues: {
+            ':key': 'summary-day-' + deviceId,
+            ':start': startDate,
+            ':end': endDate
+        },
+
+        }).promise();
+        return data.Items;
+        
+    } catch (error) {
+        console.log(error);
+        
+    }
+
+}
+/**
+ * 
+ * @param {*} dynamoDBData 
+ */
+module.exports.parseDynamoDBTableItemsToCSVFormat = (dynamoDBData) =>{
+    let output = 'Timestamp,Watts\n';
+    const jsonOutPut = module.exports.convertDynamoReadingsToJsonFormat(dynamoDBData);
+    for(const readings of jsonOutPut){
+        output += readings.timestamp + ',' + readings.reading + '\n';
+    }
+    return output;
 }

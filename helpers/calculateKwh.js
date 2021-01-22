@@ -28,3 +28,16 @@ for (let i = 0; i < data.length; i++) {
 }
 return KhwOutput;
 }
+module.exports.calculateKWhSummaryFromDevice = (data) =>{
+    const measurements = [];
+    for(const line of data.split('\n')){
+        if(line === '') continue;
+        const parts = line.split(',');
+        if (parts[0] === 'Timestamp') continue;
+        measurements.push(
+            [new Date (parseInt(parts[0]) * 1000), parseInt(parts[1])]
+        ); 
+
+    }
+    return this.calculateComsumedKhW(measurements);
+}

@@ -2,6 +2,10 @@ const express = require('express');
 const AWS = require('aws-sdk');
 const db = new AWS.DynamoDB.DocumentClient();
 const {v4: uuidv4} = require('uuid');
+const {realtimeData} = require("../functions/graphql/helpers/realtime");
+const {deviceUsageData} = require("../functions/graphql/helpers/usageData");
+const {stats} = require("../functions/graphql/helpers/stats");
+const { graphql, buildSchema, buildClientSchema } = require('graphql/index');
 const routes = express.Router({
     mergeParams: true
 });
@@ -268,6 +272,61 @@ routes.post("/configureDevice", async (req,res) => {
     
   }
 
+
+
+});
+routes.post("/graphql/query",async (req,res) =>{
+  try {
+      const graphqlSchema = buildSchema(`
+      type Query{
+          deviceUsageData(startDate: Int!, endDate: Int!): [DailySummary]!
+          
+          stats: Stats!
+
+          realtimeData(since: Int!): [Readings]!
+
+          readings(startDate: Int!, endDate: Int!): [Readings]!
+
+      }
+      type Stats{
+          always_on: Float
+          today_so_far: Float   
+      }
+
+      type Reading {
+          timestamp: Int!
+          reading: Int!
+        }
+      
+        type DailySummary{
+          timestamp: Int!
+          dayUse: Float!
+          nightUse: Float!
+        }
+  `);
+
+  const helpers = {
+      deviceUsageData: deviceUsageData,
+      realtimeData:realtimeData,
+      stats:stats
+  };
+    try {
+      const query = req.body;
+        const response = await graphql(
+            graphqlSchema,
+            query,
+            helpers
+        );
+        res.status(200).json({body: JSON.stringify(response)});
+      
+    } catch (error) {
+      res.status(400).json({status:400, error:error});
+    }
+
+    
+  } catch (error) {
+    res.status(400).json({status:400, error:error});
+  }
 
 
 });

@@ -35,7 +35,8 @@ custom:
   currentStage: ${opt:stage, self:custom.defaultStage}
   userPoolName: test-user-pool-${self:custom.currentStage}
   userPoolClientName: test-user-pool-client-${self:custom.currentStage}
-
+package:
+  individually: true
 functions:
   hello:
     handler: handler.handler
@@ -56,7 +57,20 @@ functions:
           #   type: COGNITO_USER_POOLS
           #   authorizerId:
           #     Ref: ApiGatewayAuthorizer
-          
+  graphql:
+    description: GraphQL api
+    handler: functions/graphql/graphql.graphQlQuery
+    memorySize: 512
+    events:
+      - http:
+          path: graphql
+          method: post
+          cors: true
+  dataFunction:
+    handler: functions/daily.handler
+    description: dynamoDB functions 
+    timeout: 60
+
 resources:
   Resources:
     deviceTable:
