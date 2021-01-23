@@ -9,9 +9,9 @@ const graphqlSchema = buildSchema(`
         
         stats: Stats!
 
-        realtimeData(since: Int!): [Readings]!
+        realtimeData(since: Int!): [Reading]!
 
-        readings(startDate: Int!, endDate: Int!): [Readings]!
+        readings(startDate: Int!, endDate: Int!): [Reading]!
 
     }
     type Stats{
@@ -56,7 +56,15 @@ module.exports.graphQlQuery = async (event,context,callback) =>{
         }
         
     } catch (error) {
-        console.log(error);
+        return {
+            status:400,
+            headers:{
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Credentials': true,
+            },
+            body : JSON.stringify(error),
+        }
         
     }
     

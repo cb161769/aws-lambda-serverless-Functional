@@ -29,7 +29,7 @@ async function getYesterdayData() {
         return data;
         
     } catch (error) {
-        return { Items: []};
+        return { Items: error};
         
     }
     

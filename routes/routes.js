@@ -283,9 +283,9 @@ routes.post("/graphql/query",async (req,res) =>{
           
           stats: Stats!
 
-          realtimeData(since: Int!): [Readings]!
+          realtimeData(since: Int!): [Reading]!
 
-          readings(startDate: Int!, endDate: Int!): [Readings]!
+          readings(startDate: Int!, endDate: Int!): [Reading]!
 
       }
       type Stats{

@@ -16,14 +16,14 @@ module.exports.stats = async({timeStamp}, context, information) =>{
 
     const data = await getReadingsFromDynamodbTableSince(config.deviceName,todaysTime);
     if (requestFileds.always_on) {
-        const readings = data.map(el => el.reading);
+        const readings = data.map(el => el.readings);
         const standedbywatts = jstat.mode(readings);
         output.always_on = standedbywatts;
 
         
     }
     if (requestFileds.today_so_far) {
-        const input = data.map(item => [new Date(item.timestamp * 1000), item.reading]);
+        const input = data.map(item => [new Date(item.timestamp * 1000), item.readings]);
         const usage = calculateComsumedKhW(input);
         output.today_so_far = usage.day + usage.night;
     }

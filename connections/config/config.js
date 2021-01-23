@@ -7,5 +7,5 @@ module.exports.config = {
             name:"userDevice"
         }
     },
-    deviceName:'Arduino-0002e9fc'
+    deviceName:'Arduino-0000c429'
 };

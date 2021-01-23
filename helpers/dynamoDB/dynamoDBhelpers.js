@@ -86,10 +86,10 @@ module.exports.writeToDynamoDBTable = async (tableName,object) =>{
  */
 module.exports.getUsageDataFromDynamodbTable = async (deviceId,startDate,endDate) =>{
     try {
-            const {dynamoDBConnection} = require("../../connections/connections");
-            const {config} = require('../../connections/config/config');
-            const data = await dynamoDBConnection.query({
-        tableName: config.dynamoBB.deviceReadings.name,
+        const {dynamoDBConnection} = require("../../connections/connections");
+        const {config} = require('../../connections/config/config');
+        const data = await dynamoDBConnection.query({
+        TableName: config.dynamoBB.deviceReadings.name,
         KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
         ScanIndexForward: true,
         ConsistentRead:false,
@@ -99,7 +99,7 @@ module.exports.getUsageDataFromDynamodbTable = async (deviceId,startDate,endDate
 
         },
         ExpressionAttributeValues: {
-            ':key': 'summary-day-' + deviceId,
+            ':key': 'reading-' + deviceId,
             ':start': startDate,
             ':end': endDate
         },
