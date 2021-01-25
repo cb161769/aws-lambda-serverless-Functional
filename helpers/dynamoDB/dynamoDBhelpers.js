@@ -22,7 +22,7 @@ module.exports.getReadingsFromDynamodbTableSince = async (deviceId,timestamp) =>
         },
         }).promise();
     
-        return module.exports.convertDynamoReadingsToJsonFormat(data);
+        return data.Items;
         
     } catch (error) {
         console.log(error);

@@ -70,7 +70,15 @@ functions:
     handler: functions/daily.handler
     description: dynamoDB functions 
     timeout: 60
-
+  grahplQuery:
+    description: GraphQL api query
+    handler: api/graphql.query
+    memorySize: 512
+    events:
+      - http:
+          path: query
+          method: get
+          cors: true
 resources:
   Resources:
     deviceTable:
@@ -174,7 +182,7 @@ resources:
           Sql: >-
             SELECT *, 
                   'reading-' + clientid() as primarykey, 
-                  (timestamp() / 1000) as sortkey,
+                  (timestamp() / 1000000) as sortkey,
                   ((timestamp() / 1000) + 2592000) as ttl   
     iotPolicyForDevices:
       Type: AWS::IoT::Policy

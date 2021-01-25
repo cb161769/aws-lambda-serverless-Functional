@@ -2,10 +2,11 @@ const express = require('express');
 const AWS = require('aws-sdk');
 const db = new AWS.DynamoDB.DocumentClient();
 const {v4: uuidv4} = require('uuid');
-const {realtimeData} = require("../functions/graphql/helpers/realtime");
-const {deviceUsageData} = require("../functions/graphql/helpers/usageData");
-const {stats} = require("../functions/graphql/helpers/stats");
+
 const { graphql, buildSchema, buildClientSchema } = require('graphql/index');
+const {graphQlQuery} = require('../api/graphql/graphql');
+const {realtime} = require("../api/graphql/helpers/realtime");
+var { graphqlHTTP } = require('express-graphql');
 const routes = express.Router({
     mergeParams: true
 });
@@ -275,62 +276,79 @@ routes.post("/configureDevice", async (req,res) => {
 
 
 });
-routes.post("/graphql/query",async (req,res) =>{
-  try {
-      const graphqlSchema = buildSchema(`
-      type Query{
-          deviceUsageData(startDate: Int!, endDate: Int!): [DailySummary]!
+// routes.post("/graphql/query",async (req,res) =>{
+//   try {
+//       const graphqlSchema = buildSchema(`
+//       type Query{
+//           deviceUsageData(startDate: Int!, endDate: Int!): [DailySummary]!
           
-          stats: Stats!
+//           stats: Stats!
 
-          realtimeData(since: Int!): [Reading]!
+//           realtimeData(since: Int!): [Reading]!
 
-          readings(startDate: Int!, endDate: Int!): [Reading]!
+//           readings(startDate: Int!, endDate: Int!): [Reading]!
 
-      }
-      type Stats{
-          always_on: Float
-          today_so_far: Float   
-      }
+//       }
+//       type Stats{
+//           always_on: Float
+//           today_so_far: Float   
+//       }
 
-      type Reading {
-          timestamp: Int!
-          reading: Int!
-        }
+//       type Reading {
+//           timestamp: Int!
+//           reading: Int!
+//         }
       
-        type DailySummary{
-          timestamp: Int!
-          dayUse: Float!
-          nightUse: Float!
-        }
-  `);
+//         type DailySummary{
+//           timestamp: Int!
+//           dayUse: Float!
+//           nightUse: Float!
+//         }
+//   `);
 
-  const helpers = {
-      deviceUsageData: deviceUsageData,
-      realtimeData:realtimeData,
-      stats:stats
-  };
-    try {
-      const query = req.body;
-        const response = await graphql(
-            graphqlSchema,
-            query,
-            helpers
-        );
-        res.status(200).json({body: JSON.stringify(response)});
+//   const helpers = {
+//       deviceUsageData: deviceUsageData,
+//       realtimeData:realtimeData,
+//       stats:stats
+//   };
+//     try {
+//       const query = req.body;
+//         const response = await graphql(
+//             graphqlSchema,
+//             query,
+//             helpers
+//         );
+//         res.status(200).json({body: JSON.stringify(response)});
       
-    } catch (error) {
-      res.status(400).json({status:400, error:error});
-    }
+//     } catch (error) {
+//       res.status(400).json({status:400, error:error});
+//     }
 
     
-  } catch (error) {
-    res.status(400).json({status:400, error:error});
-  }
+//   } catch (error) {
+//     res.status(400).json({status:400, error:error});
+//   }
 
 
-});
+// });
+const graphqlSchema = buildSchema(`
+    type Query{
+        realtimeData(since: Int!): [Reading]!
+    }
+    type Reading {
+        timestamp: Int!
+        reading: Int!
+      }
 
+`);
+const helper = {
+  realtimeData:realtime
+}; 
+routes.post("graphql/query", graphqlHTTP({
+  schema: graphqlSchema,
+  rootValue: helper,
+  graphiql: true
+}));
   
 module.exports = {
     routes,
