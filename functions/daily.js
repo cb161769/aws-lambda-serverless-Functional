@@ -10,7 +10,7 @@ async function getYesterdayData() {
     try {
         const startDate = getYesterdayDate().timeStamp;
         const endDate = getTodaysDate().timeStamp;
-        const deviceName = 'reading-' + config.deviceName;
+        const deviceName =  config.deviceName;
         const data = await dynamoDBConnection.query({
             TableName: config.dynamoBB.deviceReadings.name,
             KeyConditionExpression:'#initial = :key and #end BETWEEN :start AND :end',

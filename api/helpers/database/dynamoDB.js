@@ -17,7 +17,7 @@ module.exports.getReadingsFromDynamoDBTableSince = async (deviceId,timeStamp) =>
             '#sortkey': 'sortkey',
         },
         ExpressionAttributeValues: {
-            ':key': 'reading-' + deviceId,
+            ':key': deviceId,
             ':timestamp': timeStamp
         },
 
@@ -69,7 +69,7 @@ module.exports.getUsageDataFromDynamodbTable = async (deviceId,startDate,endDate
 
         },
         ExpressionAttributeValues: {
-            ':key': 'reading-' + deviceId,
+            ':key':  deviceId,
             ':start': startDate,
             ':end': endDate
         },

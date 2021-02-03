@@ -4,7 +4,8 @@ const {
     GraphQLSchema,
     GraphQLObjectType,
     GraphQLString,
-    GraphQLNonNull, 
+    GraphQLNonNull,
+    GraphQLFloat, 
   } = require('graphql');
   const {dynamoDBConnection} = require("../connections/connections");
   const {config} = require("../connections/config/config");
@@ -43,11 +44,21 @@ const {
             '#sortkey': 'sortkey',
         },
         ExpressionAttributeValues: {
-            ':key': 'reading-' + deviceId,
+            ':key':  deviceId,
             ':timestamp': parseInt(timeStamp)
         },
     },callback)).then((result) =>{
-        return  result.Items[0].readings.device_watts;
+        if (result.Items[0].readings === undefined || result.Items[0].readings == null || result.Items == undefined) {
+
+            return JSON.stringify({data:'NO DATA'});
+            
+        }
+        else{
+            return  result.Items[0].readings.device_watts;
+
+        }
+
+        
     })
 
   const schema = new GraphQLSchema({
@@ -55,7 +66,7 @@ const {
           name:'RootName',
           fields:{
               getReadings:{
-                  args:{timeStamp:{name:'timeStamp', type: new GraphQLNonNull(GraphQLString)}},
+                  args:{timeStamp:{name:'timeStamp', type: new GraphQLNonNull(GraphQLFloat)}},
                   resolve: (parent,args) => getGreeting(config.deviceName,args.timeStamp),
                   type: GraphQLString
               },
