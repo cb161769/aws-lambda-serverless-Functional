@@ -16,7 +16,7 @@ var deviceReadingsModel = new GraphQLObjectType({
     fields: function () {
         return {
             device_amps:{
-                type: GraphQLInt
+                type: GraphQLFloat
             },
             device_name:{
                 type: GraphQLString
@@ -26,7 +26,7 @@ var deviceReadingsModel = new GraphQLObjectType({
                 type: GraphQLString
             },
             device_watts:{
-                type: GraphQLInt
+                type: GraphQLFloat
             },
             wifi_IP:{
                 type: GraphQLInt
@@ -59,9 +59,10 @@ var queryType = new GraphQLObjectType({
                     const deviceId = config.deviceName;
                     const data = await dynamoDBConnection.query({
                         TableName: config.dynamoBB.deviceReadings.name,
-                        KeyConditionExpression: '#key = :key and #sortkey = :timestamp',
-                        ScanIndexForward: true, // DESC order
+                        KeyConditionExpression: '#key = :key and #sortkey <= :timestamp',
+                        ScanIndexForward: false, // DESC order
                         ConsistentRead: false,
+                        Limit:1,
                         ExpressionAttributeNames:{
                             '#key': 'primarykey',
                             '#sortkey': 'sortkey',
