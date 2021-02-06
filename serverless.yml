@@ -57,29 +57,29 @@ functions:
           #   type: COGNITO_USER_POOLS
           #   authorizerId:
           #     Ref: ApiGatewayAuthorizer
-  graphql:
-    description: GraphQL api
-    handler: functions/graphql/graphql.graphQlQuery
-    memorySize: 512
-    events:
-      - http:
-          path: graphql
-          method: post
-          cors: 
-             origin: '*'
-  dataFunction:
-    handler: functions/daily.handler
-    description: dynamoDB functions 
-    timeout: 60
-  grahplQuery:
-    description: GraphQL api query
-    handler: api/graphql.query
-    memorySize: 512
-    events:
-      - http:
-          path: query
-          method: post
-          cors: true
+  # graphql:
+  #   description: GraphQL api
+  #   handler: functions/graphql/graphql.graphQlQuery
+  #   memorySize: 512
+  #   events:
+  #     - http:
+  #         path: graphql
+  #         method: post
+  #         cors: 
+  #            origin: '*'
+  # dataFunction:
+  #   handler: functions/daily.handler
+  #   description: dynamoDB functions 
+  #   timeout: 60
+  # grahplQuery:
+  #   description: GraphQL api query
+  #   handler: api/graphql.query
+  #   memorySize: 512
+  #   events:
+  #     - http:
+  #         path: query
+  #         method: post
+  #         cors: true
 resources:
   Resources:
     deviceTable:

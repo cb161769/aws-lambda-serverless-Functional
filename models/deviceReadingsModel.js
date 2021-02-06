@@ -74,10 +74,19 @@ var queryType = new GraphQLObjectType({
 
                     }).promise();
                     if (data == null || data == undefined || !data || data.Count == 0) {
-                        throw new Error('Error')
+                        return [{error:400}];
                     }
-                    return data.Items[0].readings;
-
+                    let date = data.Items[0].sortkey;
+                    let firstValidationDate = Math.floor(Date.now()/1000) -50;
+                    let secondValidationDate = Math.floor(Date.now()/1000) + 50; 
+                    if ((date >= firstValidationDate  && date <= secondValidationDate) ) {
+                        return data.Items[0].readings;
+                        
+                    }
+                    else{
+                        return  [{device:'Not connected in realtime',error:400}];
+                    }
+                    
                     
                 }
             }

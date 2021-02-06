@@ -3,10 +3,6 @@ const AWS = require('aws-sdk');
 const db = new AWS.DynamoDB.DocumentClient();
 const {v4: uuidv4} = require('uuid');
 
-const { graphql, buildSchema, buildClientSchema } = require('graphql/index');
-const {graphQlQuery} = require('../api/graphql/graphql');
-const {realtime} = require("../api/graphql/helpers/realtime");
-var { graphqlHTTP } = require('express-graphql');
 const routes = express.Router({
     mergeParams: true
 });
@@ -116,7 +112,6 @@ routes.patch("/UpdateDevice/:deviceId", async (req,res) => {
  * 
  */
 routes.get("/fareConfiguration/getFares", async (req,res) => {
-  const data = req.body;
   let fareId = req.params.fareId;
   const params = {
     TableName: "fareConfiguration",
@@ -331,24 +326,24 @@ routes.post("/configureDevice", async (req,res) => {
 
 
 // });
-const graphqlSchema = buildSchema(`
-    type Query{
-        realtimeData(since: Int!): [Reading]!
-    }
-    type Reading {
-        timestamp: Int!
-        reading: Int!
-      }
+// const graphqlSchema = buildSchema(`
+//     type Query{
+//         realtimeData(since: Int!): [Reading]!
+//     }
+//     type Reading {
+//         timestamp: Int!
+//         reading: Int!
+//       }
 
-`);
-const helper = {
-  realtimeData:realtime
-}; 
-routes.post("graphql/query", graphqlHTTP({
-  schema: graphqlSchema,
-  rootValue: helper,
-  graphiql: true
-}));
+// `);
+// const helper = {
+//   realtimeData:realtime
+// }; 
+// routes.post("graphql/query", graphqlHTTP({
+//   schema: graphqlSchema,
+//   rootValue: helper,
+//   graphiql: true
+// }));
   
 module.exports = {
     routes,
