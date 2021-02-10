@@ -89,7 +89,35 @@ var queryType = new GraphQLObjectType({
                     
                     
                 }
-            }
+            },
+            // week:{
+            //     args:{
+            //         start:{
+            //             name:'start',
+            //             type: GraphQLFloat
+
+            //         },
+            //         end:{
+            //             name:'end',
+            //             type: GraphQLFloat
+
+            //         }
+            //     },
+            //     resolve: async (root,params) => {
+            //         const params = {
+            //             TableName: config.dynamoBB.deviceReadings.name,
+            //             KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
+            //             ScanIndexForward:false,
+            //             ConsistentRead:false,
+            //             ExpressionAttributeNames:{
+            //                 '#key':'primarykey',
+            //                 '#sortkey':'sortkey'
+                    
+            //             },
+
+            //         }
+            //     }
+            // }
         }
     }
 });

@@ -2,7 +2,8 @@ const express = require('express');
 const AWS = require('aws-sdk');
 const db = new AWS.DynamoDB.DocumentClient();
 const {v4: uuidv4} = require('uuid');
-
+const {config} = require('../connections/config/config');
+const  {getWeeklyHelper} = require('../helpers/weeklyHelper')
 const routes = express.Router({
     mergeParams: true
 });
@@ -12,7 +13,7 @@ const routes = express.Router({
 
 routes.get("/getAllDeviceReadings", async (req, res) => {
     const params = {
-        TableName: "deviceTable",
+        TableName: config.dynamoBB.deviceTable.name,
       };
       const result = await db.scan(params).promise();
       if (result != undefined) {
@@ -26,7 +27,7 @@ routes.get("/getDeviceByUserName/:deviceId", async (req,res) => {
 
   var userName = req.params.deviceId;
   const params = {
-    TableName:"deviceTable",
+    TableName: config.dynamoBB.deviceTable.name,
     ExpressionAttributeValues:{
       ":userName":userName
     },
@@ -54,7 +55,7 @@ routes.post("/createDevice", async (req,res) => {
   let creationDate = new Date();
   creationDate.getDate();
   const params = {
-    TableName:"deviceTable",
+    TableName:config.dynamoBB.deviceTable.name,
     Item:{
       deviceId: uuidv4(),
       deviceName: data.deviceName,
@@ -89,7 +90,7 @@ routes.patch("/UpdateDevice/:deviceId", async (req,res) => {
     let updateDate = new Date();
     updateDate.now();
     const params = {
-      TableName:"deviceTable",
+      TableName:config.dynamoBB.deviceTable.name,
       Item:{
         deviceId: deviceId,
         deviceName: data.deviceName,
@@ -114,7 +115,7 @@ routes.patch("/UpdateDevice/:deviceId", async (req,res) => {
 routes.get("/fareConfiguration/getFares", async (req,res) => {
   let fareId = req.params.fareId;
   const params = {
-    TableName: "fareConfiguration",
+    TableName: config.dynamoBB.fareConfiguration.name,
     ExpressionAttributeValues:{
       ":fareId":fareId
     },
@@ -135,7 +136,7 @@ routes.get("/fareConfiguration/getFares", async (req,res) => {
 });
 routes.get("/fareConfiguration/getAllFares", async (req,res) =>{
   const params = {
-    TableName:"fareConfiguration"
+    TableName:config.dynamoBB.fareConfiguration.name
 
   };
   try {
@@ -150,7 +151,7 @@ routes.post("/fareConfiguration/createFare",async (req,res) => {
   let creationDate  = new Date();
   creationDate.getDate();
   const params = {
-    TableName:"fareConfiguration",
+    TableName:config.dynamoBB.fareConfiguration.name,
     Item:{
       fareConfigurationId: uuidv4(),
       fareId: data.fareId,
@@ -225,7 +226,7 @@ routes.post("/configureDevice", async (req,res) => {
   var result;
   let fareId = data.configuration.deviceTarifConfiguration.fareId;
   const parameters = {
-    TableName: "fareConfiguration",
+    TableName: config.dynamoBB.fareConfiguration.name,
     ExpressionAttributeValues:{
       ":fareId":fareId
     },
@@ -241,7 +242,7 @@ routes.post("/configureDevice", async (req,res) => {
   }
 
   const params = {
-    TableName:"deviceTable",
+    TableName:config.dynamoBB.deviceTable.name,
     Item:{
       deviceId: data.deviceId,
       userName: data.userName,
@@ -270,6 +271,44 @@ routes.post("/configureDevice", async (req,res) => {
 
 
 
+});
+routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
+  try {
+    const params = {
+      TableName: config.dynamoBB.deviceReadings.name,
+      KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
+      ScanIndexForward:false,
+      ConsistentRead:false,
+      limit:10,
+      ExpressionAttributeNames:{
+        '#key':'primarykey',
+        '#sortkey':'sortkey'
+
+      },
+      ExpressionAttributeValues: {
+        ':key':  config.deviceName,
+        ':start': parseInt(req.params.start),
+        ':end': parseInt(req.params.end)
+    },
+    }
+    const data = await db.query(params).promise();
+    try {
+     // var Object2 = {"data":[data.Items]};
+       const week = await getWeeklyHelper(data.Items)
+      
+      res.status(200).json({ usage:week});
+      
+    } catch (error) {
+      res.status(400).json({status:400, error:error});
+    }
+    
+
+    
+   
+    
+  } catch (error) {
+    res.status(400).json({status:400, error:error});
+  }
 });
 // routes.post("/graphql/query",async (req,res) =>{
 //   try {

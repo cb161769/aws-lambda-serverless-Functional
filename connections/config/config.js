@@ -5,6 +5,12 @@ module.exports.config = {
         },
         userDevice:{
             name:"userDevice"
+        },
+        deviceTable:{
+            name:"deviceTable"
+        },
+        fareConfiguration:{
+            name:"fareConfiguration"
         }
     },
     deviceName:'ArduinoDevice01'
