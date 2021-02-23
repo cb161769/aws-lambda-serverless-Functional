@@ -43,6 +43,22 @@ var deviceReadingsModel = new GraphQLObjectType({
         
     }
 });
+var Ct1ReadingsModel = new GraphQLObjectType({
+    name:'CT1',
+    fields: function(){
+        return{
+            CT1_Amps:{
+                type: GraphQLFloat
+            },
+            CT1_Watts:{
+                type: GraphQLFloat
+            },
+            CT1_Status:{
+                type: GraphQLString
+            }
+        }
+    }
+})
 var queryType = new GraphQLObjectType({
     name:'Query',
     fields: function () {
@@ -90,6 +106,47 @@ var queryType = new GraphQLObjectType({
                     
                 }
             },
+            Ct1_readings:{
+                type:Ct1ReadingsModel,
+                args:{
+                    timeStamp:{
+                        name:'timeStamp',
+                        type: GraphQLFloat
+                    }
+                },
+                resolve: async  (root,params) => {
+                    const deviceId = config.deviceName;
+                    const data = await dynamoDBConnection.query({
+                        TableName: config.dynamoBB.deviceReadings.name,
+                        KeyConditionExpression: '#key = :key and #sortkey <= :timestamp',
+                        ScanIndexForward: false, // DESC order
+                        ConsistentRead: false,
+                        Limit:1,
+                        ExpressionAttributeNames:{
+                            '#key': 'primarykey',
+                            '#sortkey': 'sortkey',
+                        },
+                        ExpressionAttributeValues: {
+                            ':key':  deviceId,
+                            ':timestamp': params.timeStamp
+                        },
+
+                    }).promise();
+                    if (data == null || data == undefined || !data || data.Count == 0) {
+                        return [{error:400}];
+                    }
+                    let date = data.Items[0].sortkey;
+                    let firstValidationDate = Math.floor(Date.now()/1000) -50;
+                    let secondValidationDate = Math.floor(Date.now()/1000) + 50; 
+                    if ((date >= firstValidationDate  && date <= secondValidationDate) ) {
+                        return data.Items[0].CT1;
+                        
+                    }
+                    else{
+                        return  [{device:'Not connected in realtime',error:400}];
+                    }
+                }
+            }
             // week:{
             //     args:{
             //         start:{
