@@ -273,42 +273,122 @@ routes.post("/configureDevice", async (req,res) => {
 
 });
 routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
-  try {
-    const params = {
-      TableName: config.dynamoBB.deviceReadings.name,
-      KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
-      ScanIndexForward:false,
-      ConsistentRead:false,
-      limit:10,
-      ExpressionAttributeNames:{
-        '#key':'primarykey',
-        '#sortkey':'sortkey'
 
-      },
-      ExpressionAttributeValues: {
-        ':key':  config.deviceName,
-        ':start': parseInt(req.params.start),
-        ':end': parseInt(req.params.end)
+  const params = {
+    TableName: config.dynamoBB.deviceReadings.name,
+    KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
+    ScanIndexForward:false,
+    ConsistentRead:false,
+    limit:10,
+    ExpressionAttributeNames:{
+      '#key':'primarykey',
+      '#sortkey':'sortkey'
+
     },
-    }
-    const data = await db.query(params).promise();
-    try {
-     // var Object2 = {"data":[data.Items]};
-       const week = await getWeeklyHelper(data.Items)
+    ExpressionAttributeValues: {
+      ':key':  config.deviceName,
+      ':start': parseInt(req.params.start),
+      ':end': parseInt(req.params.end)
+  },
+  };
+  const data = await db.query(params).promise();
+  if ( data.ScannedCount == 0 || data == null || data == undefined || !data || data.Count == 0) {
+
+        const ob =  [ 
+          {registros:0,lunes:{registros: 0, amperios:  0,watts: 0}
+          ,martes:{registros:  0, amperios:  0,watts: 0}
+          ,miercoles:{registros:0, amperios:  0,watts: 0}
+          ,jueves:{registros: 0, amperios:  0,watts: 0}
+          ,viernes:{registros:0 , amperios:  0,watts: 0}
+          ,sabado:{registros: 0 , amperios:  0 ,watts: 0 }
+          ,domingo:{registros: 0, amperios:  0,watts:0  },
+          totalWatts:0  , totalAmps: 0 , diaConsulta: new Date().toISOString(),
+          promedioWattsSemanal: 0, promedioAmpsSemanal:  0
+      }];
       
-      res.status(200).json({ usage:week});
+       res.status(200).json({ usage:ob});
+  }
+  else{
+    try {
+      const week = await getWeeklyHelper(data.Items)
+         
+          res.status(200).json({ usage:week});
       
     } catch (error) {
-      res.status(400).json({status:400, error:error});
+      const ob =  [ 
+        {registros:0,lunes:{registros: 0, amperios:  0,watts: 0}
+        ,martes:{registros:  0, amperios:  0,watts: 0}
+        ,miercoles:{registros:0, amperios:  0,watts: 0}
+        ,jueves:{registros: 0, amperios:  0,watts: 0}
+        ,viernes:{registros:0 , amperios:  0,watts: 0}
+        ,sabado:{registros: 0 , amperios:  0 ,watts: 0 }
+        ,domingo:{registros: 0, amperios:  0,watts:0  },
+        totalWatts:0  , totalAmps: 0 , diaConsulta: new Date().toISOString(),
+        promedioWattsSemanal: 0, promedioAmpsSemanal:  0
+    }];
+    
+     res.status(200).json({ usage:ob});
+      //res.status(400).json({status:400, error:error});
     }
+  }
+
+
+  // try {
+  //   const params = {
+  //     TableName: config.dynamoBB.deviceReadings.name,
+  //     KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
+  //     ScanIndexForward:false,
+  //     ConsistentRead:false,
+  //     limit:10,
+  //     ExpressionAttributeNames:{
+  //       '#key':'primarykey',
+  //       '#sortkey':'sortkey'
+
+  //     },
+  //     ExpressionAttributeValues: {
+  //       ':key':  config.deviceName,
+  //       ':start': parseInt(req.params.start),
+  //       ':end': parseInt(req.params.end)
+  //   },
+  //   };
+  //   const data = await db.query(params).promise();
+  //   if ( data.ScannedCount == 0 || data == null || data == undefined || !data || data.Count == 0) {
+
+  //     const ob =  [ 
+  //       {registros:0,lunes:{registros: 0, amperios:  0,watts: 0}
+  //       ,martes:{registros:  0, amperios:  0,watts: 0}
+  //       ,miercoles:{registros:0, amperios:  0,watts: 0}
+  //       ,jueves:{registros: 0, amperios:  0,watts: 0}
+  //       ,viernes:{registros:0 , amperios:  0,watts: 0}
+  //       ,sabado:{registros: 0 , amperios:  0 ,watts: 0 }
+  //       ,domingo:{registros: 0, amperios:  0,watts:0  },
+  //       totalWatts:0  , totalAmps: 0 , diaConsulta: new Date().toISOString(),
+  //       promedioWattsSemanal: 0, promedioAmpsSemanal:  0
+  //   }];
+    
+  //   return ob;
+  //   }
+  //   else{
+  //     try {
+  //       // var Object2 = {"data":[data.Items]};
+  //         const week = await getWeeklyHelper(data.Items)
+         
+  //        res.status(200).json({ usage:week});
+         
+  //      } catch (error) {
+  //        res.status(400).json({status:400, error:error});
+  //      }
+
+  //   }
+    
     
 
     
    
     
-  } catch (error) {
-    res.status(400).json({status:400, error:error});
-  }
+  // } catch (error) {
+  //   res.status(400).json({status:400, error:error});
+  // }
 });
 // routes.post("/graphql/query",async (req,res) =>{
 //   try {

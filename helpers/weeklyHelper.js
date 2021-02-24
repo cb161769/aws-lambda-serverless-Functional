@@ -122,7 +122,7 @@ module.exports.getWeeklyHelper = async function  (dynamoDBArray) {
         ,sabado:{registros:saturday || 0 , amperios: saturdayAmps || 0 ,watts:saturdayWatts | 0 }
         ,domingo:{registros:sunday || 0, amperios: sundayAmps || 0,watts:sundayWatts ||0  },
         totalWatts:totalWatts || 0, totalAmps:totalAmps || 0 , diaConsulta: new Date().toISOString(),
-        promedioWattsSemanal: totalWAttsProm ||0, promedioAmpsSemanal: totalAmpsProm
+        promedioWattsSemanal: totalWAttsProm ||0, promedioAmpsSemanal: totalAmpsProm || 0
     }];
     return ob;
     // let sortKeyDate = dynamoDBArray[index].sortkey;
