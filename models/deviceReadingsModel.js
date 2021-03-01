@@ -55,6 +55,9 @@ var Ct1ReadingsModel = new GraphQLObjectType({
             },
             CT1_Status:{
                 type: GraphQLString
+            },
+            Name:{
+                type: GraphQLString
             }
         }
     }
@@ -139,11 +142,12 @@ var queryType = new GraphQLObjectType({
                     let firstValidationDate = Math.floor(Date.now()/1000) -50;
                     let secondValidationDate = Math.floor(Date.now()/1000) + 50; 
                     if ((date >= firstValidationDate  && date <= secondValidationDate) ) {
-                        return data.Items[0].CT1;
+                        return data.Items[0].Relays[0];
                         
                     }
                     else{
                         return  [{device:'Not connected in realtime',error:400}];
+                        // return data.Items[0].Relays[0];
                     }
                 }
             }
