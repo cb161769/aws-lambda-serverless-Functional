@@ -411,6 +411,59 @@ routes.get("/getDeviceConfiguration/:userName", async (req,res) => {
   }
 
 });
+routes.get("/getDeviceRelays/:userName", async (req,res) => {
+  const deviceId  = config.deviceName;
+  let userName= req.params.userName;
+  const params = {
+    TableName: config.dynamoBB.deviceTable.name,
+    ExpressionAttributeValues:{
+      ":userName":userName
+    },
+    KeyConditionExpression: `#user = :userName`,
+    ExpressionAttributeNames:{
+      "#user":"userName"
+    }
+  };
+  try {
+    const result = await db.query(params).promise();
+    if (result.ScannedCount == 1 || result.Count == 1 || result.Items.length == 1) {
+      try {
+        var deviceName = result.Items[0].deviceName;
+        var time = Math.floor(Date.now()/1000)
+        var timeFloat = parseFloat(time);
+        const data = await db.query({
+          TableName: config.dynamoBB.deviceReadings.name,
+          KeyConditionExpression:'#key = :key and #sortkey <= :timestamp', 
+          ScanIndexForward: false,
+          ConsistentRead: false,
+          Limit:1,
+          ExpressionAttributeNames:{
+            '#key': 'primarykey',
+            '#sortkey': 'sortkey',
+          },
+          ExpressionAttributeValues:{
+            ':key':deviceName,
+            ':timestamp': timeFloat
+          }
+
+        }).promise();
+
+        if (data.ScannedCount == 0 || data == null || data == undefined || !data || data.Count == 0){
+          res.status(404).json({notfound:'NO ROWS'});
+        }
+        res.status(200).json({data:data.Items[0].Relays});
+      } catch (error) {
+        res.status(400).json({error: error});
+      }
+    }
+    else{
+      res.status(404).json({result:'not found'});
+    }
+  } catch (error) {
+    res.status(400).json({error: error});
+  }
+
+})
 /**
  * get relays realtime
  */
