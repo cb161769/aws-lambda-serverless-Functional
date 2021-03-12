@@ -411,6 +411,9 @@ routes.get("/getDeviceConfiguration/:userName", async (req,res) => {
   }
 
 });
+/** 
+ *  Get the Device Relays by the UserName
+ */
 routes.get("/getDeviceRelays/:userName", async (req,res) => {
   const deviceId  = config.deviceName;
   let userName= req.params.userName;
@@ -463,7 +466,40 @@ routes.get("/getDeviceRelays/:userName", async (req,res) => {
     res.status(400).json({error: error});
   }
 
+});
+routes.post("/addDeviceConfiguration", async(req, res) => {
+  const data = req.body;
+  let createdDate = new Date();
+  let updateDate = new Date();
+  createdDate.getDate();
+  updateDate.getDate();
+  var result;
+  
+  const params = {
+    TableName: config.dynamoBB.deviceConfiguration.name,
+    Item:{
+      configurationId: uuidv4(),
+      deviceId: data.deviceId,
+      configurationName: data.configurationName,
+      status: data.status,
+      configurationDays: data.configurationDays,
+      connectionsConfigurations: data.connectionsConfigurations,
+      configurationMaximumKilowattsPerDay: data.configurationMaximumKilowattsPerDay,
+      registeredAt: createdDate,
+      updatedAt: updateDate
+
+    }
+  };
+  try {
+    await db.put(params).promise();
+    res.status(200).json({status:200,success:true});
+  } catch (error) {
+    res.status(400).json({status:400,success:false, error:error});
+  }
+
+
 })
+
 /**
  * get relays realtime
  */

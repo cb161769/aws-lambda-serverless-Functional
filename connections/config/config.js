@@ -11,6 +11,9 @@ module.exports.config = {
         },
         fareConfiguration:{
             name:"fareConfiguration"
+        },
+        deviceConfiguration:{
+            name:"deviceConfiguration"
         }
     },
     deviceName:'ArduinoDevice01'
