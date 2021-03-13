@@ -485,8 +485,8 @@ routes.post("/addDeviceConfiguration", async(req, res) => {
       configurationDays: data.configurationDays,
       connectionsConfigurations: data.connectionsConfigurations,
       configurationMaximumKilowattsPerDay: data.configurationMaximumKilowattsPerDay,
-      registeredAt: createdDate,
-      updatedAt: updateDate
+      registeredAt: createdDate.toLocaleDateString(),
+      updatedAt: updateDate.toLocaleDateString()
 
     }
   };
