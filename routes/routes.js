@@ -498,6 +498,31 @@ routes.post("/addDeviceConfiguration", async(req, res) => {
   }
 
 
+});
+routes.get("/getArduinoDeviceConfiguration/:deviceId" , async (req,res) =>{
+  var userName = req.params.deviceId;
+  const params = {
+    TableName: config.dynamoBB.deviceConfiguration.name,
+    ExpressionAttributeValues:{
+      ":userName":userName
+    },
+    KeyConditionExpression: `#user = :userName`,
+    ExpressionAttributeNames:{
+      "#user":"deviceId"
+    }
+  };
+  try {
+    const result = await db.query(params).promise();
+    if ( result.ScannedCount == 1 || result.Count == 1 || result.Items.length == 1){
+      res.status(200).json({status:200,deviceConfiguration:result.Items})
+    }
+    else{
+      rest.status(200).json({status:200,deviceConfiguration:[]})
+    }
+  } catch (error) {
+    res.status(400).json({status:400,error: error})
+    
+  }
 })
 
 /**
