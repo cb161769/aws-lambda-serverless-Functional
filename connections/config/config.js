@@ -14,6 +14,9 @@ module.exports.config = {
         },
         deviceConfiguration:{
             name:"deviceConfiguration"
+        },
+        test:{
+            
         }
     },
     deviceName:'ArduinoDevice01'

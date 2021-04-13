@@ -274,26 +274,50 @@ routes.post("/configureDevice", async (req,res) => {
 });
 routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
 
-  const params = {
-    TableName: config.dynamoBB.deviceReadings.name,
-    KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
-    ScanIndexForward:false,
-    ConsistentRead:false,
-    limit:10,
-    ExpressionAttributeNames:{
-      '#key':'primarykey',
-      '#sortkey':'sortkey'
-
+  if (parseInt(req.params.start) > parseInt(req.params.end)) {
+    var startChanged = parseInt(req.params.end);
+    var endChanged = parseInt(req.params.start);
+    const params = {
+      TableName: config.dynamoBB.deviceReadings.name,
+      KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
+      ScanIndexForward:false,
+      ConsistentRead:false,
+      limit:10,
+      ExpressionAttributeNames:{
+        '#key':'primarykey',
+        '#sortkey':'sortkey'
+  
+      },
+      ExpressionAttributeValues: {
+        ':key':  config.deviceName,
+        ':start':startChanged,
+        ':end': endChanged
     },
-    ExpressionAttributeValues: {
-      ':key':  config.deviceName,
-      ':start': parseInt(req.params.start),
-      ':end': parseInt(req.params.end)
-  },
-  };
-  const data = await db.query(params).promise();
-  if ( data.ScannedCount == 0 || data == null || data == undefined || !data || data.Count == 0) {
-
+    };
+    const data = await db.query(params).promise();
+    if ( data.ScannedCount == 0 || data == null || data == undefined || !data || data.Count == 0) {
+  
+          const ob =  [ 
+            {registros:0,lunes:{registros: 0, amperios:  0,watts: 0}
+            ,martes:{registros:  0, amperios:  0,watts: 0}
+            ,miercoles:{registros:0, amperios:  0,watts: 0}
+            ,jueves:{registros: 0, amperios:  0,watts: 0}
+            ,viernes:{registros:0 , amperios:  0,watts: 0}
+            ,sabado:{registros: 0 , amperios:  0 ,watts: 0 }
+            ,domingo:{registros: 0, amperios:  0,watts:0  },
+            totalWatts:0  , totalAmps: 0 , diaConsulta: new Date().toISOString(),
+            promedioWattsSemanal: 0, promedioAmpsSemanal:  0
+        }];
+        
+         res.status(200).json({ usage:ob});
+    }
+    else{
+      try {
+        const week = await getWeeklyHelper(data.Items)
+           
+            res.status(200).json({ usage:week});
+        
+      } catch (error) {
         const ob =  [ 
           {registros:0,lunes:{registros: 0, amperios:  0,watts: 0}
           ,martes:{registros:  0, amperios:  0,watts: 0}
@@ -307,88 +331,78 @@ routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
       }];
       
        res.status(200).json({ usage:ob});
-  }
-  else{
-    try {
-      const week = await getWeeklyHelper(data.Items)
-         
-          res.status(200).json({ usage:week});
-      
-    } catch (error) {
-      const ob =  [ 
-        {registros:0,lunes:{registros: 0, amperios:  0,watts: 0}
-        ,martes:{registros:  0, amperios:  0,watts: 0}
-        ,miercoles:{registros:0, amperios:  0,watts: 0}
-        ,jueves:{registros: 0, amperios:  0,watts: 0}
-        ,viernes:{registros:0 , amperios:  0,watts: 0}
-        ,sabado:{registros: 0 , amperios:  0 ,watts: 0 }
-        ,domingo:{registros: 0, amperios:  0,watts:0  },
-        totalWatts:0  , totalAmps: 0 , diaConsulta: new Date().toISOString(),
-        promedioWattsSemanal: 0, promedioAmpsSemanal:  0
-    }];
-    
-     res.status(200).json({ usage:ob});
-      //res.status(400).json({status:400, error:error});
+        //res.status(400).json({status:400, error:error});
+      }
     }
+
+    
+
+    
+  }else{
+    const params = {
+      TableName: config.dynamoBB.deviceReadings.name,
+      KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
+      ScanIndexForward:false,
+      ConsistentRead:false,
+      limit:10,
+      ExpressionAttributeNames:{
+        '#key':'primarykey',
+        '#sortkey':'sortkey'
+  
+      },
+      ExpressionAttributeValues: {
+        ':key':  config.deviceName,
+        ':start': parseInt(req.params.start),
+        ':end': parseInt(req.params.end)
+    },
+    };
+    const data = await db.query(params).promise();
+    if ( data.ScannedCount == 0 || data == null || data == undefined || !data || data.Count == 0) {
+  
+          const ob =  [ 
+            {registros:0,lunes:{registros: 0, amperios:  0,watts: 0}
+            ,martes:{registros:  0, amperios:  0,watts: 0}
+            ,miercoles:{registros:0, amperios:  0,watts: 0}
+            ,jueves:{registros: 0, amperios:  0,watts: 0}
+            ,viernes:{registros:0 , amperios:  0,watts: 0}
+            ,sabado:{registros: 0 , amperios:  0 ,watts: 0 }
+            ,domingo:{registros: 0, amperios:  0,watts:0  },
+            totalWatts:0  , totalAmps: 0 , diaConsulta: new Date().toISOString(),
+            promedioWattsSemanal: 0, promedioAmpsSemanal:  0
+        }];
+        
+         res.status(200).json({ usage:ob});
+    }
+    else{
+      try {
+        const week = await getWeeklyHelper(data.Items)
+           
+            res.status(200).json({ usage:week});
+        
+      } catch (error) {
+        const ob =  [ 
+          {registros:0,lunes:{registros: 0, amperios:  0,watts: 0}
+          ,martes:{registros:  0, amperios:  0,watts: 0}
+          ,miercoles:{registros:0, amperios:  0,watts: 0}
+          ,jueves:{registros: 0, amperios:  0,watts: 0}
+          ,viernes:{registros:0 , amperios:  0,watts: 0}
+          ,sabado:{registros: 0 , amperios:  0 ,watts: 0 }
+          ,domingo:{registros: 0, amperios:  0,watts:0  },
+          totalWatts:0  , totalAmps: 0 , diaConsulta: new Date().toISOString(),
+          promedioWattsSemanal: 0, promedioAmpsSemanal:  0
+      }];
+      
+       res.status(200).json({ usage:ob});
+        //res.status(400).json({status:400, error:error});
+      }
+    }
+
   }
 
+  
 
-  // try {
-  //   const params = {
-  //     TableName: config.dynamoBB.deviceReadings.name,
-  //     KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
-  //     ScanIndexForward:false,
-  //     ConsistentRead:false,
-  //     limit:10,
-  //     ExpressionAttributeNames:{
-  //       '#key':'primarykey',
-  //       '#sortkey':'sortkey'
 
-  //     },
-  //     ExpressionAttributeValues: {
-  //       ':key':  config.deviceName,
-  //       ':start': parseInt(req.params.start),
-  //       ':end': parseInt(req.params.end)
-  //   },
-  //   };
-  //   const data = await db.query(params).promise();
-  //   if ( data.ScannedCount == 0 || data == null || data == undefined || !data || data.Count == 0) {
-
-  //     const ob =  [ 
-  //       {registros:0,lunes:{registros: 0, amperios:  0,watts: 0}
-  //       ,martes:{registros:  0, amperios:  0,watts: 0}
-  //       ,miercoles:{registros:0, amperios:  0,watts: 0}
-  //       ,jueves:{registros: 0, amperios:  0,watts: 0}
-  //       ,viernes:{registros:0 , amperios:  0,watts: 0}
-  //       ,sabado:{registros: 0 , amperios:  0 ,watts: 0 }
-  //       ,domingo:{registros: 0, amperios:  0,watts:0  },
-  //       totalWatts:0  , totalAmps: 0 , diaConsulta: new Date().toISOString(),
-  //       promedioWattsSemanal: 0, promedioAmpsSemanal:  0
-  //   }];
-    
-  //   return ob;
-  //   }
-  //   else{
-  //     try {
-  //       // var Object2 = {"data":[data.Items]};
-  //         const week = await getWeeklyHelper(data.Items)
-         
-  //        res.status(200).json({ usage:week});
-         
-  //      } catch (error) {
-  //        res.status(400).json({status:400, error:error});
-  //      }
-
-  //   }
-    
-    
-
-    
-   
-    
-  // } catch (error) {
-  //   res.status(400).json({status:400, error:error});
-  // }
+  
 });
 routes.get("/getDeviceConfiguration/:userName", async (req,res) => {
   let userName = req.params.userName;
@@ -404,7 +418,7 @@ routes.get("/getDeviceConfiguration/:userName", async (req,res) => {
   }
   try {
     const result = await db.query(params).promise();
-    res.status(200).json({configuration:result});
+    res.status(200).json({configuration:result.Items});
     
   } catch (error) {
     res.status(400).json({error: error});
@@ -466,7 +480,7 @@ routes.get("/getDeviceRelays/:userName", async (req,res) => {
     res.status(400).json({error: error});
   }
 
-});
+}); 
 routes.post("/addDeviceConfiguration", async(req, res) => {
   const data = req.body;
   let createdDate = new Date();
@@ -507,7 +521,7 @@ routes.get("/getArduinoDeviceConfiguration/:deviceId" , async (req,res) =>{
       ":userName":userName
     },
     KeyConditionExpression: `#user = :userName`,
-    ExpressionAttributeNames:{
+    ExpressionAttributeNames:{ 
       "#user":"deviceId"
     }
   };
@@ -523,129 +537,22 @@ routes.get("/getArduinoDeviceConfiguration/:deviceId" , async (req,res) =>{
     res.status(400).json({status:400,error: error})
     
   }
+});
+routes.get("/getAllDeviceReadingsByMonth", async (req, res ) => {
+  const params = {
+    TableName: config.dynamoBB.deviceTable.name,
+  };
+  const result = await db.scan(params).promise();
+  if (result != undefined) {
+    res.status(200).json({readings: result});
+  }
+  else{
+    res.status(400).json({error: result});
+  }
 })
 
-/**
- * get relays realtime
- */
-// routes.get('/try/:timestamp', async (req, res) => {
-//   const deviceId = config.deviceName;
-//   let timestamp = req.params.timestamp;
-//   var time = parseFloat(timestamp)
-//   try {
-//     const data = await db.query({
-//       TableName: config.dynamoBB.deviceReadings.name,
-//       KeyConditionExpression: '#key = :key and #sortkey <= :timestamp',
-//       ScanIndexForward: false, // DESC order
-//       ConsistentRead: false,
-//       Limit:1,
-//       ExpressionAttributeNames:{
-//           '#key': 'primarykey',
-//           '#sortkey': 'sortkey',
-//       },
-//       ExpressionAttributeValues: {
-//           ':key':  deviceId,
-//           ':timestamp': time
-//       },
-  
-//   }).promise();
-//   if (data == null || data == undefined || !data || data.Count == 0) {
-//     let error =  [{error:400}];
-//     res.status(400).json({error: error});
-//   }
-//   let date = data.Items[0].sortkey;
-//   let firstValidationDate = Math.floor(Date.now()/1000) -50;
-//   let secondValidationDate = Math.floor(Date.now()/1000) + 50; 
-//   if ((date >= firstValidationDate  && date <= secondValidationDate) ) {
-//     const rb =  data.Items[0];
-//     res.status(200).json({configuration:rb});
-    
-//   }
-//   else{
-//     const err =   [{device:'Not connected in realtime',error:400}];
-//     const rb =  data.Items[0].Relays[0];
-//     res.status(200).json({configuration:rb});
-//   }
-    
-//   } catch (error) {
-//     res.status(400).json({error: error});
-//   }
-  
-
-// })
-// routes.post("/graphql/query",async (req,res) =>{
-//   try {
-//       const graphqlSchema = buildSchema(`
-//       type Query{
-//           deviceUsageData(startDate: Int!, endDate: Int!): [DailySummary]!
-          
-//           stats: Stats!
-
-//           realtimeData(since: Int!): [Reading]!
-
-//           readings(startDate: Int!, endDate: Int!): [Reading]!
-
-//       }
-//       type Stats{
-//           always_on: Float
-//           today_so_far: Float   
-//       }
-
-//       type Reading {
-//           timestamp: Int!
-//           reading: Int!
-//         }
-      
-//         type DailySummary{
-//           timestamp: Int!
-//           dayUse: Float!
-//           nightUse: Float!
-//         }
-//   `);
-
-//   const helpers = {
-//       deviceUsageData: deviceUsageData,
-//       realtimeData:realtimeData,
-//       stats:stats
-//   };
-//     try {
-//       const query = req.body;
-//         const response = await graphql(
-//             graphqlSchema,
-//             query,
-//             helpers
-//         );
-//         res.status(200).json({body: JSON.stringify(response)});
-      
-//     } catch (error) {
-//       res.status(400).json({status:400, error:error});
-//     }
-
-    
-//   } catch (error) {
-//     res.status(400).json({status:400, error:error});
-//   }
 
 
-// });
-// const graphqlSchema = buildSchema(`
-//     type Query{
-//         realtimeData(since: Int!): [Reading]!
-//     }
-//     type Reading {
-//         timestamp: Int!
-//         reading: Int!
-//       }
-
-// `);
-// const helper = {
-//   realtimeData:realtime
-// }; 
-// routes.post("graphql/query", graphqlHTTP({
-//   schema: graphqlSchema,
-//   rootValue: helper,
-//   graphiql: true
-// }));
   
 module.exports = {
     routes,

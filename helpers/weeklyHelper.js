@@ -125,35 +125,6 @@ module.exports.getWeeklyHelper = async function  (dynamoDBArray) {
         promedioWattsSemanal: totalWAttsProm ||0, promedioAmpsSemanal: totalAmpsProm || 0
     }];
     return ob;
-    // let sortKeyDate = dynamoDBArray[index].sortkey;
-        // let sortKeyEpoch = convertEpochDateToHumanDate(sortKeyDate);
-        // var week = isInCurrentWEEK(sortKeyEpoch);
-        // if (week === false) {
-        //     break;
-        // }
-        // const deviceName = dynamoDBArray[index].primarykey;
-        // var readingsVersions = dynamoDBArray[index].readings;
-        // for (let j = 0; j < readingsVersions.length; j++) {
-        //     const element = array[j];
-            
-        // }
-
-
-        // const element = dynamoDBArray[index];
-    // const data = await dynamoDBConnection.query({
-    //     TableName: config.dynamoBB.deviceReadings,
-    //     KeyConditionExpression:'#key = :key and #sortKey BETWEEN :start AND :end',
-    //     ScanIndexForward:true,
-    //     ConsistentRead:false,
-    //     ExpressionAttributeNames:{
-    //         '#key':'primaryKey',
-    //         '#sortkey':'sortkey'
-
-    //     }
-    // })
-
-
-    
 }
 /**
  * this Function determines if the user consumed 
@@ -176,19 +147,5 @@ const moment = require('moment');
   var input = moment(date);
   var isThisWeek = (now.isoWeek() == input.isoWeek());
   return isThisWeek;
-     
-//   const todayObj = new Date();
-//   const todayDate = todayObj.getDate();
-//   const todayDay = todayObj.getDay();
-
-//   // get first date of week
-//   const firstDayOfWeek = new Date(todayObj.setDate(todayDate - todayDay));
-
-//   // get last date of week
-//   const lastDayOfWeek = new Date(firstDayOfWeek);
-//   lastDayOfWeek.setDate(lastDayOfWeek.getDate() + 6);
-
-//   // if date is equal or within the first and last dates of the week
-//   return date >= firstDayOfWeek && date <= lastDayOfWeek;
 }
 
