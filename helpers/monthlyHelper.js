@@ -43,7 +43,7 @@ module.exports.isNightTarif = function(dateObj){
  * @function getMonthlyHelper
  * @author Claudio Raul Brito Mercedes
  */
-module.exports.getMonthlyHelper = function(params){
+module.exports.getMonthlyHelper =  async function(params){
     const moment = require('moment');
     let counter = 0;
     var totalWatts = 0;
@@ -5347,8 +5347,8 @@ module.exports.getMonthlyHelper = function(params){
         var secondDataElement = params[index + 1];
         var sortkeyDate = dataElement.sortkey;
         var seconkeyDate = secondDataElement.sortkey;
-        var sortKeyEpoch = convertEpochDateToHumanDate(sortkeyDate);
-        var secondSortKeyEpoch = convertEpochDateToHumanDate(seconkeyDate);
+        var sortKeyEpoch = module.exports.convertEpochDateToHumanDate(sortkeyDate);
+        var secondSortKeyEpoch =  module.exports.convertEpochDateToHumanDate(seconkeyDate);
         var LocalDate = moment(sortKeyEpoch);
         moment.locale('es-do');
         LocalDate.locale(false);
@@ -5367,7 +5367,7 @@ module.exports.getMonthlyHelper = function(params){
 
         var day = LocalDate.isoWeekday();
         var weekMonth = (LocalDate.week() - (month* 4));
-        var isNight = isNightTarif(sortKeyEpoch);
+        var isNight = module.exports.isNightTarif(sortKeyEpoch);
         for (let j = 0; j < Object.keys(readings2).length; j++) {
             //january
             if (month ==0) { 

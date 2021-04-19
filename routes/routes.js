@@ -3,7 +3,8 @@ const AWS = require('aws-sdk');
 const db = new AWS.DynamoDB.DocumentClient();
 const {v4: uuidv4} = require('uuid');
 const {config} = require('../connections/config/config');
-const  {getWeeklyHelper} = require('../helpers/weeklyHelper')
+const  {getWeeklyHelper} = require('../helpers/weeklyHelper');
+const {getMonthlyHelper} = require('../helpers/monthlyHelper');
 const routes = express.Router({
     mergeParams: true
 });
@@ -272,6 +273,9 @@ routes.post("/configureDevice", async (req,res) => {
 
 
 });
+/** 
+ * 
+ */
 routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
 
   if (parseInt(req.params.start) > parseInt(req.params.end)) {
@@ -404,6 +408,22 @@ routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
 
   
 });
+routes.get("/getDeviceYearly/allConfig", async (req,res) => {
+  const params = {
+    TableName: config.dynamoBB.deviceReadings.name,
+  };
+  const result = await db.scan(params).promise();
+  try {
+    const data = await getMonthlyHelper(result.Items);
+    res.status(200).json({result:data});
+    
+  } catch (error) {
+    res.status(400).json({error: error})
+  }
+ 
+
+
+})
 routes.get("/getDeviceConfiguration/:userName", async (req,res) => {
   let userName = req.params.userName;
   const params = {
