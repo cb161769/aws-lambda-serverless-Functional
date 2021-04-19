@@ -13,11 +13,11 @@ const routes = express.Router({
 
 routes.get("/getAllDeviceReadings", async (req, res) => {
     const params = {
-        TableName: config.dynamoBB.deviceTable.name,
+        TableName: config.dynamoBB.deviceReadings.name,
       };
       const result = await db.scan(params).promise();
       if (result != undefined) {
-        res.status(200).json({readings: result});
+        res.status(200).json({readings: result.Items});
       }
       else{
         res.status(400).json({error: result});

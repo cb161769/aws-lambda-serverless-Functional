@@ -46,7 +46,6 @@ module.exports.getWeeklyHelper = async function  (dynamoDBArray) {
                 mondayAmps += readings2.device_amps;
                 mondayWatts += readings2.device_watts;
                 break;
-                // totalWatts += Object.keys(readings2).length;
                     
             }
             if (weekDay == 2) {
@@ -54,7 +53,6 @@ module.exports.getWeeklyHelper = async function  (dynamoDBArray) {
                 tuesdayWatts += readings2.device_watts;
                 tuesdayAmps += readings2.device_amps;
                 break;
-                totalWatts += Object.keys(readings2).length;
                     
             }
             if (weekDay == 3) {
@@ -62,7 +60,6 @@ module.exports.getWeeklyHelper = async function  (dynamoDBArray) {
                 wednesdayWatts += readings2.device_watts;
                 wednesdayAmps += readings2.device_amps;
                 break;
-                totalWatts += Object.keys(readings2).length;
                     
             }
             if (weekDay == 4) {
@@ -78,7 +75,6 @@ module.exports.getWeeklyHelper = async function  (dynamoDBArray) {
                 fridayWatts += readings2.device_watts;
                 fridayAmps += readings2.device_amps;
                 break;
-                totalWatts += Object.keys(readings2).length;
                     
             }
             if (weekDay == 6) {
@@ -86,7 +82,6 @@ module.exports.getWeeklyHelper = async function  (dynamoDBArray) {
                 saturdayWatts += readings2.device_watts;
                 saturdayAmps += readings2.device_amps;
                 break;
-                totalWatts += Object.keys(readings2).length;
                     
             }
 
@@ -95,7 +90,6 @@ module.exports.getWeeklyHelper = async function  (dynamoDBArray) {
                 sundayWatts += readings2.device_watts;
                 sundayAmps += readings2.device_amps;
                 break;
-                totalWatts += Object.keys(readings2).length;
                     
             }
             
