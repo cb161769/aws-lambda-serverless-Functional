@@ -415,7 +415,7 @@ routes.get("/getDeviceYearly/allConfig", async (req,res) => {
   const result = await db.scan(params).promise();
   try {
     const data = await getMonthlyHelper(result.Items);
-    res.status(200).json({result:data});
+    res.status(200).json({result:data,database:result.Items});
     
   } catch (error) {
     res.status(400).json({error: error})

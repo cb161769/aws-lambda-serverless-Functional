@@ -3,7 +3,7 @@
  * @param {*} epochDate date 
  */
 module.exports.convertEpochDateToHumanDate = function(epochDate){
-    var epoch = new Date(epochDate);
+    var epoch = new Date(epochDate * 1000);
     return epoch;
 }
 /**
@@ -43,7 +43,7 @@ module.exports.isNightTarif = function(dateObj){
  * @function getMonthlyHelper
  * @author Claudio Raul Brito Mercedes
  */
-module.exports.getMonthlyHelper =  async function(params){
+ module.exports.getMonthlyHelper = async function (params){
     const moment = require('moment');
     let counter = 0;
     var totalWatts = 0;
@@ -5342,33 +5342,32 @@ module.exports.getMonthlyHelper =  async function(params){
     var DecemberAmps = 0;
     var totalAmpsProm = 0;
 
-    for (let index = 0; index < params.length - 1; index++) {
+    for (let index = 0; index < params.length; index++) {
         var dataElement = params[index];
         var secondDataElement = params[index + 1];
         var sortkeyDate = dataElement.sortkey;
         var seconkeyDate = secondDataElement.sortkey;
         var sortKeyEpoch = module.exports.convertEpochDateToHumanDate(sortkeyDate);
-        var secondSortKeyEpoch =  module.exports.convertEpochDateToHumanDate(seconkeyDate);
+        var secondSortKeyEpoch = module.exports.convertEpochDateToHumanDate(seconkeyDate);
         var LocalDate = moment(sortKeyEpoch);
         moment.locale('es-do');
         LocalDate.locale(false);
         var readings2 = params[index].readings;
-        var month = LocalDate.month();
-        
-        var year = isInCurrentYear(sortKeyEpoch);
+        var year = module.exports.isInCurrentYear(sortKeyEpoch);
         if (year === false) {
             break;
             
         }
-        if (readings2 == undefined) {
+        if( readings2 === undefined){
             break;
         }
         
+        var month = LocalDate.month();
 
         var day = LocalDate.isoWeekday();
         var weekMonth = (LocalDate.week() - (month* 4));
         var isNight = module.exports.isNightTarif(sortKeyEpoch);
-        for (let j = 0; j < Object.keys(readings2).length; j++) {
+        for (let j = 0; j <= Object.keys(readings2).length; j++) {
             //january
             if (month ==0) { 
 
@@ -5827,6 +5826,7 @@ module.exports.getMonthlyHelper =  async function(params){
                 }
 
                 if (weekMonth ==4) {
+
                     januaryWeekDays.fourthweek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
                         januaryWeekDays.fourthweek.monday.Total += readings2.device_watts;
@@ -5954,6 +5954,7 @@ module.exports.getMonthlyHelper =  async function(params){
                         
                     }
                     if (day == 7) {
+
                         januaryWeekDays.fourthweek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -5972,14 +5973,13 @@ module.exports.getMonthlyHelper =  async function(params){
                             break;
                         }
                         
-                     
+                    }
                    
                 }
-                
+                break;
                 
             }
-            if (month ==1) {
-
+            if (month == 1) {
                 FebruaryAmps += readings2.device_amps;
                 FebruaryWatts += readings2.device_watts;
                 if (weekMonth ==1) {
@@ -6433,10 +6433,7 @@ module.exports.getMonthlyHelper =  async function(params){
                     }
                     
                 }
-
-                if (weekMonth ==4) {
-
-
+                if (weekMonth == 4) {
                     februaryWeekDays.fourthweek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
                         februaryWeekDays.fourthweek.monday.Total += readings2.device_watts;
@@ -6582,17 +6579,14 @@ module.exports.getMonthlyHelper =  async function(params){
                             break;
                         }
                         
-                     
-                   
+                    }
+                    
                 }
-                
+                break;
                 
             }
-            //feb
-   
-            //march
-            if (month ==2) {
-
+            if (month == 2) {
+                
                 MarchAmps += readings2.device_amps;
                 MarchWatts += readings2.device_watts;
                 if (weekMonth ==1) {
@@ -6897,148 +6891,148 @@ module.exports.getMonthlyHelper =  async function(params){
                 }
 
                 if (weekMonth ==3) {
-                    februaryWeekDays.thirdweek.totalKwhPerWeek += readings2.device_watts;
+                    MarchWeekDays.thirdweek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
-                        februaryWeekDays.thirdweek.monday.Total += readings2.device_watts;
+                        MarchWeekDays.thirdweek.monday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
-                            februaryWeekDays.thirdweek.monday.Night.count += 1;
-                            februaryWeekDays.thirdweek.monday.Night.kilowatts += kwh;
-                            februaryWeekDays.thirdweek.monday.Night.watts += readings2.device_watts;
-                            februaryWeekDays.thirdweek.monday.Night.amps += readings2.device_amps;
+                            MarchWeekDays.thirdweek.monday.Night.count += 1;
+                            MarchWeekDays.thirdweek.monday.Night.kilowatts += kwh;
+                            MarchWeekDays.thirdweek.monday.Night.watts += readings2.device_watts;
+                            MarchWeekDays.thirdweek.monday.Night.amps += readings2.device_amps;
                             break;
                             
                         }else{
-                            februaryWeekDays.thirdweek.monday.Day.count += 1;
-                            februaryWeekDays.thirdweek.monday.Day.kilowatts += kwh;
-                            februaryWeekDays.thirdweek.monday.Day.watts += readings2.device_watts;
-                            februaryWeekDays.thirdweek.monday.Day.amps += readings2.device_amps;
+                            MarchWeekDays.thirdweek.monday.Day.count += 1;
+                            MarchWeekDays.thirdweek.monday.Day.kilowatts += kwh;
+                            MarchWeekDays.thirdweek.monday.Day.watts += readings2.device_watts;
+                            MarchWeekDays.thirdweek.monday.Day.amps += readings2.device_amps;
                             break;
                         }
                         
                     }
                     if (day == 2) {
-                        februaryWeekDays.thirdweek.tuesday.Total += readings2.device_watts;
+                        MarchWeekDays.thirdweek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
-                            februaryWeekDays.thirdweek.tuesday.Night.count += 1;
-                            februaryWeekDays.thirdweek.tuesday.Night.kilowatts += kwh;
-                            februaryWeekDays.thirdweek.tuesday.Night.watts += readings2.device_watts;
-                            februaryWeekDays.thirdweek.tuesday.Night.amps += readings2.device_amps;
+                            MarchWeekDays.thirdweek.tuesday.Night.count += 1;
+                            MarchWeekDays.thirdweek.tuesday.Night.kilowatts += kwh;
+                            MarchWeekDays.thirdweek.tuesday.Night.watts += readings2.device_watts;
+                            MarchWeekDays.thirdweek.tuesday.Night.amps += readings2.device_amps;
                             break;
                             
                         }else{
-                            februaryWeekDays.thirdweek.tuesday.Day.count += 1;
-                            februaryWeekDays.thirdweek.tuesday.Day.kilowatts += kwh;
-                            februaryWeekDays.thirdweek.tuesday.Day.watts += readings2.device_watts;
-                            februaryWeekDays.thirdweek.tuesday.Day.amps += readings2.device_amps;
+                            MarchWeekDays.thirdweek.tuesday.Day.count += 1;
+                            MarchWeekDays.thirdweek.tuesday.Day.kilowatts += kwh;
+                            MarchWeekDays.thirdweek.tuesday.Day.watts += readings2.device_watts;
+                            MarchWeekDays.thirdweek.tuesday.Day.amps += readings2.device_amps;
                             break;
                         }
                         
                         
                     }
                     if (day ==3) {
-                        februaryWeekDays.thirdweek.wednesday.Total += readings2.device_watts;
+                        MarchWeekDays.thirdweek.wednesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
-                            februaryWeekDays.thirdweek.wednesday.Night.count += 1;
-                            februaryWeekDays.thirdweek.wednesday.Night.kilowatts += kwh;
-                            februaryWeekDays.thirdweek.wednesday.Night.watts += readings2.device_watts;
-                            februaryWeekDays.thirdweek.wednesday.Night.amps += readings2.device_amps;
+                            MarchWeekDays.thirdweek.wednesday.Night.count += 1;
+                            MarchWeekDays.thirdweek.wednesday.Night.kilowatts += kwh;
+                            MarchWeekDays.thirdweek.wednesday.Night.watts += readings2.device_watts;
+                            MarchWeekDays.thirdweek.wednesday.Night.amps += readings2.device_amps;
                             break;
                             
                         }else{
-                            februaryWeekDays.thirdweek.wednesday.Day.count += 1;
-                            februaryWeekDays.thirdweek.wednesday.Day.kilowatts += kwh;
-                            februaryWeekDays.thirdweek.wednesday.Day.watts += readings2.device_watts;
-                            februaryWeekDays.thirdweek.wednesday.Day.amps += readings2.device_amps;
+                            MarchWeekDays.thirdweek.wednesday.Day.count += 1;
+                            MarchWeekDays.thirdweek.wednesday.Day.kilowatts += kwh;
+                            MarchWeekDays.thirdweek.wednesday.Day.watts += readings2.device_watts;
+                            MarchWeekDays.thirdweek.wednesday.Day.amps += readings2.device_amps;
                             break;
                         }
     
                         
                     }
                     if (day == 4) {
-                        februaryWeekDays.thirdweek.thursday.Total += readings2.device_watts;
+                        MarchWeekDays.thirdweek.thursday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
-                            februaryWeekDays.thirdweek.thursday.Night.count += 1;
-                            februaryWeekDays.thirdweek.thursday.Night.kilowatts += kwh;
-                            februaryWeekDays.thirdweek.thursday.Night.watts += readings2.device_watts;
-                            februaryWeekDays.thirdweek.thursday.Night.amps += readings2.device_amps;
+                            MarchWeekDays.thirdweek.thursday.Night.count += 1;
+                            MarchWeekDays.thirdweek.thursday.Night.kilowatts += kwh;
+                            MarchWeekDays.thirdweek.thursday.Night.watts += readings2.device_watts;
+                            MarchWeekDays.thirdweek.thursday.Night.amps += readings2.device_amps;
                             break;
                             
                         }else{
-                            februaryWeekDays.thirdweek.thursday.Day.count += 1;
-                            februaryWeekDays.thirdweek.thursday.Day.kilowatts += kwh;
-                            februaryWeekDays.thirdweek.thursday.Day.watts += readings2.device_watts;
-                            februaryWeekDays.thirdweek.thursday.Day.amps += readings2.device_amps;
+                            MarchWeekDays.thirdweek.thursday.Day.count += 1;
+                            MarchWeekDays.thirdweek.thursday.Day.kilowatts += kwh;
+                            MarchWeekDays.thirdweek.thursday.Day.watts += readings2.device_watts;
+                            MarchWeekDays.thirdweek.thursday.Day.amps += readings2.device_amps;
                             break;
                         }
                         
                     }
                     if (day ==5) {
-                        februaryWeekDays.thirdweek.friday.Total += readings2.device_watts;
+                        MarchWeekDays.thirdweek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
-                            februaryWeekDays.thirdweek.friday.Night.count += 1;
-                            februaryWeekDays.thirdweek.friday.Night.kilowatts += kwh;
-                            februaryWeekDays.thirdweek.friday.Night.watts += readings2.device_watts;
-                            februaryWeekDays.thirdweek.friday.Night.amps += readings2.device_amps;
+                            MarchWeekDays.thirdweek.friday.Night.count += 1;
+                            MarchWeekDays.thirdweek.friday.Night.kilowatts += kwh;
+                            MarchWeekDays.thirdweek.friday.Night.watts += readings2.device_watts;
+                            MarchWeekDays.thirdweek.friday.Night.amps += readings2.device_amps;
                             break;
                             
                         }else{
-                            februaryWeekDays.thirdweek.friday.Day.count += 1;
-                            februaryWeekDays.thirdweek.friday.Day.kilowatts += kwh;
-                            februaryWeekDays.thirdweek.friday.Day.watts += readings2.device_watts;
-                            februaryWeekDays.thirdweek.friday.Day.amps += readings2.device_amps;
+                            MarchWeekDays.thirdweek.friday.Day.count += 1;
+                            MarchWeekDays.thirdweek.friday.Day.kilowatts += kwh;
+                            MarchWeekDays.thirdweek.friday.Day.watts += readings2.device_watts;
+                            MarchWeekDays.thirdweek.friday.Day.amps += readings2.device_amps;
                             break;
                         }
     
                         
                     }
                     if (day == 6) {
-                        februaryWeekDays.thirdweek.saturday.Total += readings2.device_watts;
+                        MarchWeekDays.thirdweek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
-                            februaryWeekDays.thirdweek.saturday.Night.count += 1;
-                            februaryWeekDays.thirdweek.saturday.Night.kilowatts += kwh;
-                            februaryWeekDays.thirdweek.saturday.Night.watts += readings2.device_watts;
-                            februaryWeekDays.thirdweek.saturday.Night.amps += readings2.device_amps;
+                            MarchWeekDays.thirdweek.saturday.Night.count += 1;
+                            MarchWeekDays.thirdweek.saturday.Night.kilowatts += kwh;
+                            MarchWeekDays.thirdweek.saturday.Night.watts += readings2.device_watts;
+                            MarchWeekDays.thirdweek.saturday.Night.amps += readings2.device_amps;
                             break;
                             
                         }else{
-                            februaryWeekDays.thirdweek.saturday.Day.count += 1;
-                            februaryWeekDays.thirdweek.saturday.Day.kilowatts += kwh;
-                            februaryWeekDays.thirdweek.saturday.Day.watts += readings2.device_watts;
-                            februaryWeekDays.thirdweek.saturday.Day.amps += readings2.device_amps;
+                            MarchWeekDays.thirdweek.saturday.Day.count += 1;
+                            MarchWeekDays.thirdweek.saturday.Day.kilowatts += kwh;
+                            MarchWeekDays.thirdweek.saturday.Day.watts += readings2.device_watts;
+                            MarchWeekDays.thirdweek.saturday.Day.amps += readings2.device_amps;
                             break;
                         }
                         
                         
                     }
                     if (day == 7) {
-                        februaryWeekDays.thirdweek.sunday.Total += readings2.device_watts;
+                        MarchWeekDays.thirdweek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
-                            februaryWeekDays.thirdweek.sunday.Night.count += 1;
-                            februaryWeekDays.thirdweek.sunday.Night.kilowatts += kwh;
-                            februaryWeekDays.thirdweek.sunday.Night.watts += readings2.device_watts;
-                            februaryWeekDays.thirdweek.sunday.Night.amps += readings2.device_amps;
+                            MarchWeekDays.thirdweek.sunday.Night.count += 1;
+                            MarchWeekDays.thirdweek.sunday.Night.kilowatts += kwh;
+                            MarchWeekDays.thirdweek.sunday.Night.watts += readings2.device_watts;
+                            MarchWeekDays.thirdweek.sunday.Night.amps += readings2.device_amps;
                             break;
                             
                         }else{
-                            februaryWeekDays.thirdweek.sunday.Day.count += 1;
-                            februaryWeekDays.thirdweek.sunday.Day.kilowatts += kwh;
-                            februaryWeekDays.thirdweek.sunday.Day.watts += readings2.device_watts;
-                            februaryWeekDays.thirdweek.sunday.Day.amps += readings2.device_amps;
+                            MarchWeekDays.thirdweek.sunday.Day.count += 1;
+                            MarchWeekDays.thirdweek.sunday.Day.kilowatts += kwh;
+                            MarchWeekDays.thirdweek.sunday.Day.watts += readings2.device_watts;
+                            MarchWeekDays.thirdweek.sunday.Day.amps += readings2.device_amps;
                             break;
                         }
                         
@@ -7048,158 +7042,159 @@ module.exports.getMonthlyHelper =  async function(params){
                 }
 
                 if (weekMonth ==4) {
-                    februaryWeekDays.fourthweek.totalKwhPerWeek += readings2.device_watts;
+                    MarchWeekDays.fourthweek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
-                        februaryWeekDays.fourthweek.monday.Total += readings2.device_watts;
+                        MarchWeekDays.fourthweek.monday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
-                            februaryWeekDays.fourthweek.monday.Night.count += 1;
-                            februaryWeekDays.fourthweek.monday.Night.kilowatts += kwh;
-                            februaryWeekDays.fourthweek.monday.Night.watts += readings2.device_watts;
-                            februaryWeekDays.fourthweek.monday.Night.amps += readings2.device_amps;
+                            MarchWeekDays.fourthweek.monday.Night.count += 1;
+                            MarchWeekDays.fourthweek.monday.Night.kilowatts += kwh;
+                            MarchWeekDays.fourthweek.monday.Night.watts += readings2.device_watts;
+                            MarchWeekDays.fourthweek.monday.Night.amps += readings2.device_amps;
                             break;
                             
                         }else{
-                            februaryWeekDays.fourthweek.monday.Day.count += 1;
-                            februaryWeekDays.fourthweek.monday.Day.kilowatts += kwh;
-                            februaryWeekDays.fourthweek.monday.Day.watts += readings2.device_watts;
-                            februaryWeekDays.fourthweek.monday.Day.amps += readings2.device_amps;
+                            MarchWeekDays.fourthweek.monday.Day.count += 1;
+                            MarchWeekDays.fourthweek.monday.Day.kilowatts += kwh;
+                            MarchWeekDays.fourthweek.monday.Day.watts += readings2.device_watts;
+                            MarchWeekDays.fourthweek.monday.Day.amps += readings2.device_amps;
                             break;
                         }
                         
                     }
                     if (day == 2) {
-                        februaryWeekDays.fourthweek.tuesday.Total += readings2.device_watts;
+                        MarchWeekDays.fourthweek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
-                            februaryWeekDays.fourthweek.tuesday.Night.count += 1;
-                            februaryWeekDays.fourthweek.tuesday.Night.kilowatts += kwh;
-                            februaryWeekDays.fourthweek.tuesday.Night.watts += readings2.device_watts;
-                            februaryWeekDays.fourthweek.tuesday.Night.amps += readings2.device_amps;
+                            MarchWeekDays.fourthweek.tuesday.Night.count += 1;
+                            MarchWeekDays.fourthweek.tuesday.Night.kilowatts += kwh;
+                            MarchWeekDays.fourthweek.tuesday.Night.watts += readings2.device_watts;
+                            MarchWeekDays.fourthweek.tuesday.Night.amps += readings2.device_amps;
                             break;
                             
                         }else{
-                            februaryWeekDays.fourthweek.tuesday.Day.count += 1;
-                            februaryWeekDays.fourthweek.tuesday.Day.kilowatts += kwh;
-                            februaryWeekDays.fourthweek.tuesday.Day.watts += readings2.device_watts;
-                            februaryWeekDays.fourthweek.tuesday.Day.amps += readings2.device_amps;
+                            MarchWeekDays.fourthweek.tuesday.Day.count += 1;
+                            MarchWeekDays.fourthweek.tuesday.Day.kilowatts += kwh;
+                            MarchWeekDays.fourthweek.tuesday.Day.watts += readings2.device_watts;
+                            MarchWeekDays.fourthweek.tuesday.Day.amps += readings2.device_amps;
                             break;
                         }
                         
                         
                     }
                     if (day ==3) {
-                        februaryWeekDays.fourthweek.wednesday.Total += readings2.device_watts;
+                        MarchWeekDays.fourthweek.wednesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
-                            februaryWeekDays.fourthweek.wednesday.Night.count += 1;
-                            februaryWeekDays.fourthweek.wednesday.Night.kilowatts += kwh;
-                            februaryWeekDays.fourthweek.wednesday.Night.watts += readings2.device_watts;
-                            februaryWeekDays.fourthweek.wednesday.Night.amps += readings2.device_amps;
+                            MarchWeekDays.fourthweek.wednesday.Night.count += 1;
+                            MarchWeekDays.fourthweek.wednesday.Night.kilowatts += kwh;
+                            MarchWeekDays.fourthweek.wednesday.Night.watts += readings2.device_watts;
+                            MarchWeekDays.fourthweek.wednesday.Night.amps += readings2.device_amps;
                             break;
                             
                         }else{
-                            februaryWeekDays.fourthweek.wednesday.Day.count += 1;
-                            februaryWeekDays.fourthweek.wednesday.Day.kilowatts += kwh;
-                            februaryWeekDays.fourthweek.wednesday.Day.watts += readings2.device_watts;
-                            februaryWeekDays.fourthweek.wednesday.Day.amps += readings2.device_amps;
+                            MarchWeekDays.fourthweek.wednesday.Day.count += 1;
+                            MarchWeekDays.fourthweek.wednesday.Day.kilowatts += kwh;
+                            MarchWeekDays.fourthweek.wednesday.Day.watts += readings2.device_watts;
+                            MarchWeekDays.fourthweek.wednesday.Day.amps += readings2.device_amps;
                             break;
                         }
     
                         
                     }
                     if (day == 4) {
-                        februaryWeekDays.fourthweek.thursday.Total += readings2.device_watts;
+                        MarchWeekDays.fourthweek.thursday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
-                            februaryWeekDays.fourthweek.thursday.Night.count += 1;
-                            februaryWeekDays.fourthweek.thursday.Night.kilowatts += kwh;
-                            februaryWeekDays.fourthweek.thursday.Night.watts += readings2.device_watts;
-                            februaryWeekDays.fourthweek.thursday.Night.amps += readings2.device_amps;
+                            MarchWeekDays.fourthweek.thursday.Night.count += 1;
+                            MarchWeekDays.fourthweek.thursday.Night.kilowatts += kwh;
+                            MarchWeekDays.fourthweek.thursday.Night.watts += readings2.device_watts;
+                            MarchWeekDays.fourthweek.thursday.Night.amps += readings2.device_amps;
                             break;
                             
                         }else{
-                            februaryWeekDays.fourthweek.thursday.Day.count += 1;
-                            februaryWeekDays.fourthweek.thursday.Day.kilowatts += kwh;
-                            februaryWeekDays.fourthweek.thursday.Day.watts += readings2.device_watts;
-                            februaryWeekDays.fourthweek.thursday.Day.amps += readings2.device_amps;
+                            MarchWeekDays.fourthweek.thursday.Day.count += 1;
+                            MarchWeekDays.fourthweek.thursday.Day.kilowatts += kwh;
+                            MarchWeekDays.fourthweek.thursday.Day.watts += readings2.device_watts;
+                            MarchWeekDays.fourthweek.thursday.Day.amps += readings2.device_amps;
                             break;
                         }
                         
                     }
                     if (day ==5) {
-                        februaryWeekDays.fourthweek.friday.Total += readings2.device_watts;
+                        MarchWeekDays.fourthweek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
-                            februaryWeekDays.fourthweek.friday.Night.count += 1;
-                            februaryWeekDays.fourthweek.friday.Night.kilowatts += kwh;
-                            februaryWeekDays.fourthweek.friday.Night.watts += readings2.device_watts;
-                            februaryWeekDays.fourthweek.friday.Night.amps += readings2.device_amps;
+                            MarchWeekDays.fourthweek.friday.Night.count += 1;
+                            MarchWeekDays.fourthweek.friday.Night.kilowatts += kwh;
+                            MarchWeekDays.fourthweek.friday.Night.watts += readings2.device_watts;
+                            MarchWeekDays.fourthweek.friday.Night.amps += readings2.device_amps;
                             break;
                             
                         }else{
-                            februaryWeekDays.fourthweek.friday.Day.count += 1;
-                            februaryWeekDays.fourthweek.friday.Day.kilowatts += kwh;
-                            februaryWeekDays.fourthweek.friday.Day.watts += readings2.device_watts;
-                            februaryWeekDays.fourthweek.friday.Day.amps += readings2.device_amps;
+                            MarchWeekDays.fourthweek.friday.Day.count += 1;
+                            MarchWeekDays.fourthweek.friday.Day.kilowatts += kwh;
+                            MarchWeekDays.fourthweek.friday.Day.watts += readings2.device_watts;
+                            MarchWeekDays.fourthweek.friday.Day.amps += readings2.device_amps;
                             break;
                         }
     
                         
                     }
                     if (day == 6) {
-                        februaryWeekDays.fourthweek.saturday.Total += readings2.device_watts;
+                        MarchWeekDays.fourthweek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
-                            februaryWeekDays.fourthweek.saturday.Night.count += 1;
-                            februaryWeekDays.fourthweek.saturday.Night.kilowatts += kwh;
-                            februaryWeekDays.fourthweek.saturday.Night.watts += readings2.device_watts;
-                            februaryWeekDays.fourthweek.saturday.Night.amps += readings2.device_amps;
+                            MarchWeekDays.fourthweek.saturday.Night.count += 1;
+                            MarchWeekDays.fourthweek.saturday.Night.kilowatts += kwh;
+                            MarchWeekDays.fourthweek.saturday.Night.watts += readings2.device_watts;
+                            MarchWeekDays.fourthweek.saturday.Night.amps += readings2.device_amps;
                             break;
                             
                         }else{
-                            februaryWeekDays.fourthweek.saturday.Day.count += 1;
-                            februaryWeekDays.fourthweek.saturday.Day.kilowatts += kwh;
-                            februaryWeekDays.fourthweek.saturday.Day.watts += readings2.device_watts;
-                            februaryWeekDays.fourthweek.saturday.Day.amps += readings2.device_amps;
+                            MarchWeekDays.fourthweek.saturday.Day.count += 1;
+                            MarchWeekDays.fourthweek.saturday.Day.kilowatts += kwh;
+                            MarchWeekDays.fourthweek.saturday.Day.watts += readings2.device_watts;
+                            MarchWeekDays.fourthweek.saturday.Day.amps += readings2.device_amps;
                             break;
                         }
                         
                         
                     }
                     if (day == 7) {
-                        februaryWeekDays.fourthweek.sunday.Total += readings2.device_watts;
+                        MarchWeekDays.fourthweek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
-                            februaryWeekDays.fourthweek.sunday.Night.count += 1;
-                            februaryWeekDays.fourthweek.sunday.Night.kilowatts += kwh;
-                            februaryWeekDays.fourthweek.sunday.Night.watts += readings2.device_watts;
-                            februaryWeekDays.fourthweek.sunday.Night.amps += readings2.device_amps;
+                            MarchWeekDays.fourthweek.sunday.Night.count += 1;
+                            MarchWeekDays.fourthweek.sunday.Night.kilowatts += kwh;
+                            MarchWeekDays.fourthweek.sunday.Night.watts += readings2.device_watts;
+                            MarchWeekDays.fourthweek.sunday.Night.amps += readings2.device_amps;
                             break;
                             
                         }else{
-                            februaryWeekDays.fourthweek.sunday.Day.count += 1;
-                            februaryWeekDays.fourthweek.sunday.Day.kilowatts += kwh;
-                            februaryWeekDays.fourthweek.sunday.Day.watts += readings2.device_watts;
-                            februaryWeekDays.fourthweek.sunday.Day.amps += readings2.device_amps;
+                            MarchWeekDays.fourthweek.sunday.Day.count += 1;
+                            MarchWeekDays.fourthweek.sunday.Day.kilowatts += kwh;
+                            MarchWeekDays.fourthweek.sunday.Day.watts += readings2.device_watts;
+                            MarchWeekDays.fourthweek.sunday.Day.amps += readings2.device_amps;
                             break;
                         }
                         
                      
                    
+                    }
                 }
-                }
+                break;
+                
             }
-            //april
-            if (month ==3) {
+            if (month == 3) {
                 AprilAmps += readings2.device_amps;
                 AprilWatts += readings2.device_watts;
                 if (weekMonth ==1) {
@@ -7802,13 +7797,14 @@ module.exports.getMonthlyHelper =  async function(params){
                         
                      
                    
+                    }
                 }
-                }
-            }
-            //may
-            if (month ==4) {
+                break;
                 
+            }
 
+            if (month == 4) {
+                
                 MayAmps += readings2.device_amps;
                 MayWatts += readings2.device_watts;
                 if (weekMonth ==1) {
@@ -8410,11 +8406,14 @@ module.exports.getMonthlyHelper =  async function(params){
                         
                      
                    
+                    }
                 }
-                }
+
+                break;
+                
             }
-            //june
-            if (month ==5) {
+
+            if (month == 5) {
                 JuneAmps += readings2.device_amps;
                 JuneWatts += readings2.device_watts;
                 if (weekMonth ==1) {
@@ -9016,9 +9015,10 @@ module.exports.getMonthlyHelper =  async function(params){
                    
                     }
                 }
+
+                break;
             }
-            //july
-            if (month ==6) {
+            if (moth == 6) {
                 JulyAmps += readings2.device_amps;
                 JulyWatts += readings2.device_watts;
                 if (weekMonth ==1) {
@@ -9620,9 +9620,11 @@ module.exports.getMonthlyHelper =  async function(params){
                    
                     }
                 }
+
+                break;
+                
             }
-            //august
-            if (month ==7) {
+            if(month == 7){
                 AugustAmps += readings2.device_amps;
                 AugustWatts += readings2.device_watts;
                 if (weekMonth ==1) {
@@ -10224,9 +10226,9 @@ module.exports.getMonthlyHelper =  async function(params){
                    
                     }
                 }
+                break;
             }
-            //september
-            if (month ==8) {
+            if (month == 8) {
                 SeptemberWatts += readings2.device_amps;
                 SeptemberWatts += readings2.device_watts;
                 if (weekMonth ==1) {
@@ -10828,9 +10830,10 @@ module.exports.getMonthlyHelper =  async function(params){
                    
                     }
                 }
+                break;
+                
             }
-             //october
-             if (month ==9) {
+            if (month == 9) {
                 OctoberAmps += readings2.device_amps;
                 OctoberWatts += readings2.device_watts;
                 if (weekMonth ==1) {
@@ -11432,9 +11435,10 @@ module.exports.getMonthlyHelper =  async function(params){
                    
                     }
                 }
+                break;
+                
             }
-            //november
-            if (month ==10) {
+            if (month == 10) {
                 NovemberAmps += readings2.device_amps;
                 NovemberWatts += readings2.device_watts;
                 if (weekMonth ==1) {
@@ -12036,10 +12040,10 @@ module.exports.getMonthlyHelper =  async function(params){
                    
                     }
                 }
+                break;
             }
-             //december
-             if (month ==11) {
-                DecemberAmps += readings2.device_amps;
+            if (month == 11) {
+             DecemberAmps += readings2.device_amps;
                 DecemberWatts += readings2.device_watts;
                 if (weekMonth ==1) {
                     DecemberWeekDays.firstWeek.totalKwhPerWeek += readings2.device_watts;
@@ -12639,98 +12643,100 @@ module.exports.getMonthlyHelper =  async function(params){
                         }
                    
                     }
+                    break;    
                 }
-            }
-       
+            }  
+            
         }
-    }
-}
+            
         counter++;
         totalAmps += readings2.device_amps;
         totalWatts += readings2.device_watts;
-        
-        
-
-        
-    totalAmpsProm = totalAmps/ params.length;
-        totalWAttsProm = totalWatts/ params.length;
-        const ob = [
-            {registros:counter,
-                year:LocalDate.year(),
-                totalAmpsProm:totalAmpsProm,
-                totalWattsProm:totalWAttsProm,
-            january:{
-                amps:januaryAmps,
-                watts:januaryWatts,
-                januaryDetail: [
-                    januaryWeekDays
-                ]
-            },
-            February:{
-                amps:FebruaryAmps,
-                watts:FebruaryWatts,
-                februaryDetails:[februaryWeekDays]
-            },
-            march:{
-                amps:MarchAmps,
-                watts:MarchWatts,
-                marchDetails: [MarchWeekDays]
-            },
-            april:{
-                amps:AprilAmps,
-                watts:AprilWatts,
-                aprilDetails:[aprilWeekDays]
-            },
-            may:{
-                amps:MayAmps,
-                watts:MayWatts,
-                mayDetails:[MayWeekDays]
-            },
-            june:{
-                amps:JuneAmps
-            },
-            july:{
-                amps:JulyAmps,
-                watts:JulyWatts,
-                julyDetails:[JulyWeekDays]                
-                
-            },
-            augustus:{
-                amps:AugustAmps,
-                watts:AugustWatts,
-                augustDetails:[AugustWeekDays]
-
-            },
-            September:{
-                amps:SeptemberAmps,
-                watts:SeptemberAmps,
-                SeptemberDetails:[SeptemberWeekDays]
-
-            },
-            october:{
-                amps:OctoberAmps,
-                watts:OctoberWatts,
-                OctoberDetails:[OctoberWeekDays]
-
-            },
-            november:{
-                amps:NovemberAmps,
-                watts:NovemberWatts,
-                NovemberDetails:[NovemberWeekDays]
-
-            },
-            december:{
-                amps:DecemberAmps,
-                watts:DecemberWatts,
-                DecemberDetails:[DecemberWeekDays]
-            }
-
             
-        }
-        
-        ];
+       
+    }
+    
+    totalAmpsProm = totalAmps/ params.length;
+    totalWAttsProm = totalWatts/ params.length;
+    const ob = [
+        {registros:counter,
+            year:LocalDate.year(),
+            totalAmpsProm:totalAmpsProm,
+            totalWattsProm:totalWAttsProm,
+        january:{
+            amps:januaryAmps,
+            watts:januaryWatts,
+            januaryDetail: [
+                januaryWeekDays
+            ]
+        },
+        February:{
+            amps:FebruaryAmps,
+            watts:FebruaryWatts,
+            februaryDetails:[februaryWeekDays]
+        },
+        march:{
+            amps:MarchAmps,
+            watts:MarchWatts,
+            marchDetails: [MarchWeekDays]
+        },
+        april:{
+            amps:AprilAmps,
+            watts:AprilWatts,
+            aprilDetails:[aprilWeekDays]
+        },
+        may:{
+            amps:MayAmps,
+            watts:MayWatts,
+            mayDetails:[MayWeekDays]
+        },
+        june:{
+            amps:JuneAmps
+        },
+        july:{
+            amps:JulyAmps,
+            watts:JulyWatts,
+            julyDetails:[JulyWeekDays]                
+            
+        },
+        augustus:{
+            amps:AugustAmps,
+            watts:AugustWatts,
+            augustDetails:[AugustWeekDays]
 
-        return ob;
-}
-}
+        },
+        September:{
+            amps:SeptemberAmps,
+            watts:SeptemberAmps,
+            SeptemberDetails:[SeptemberWeekDays]
+
+        },
+        october:{
+            amps:OctoberAmps,
+            watts:OctoberWatts,
+            OctoberDetails:[OctoberWeekDays]
+
+        },
+        november:{
+            amps:NovemberAmps,
+            watts:NovemberWatts,
+            NovemberDetails:[NovemberWeekDays]
+
+        },
+        december:{
+            amps:DecemberAmps,
+            watts:DecemberWatts,
+            DecemberDetails:[DecemberWeekDays]
+        }
+
+        
+    }
+    
+    ];
+
+    return ob;
+     
+      
+    }
+
 
