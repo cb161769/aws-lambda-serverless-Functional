@@ -19,7 +19,9 @@ module.exports.isInCurrentYear = function(date){
     var isThisYear = (now.year() == input.year());
     return isThisYear;
 }
-
+/**
+ * 
+ */
 module.exports.isNightTarif = function(dateObj){
     if (typeof dateObj ==='number') {
         dateObj = new Date(date);
