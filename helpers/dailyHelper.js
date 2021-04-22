@@ -27,7 +27,7 @@
 }
 
 
-module.exports.dailyHelper = function (params){
+module.exports.dailyHelper = async function (params){
     const moment = require('moment');
     var dayInformation = {
         AlldayName:'',
@@ -48,17 +48,27 @@ module.exports.dailyHelper = function (params){
             }
         }
     }
-    for (let index = 0; index < params.length; index++) {
-        var dataElement = params[index];
-        var secondDataElement = params[index + 1];
+    const fixedParams = params.filter(x => x.sortkey != undefined);
+    for (let index = 0; index <= fixedParams.length; index++) {
+        var dataElement = fixedParams[index];
+        if (dataElement == undefined) {
+            break;
+        }
+        var secondDataElement = fixedParams[index + 1];
+        if (secondDataElement == undefined) {
+            break; 
+         }
         var seconkeyDate = secondDataElement.sortkey;
         var secondSortKeyEpoch = module.exports.convertEpochDateToHumanDate(seconkeyDate);
         var sortKeyDate = dataElement.sortkey;
+        if (seconkeyDate == undefined && sortKeyDate == undefined) {
+            break;
+        }
         var sortKeyEpoch = module.exports.convertEpochDateToHumanDate(sortKeyDate);
         var LocalDate = moment(sortKeyEpoch);
         moment.locale('es-do');
         LocalDate.locale(false);
-        var readings2 = params[index].readings;
+        var readings2 = fixedParams[index].readings;
         if (readings2 == undefined) {
             break;
             
