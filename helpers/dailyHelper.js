@@ -39,11 +39,13 @@ module.exports.dailyHelper = async function (params){
                 amps:0,
                 watts:0,
                 kilowatts:0,
+                TimeStamp:[]
             },
             Day:{
                 amps:0,
                 watts:0,
                 kilowatts:0,
+                TimeStamp:[]
 
             }
         }
@@ -82,6 +84,7 @@ module.exports.dailyHelper = async function (params){
                 dayInformation.DayDetails.Night.amps += readings2.device_amps;
                 dayInformation.DayDetails.Night.kilowatts += kwh;
                 dayInformation.DayDetails.Night.watts += readings2.device_watts;
+                dayInformation.DayDetails.Night.TimeStamp.push({time:sortKeyEpoch/1000,valueAmps:readings2.device_amps,valueKwh:kwh,valueWatts:readings2.device_watts});
                 break;
                 
             }else{
@@ -90,6 +93,7 @@ module.exports.dailyHelper = async function (params){
                 dayInformation.DayDetails.Day.amps += readings2.device_amps;
                 dayInformation.DayDetails.Day.kilowatts += kwh;
                 dayInformation.DayDetails.Day.watts += readings2.device_watts;
+                dayInformation.DayDetails.Day.TimeStamp.push({time:sortKeyEpoch/1000,valueAmps:readings2.device_amps,valueKwh:kwh,valueWatts:readings2.device_watts});
                 break;
             }
 
