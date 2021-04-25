@@ -1,6 +1,8 @@
 /**
  * this Function determines if the user consumed 
  * @param {*} epochDate date 
+ * @function convertEpochDateToHumanDate()
+ * 
  */
 
 module.exports.convertEpochDateToHumanDate = function(epochDate){
@@ -22,8 +24,9 @@ module.exports.isInCurrentWEEK = function(date){
 /**
  * @function dailyHelperFromConnections
  * @author Claudio Raul Brito Mercedes
- * @param {``} connectionName  the ConnectionName
+ * @param {} connectionName  the ConnectionName
  * @param {*} params the DynamoDBArray 
+ * 
  */
 module.exports.dailyHelperFromConnections = async function(connectionName,params){
     const moment = require('moment');
@@ -72,15 +75,15 @@ module.exports.dailyHelperFromConnections = async function(connectionName,params
      }
 
     var sortKeyDate = dataElement.sortkey;
-    var sortKeyEpoch = convertEpochDateToHumanDate(sortKeyDate);
+    var sortKeyEpoch = module.exports.convertEpochDateToHumanDate(sortKeyDate);
     var LocalDate = moment(sortKeyEpoch);
     var seconkeyDate = secondDataElement.sortkey;
-    var secondKeyEpoch = convertEpochDateToHumanDate(seconkeyDate);
+    var secondKeyEpoch = module.exports.convertEpochDateToHumanDate(seconkeyDate);
     moment.locale('es-do');
     LocalDate.locale(false);
     var readings2 = filteredArray[index].Relays;
     var filteredReadings = readings2.filter(x => x.Name === connectionName);
-    var week = isInCurrentWEEK(sortKeyEpoch);
+    var week = module.exports.isInCurrentWEEK(sortKeyEpoch);
     if (week === false) {
         break;
     }
@@ -162,7 +165,7 @@ module.exports.dailyHelperFromConnections = async function(connectionName,params
             sunday +=1;
             sundayWatts += filteredReadings[0].CT1_Watts;
             sundayAmps += filteredReadings[0].CT1_Amps;
-            sundayTimesTamp.push({time:sortKeyEpoch/1000,valueAmps:filteredReadings[0].CT1_Amp,valueKwh:kwh,valueWatts:filteredReadings[0].CT1_Watts});
+            sundayTimesTamp.push({time:sortKeyEpoch/1000,valueAmps:filteredReadings[0].CT1_Amps,valueKwh:kwh,valueWatts:filteredReadings[0].CT1_Watts});
             break;
                 
         }

@@ -18,7 +18,10 @@ module.exports.findFirstDay = function(y,m){
 };
 
 /**
- * 
+ * @function isNightTarif()
+ * @description this method is used when the given timesTamp is in the night or the day
+ * @returns boolean
+ * @author Claudio Raul Brito Mercedes
  */
  module.exports.isNightTarif = function(dateObj){
     if (typeof dateObj ==='number') {
@@ -34,7 +37,7 @@ module.exports.findFirstDay = function(y,m){
 	}
 
 	return false;
-}
+};
 /**
  * this Function determines if the user consumed 
  * @param {*} epochDate date 
@@ -43,7 +46,8 @@ module.exports.findFirstDay = function(y,m){
     var epoch = new Date(epochDate * 1000);
     return epoch;
 }
-/**@description this Functions get all detail from a given Month
+/**
+ * @description this Functions get all detail from a given Month
  * @function getByMonth()
  * @param {*} params parameters
  */

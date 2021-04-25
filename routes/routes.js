@@ -7,6 +7,8 @@ const  {getWeeklyHelper} = require('../helpers/weeklyHelper');
 const {getMonthlyHelper} = require('../helpers/monthlyHelper');
 const {dailyHelper} = require('../helpers/dailyHelper');
 const {findLastDay,findFirstDay,getByMonth} = require('../helpers/getByMonthHelper');
+const {dailyHelperFromConnections} = require('../helpers/connectionHelpers/dailyHelper');
+const {findLastDayConnection,findFirstDayConnection,getByMonthConnections} = require('../helpers/connectionHelpers/getByMonthHelper')
 const routes = express.Router({
     mergeParams: true
 });
@@ -1172,7 +1174,610 @@ routes.get("/getAllDeviceReadingsByGivenMonth/:day", async (req,res) => {
 });
 
 
+routes.get("/Connections/getConnectionReadingsCurrentWeek/:start/:end/:ConnectionName", async (req,res)=>{
+var ConnectionName = req.params.ConnectionName;
+  if (ConnectionName == '' || ConnectionName == null || ConnectionName == undefined) {
+    res.status(404).json({ error:'The name is incorrect'});
+  
+  }
+  if (parseInt(req.params.start) > parseInt(req.params.end)) {
+    var startChanged = parseInt(req.params.end);
+    var endChanged = parseInt(req.params.start);
+    const params = {
+      TableName: config.dynamoBB.deviceReadings.name,
+      KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
+      ScanIndexForward:false,
+      ConsistentRead:false,
+      ExpressionAttributeNames:{
+        '#key':'primarykey',
+        '#sortkey':'sortkey'
+  
+      },
+      ExpressionAttributeValues: {
+        ':key':  config.deviceName,
+        ':start':startChanged,
+        ':end': endChanged
+    },
+    };
+    const data = await db.query(params).promise();
+    if (data.ScannedCount == 0 || data == null || data == undefined || data.Count ==0) {
+      const ob =  [ 
+        {registros:0,Connextion:ConnectionName,Timestamp:[],lunes:{registros:0, amperios: 0,watts: 0, Timestamp:[]}
+        ,martes:{registros:  0, amperios:  0,watts: 0,Timestamp:[]}
+        ,miercoles:{registros: 0, amperios:  0,watts: 0,Timestamp:[]}
+        ,jueves:{registros: 0, amperios:  0,watts:0,Timestamp:[]}
+        ,viernes:{registros:0 , amperios:  0,watts:0, Timestamp:[]}
+        ,sabado:{registros: 0 , amperios:  0 ,watts: 0, Timestamp:[] }
+        ,domingo:{registros:0, amperios:  0,watts:0, Timestamp:[]  },
+        totalWatts: 0, totalAmps:0 , diaConsulta: new Date().toISOString(),
+        promedioWattsSemanal: 0, promedioAmpsSemanal:0, promedioKwhSemanal:  0,uso:data.Items
+    }];
+    res.status(200).json({ usage:ob});
+      
+    }else{
+      try {
+        const week  =await dailyHelperFromConnections(ConnectionName,data.Items);
+        res.status(200).json({uso:week});
+      } catch (error) {
+        const ob =  [ 
+          {registros:0,Connextion:ConnectionName,Timestamp:[],lunes:{registros:0, amperios: 0,watts: 0, Timestamp:[]}
+          ,martes:{registros:  0, amperios:  0,watts: 0,Timestamp:[]}
+          ,miercoles:{registros: 0, amperios:  0,watts: 0,Timestamp:[]}
+          ,jueves:{registros: 0, amperios:  0,watts:0,Timestamp:[]}
+          ,viernes:{registros:0 , amperios:  0,watts:0, Timestamp:[]}
+          ,sabado:{registros: 0 , amperios:  0 ,watts: 0, Timestamp:[] }
+          ,domingo:{registros:0, amperios:  0,watts:0, Timestamp:[]  },
+          totalWatts: 0, totalAmps:0 , diaConsulta: new Date().toISOString(),
+          promedioWattsSemanal: 0, promedioAmpsSemanal:0, promedioKwhSemanal:  0
+         }];
+         res.status(200).json({ error:ob,err2:error});
+      }
+      
+    }
+    
+  }else{
+    const params = {
+      TableName: config.dynamoBB.deviceReadings.name,
+      KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
+      ScanIndexForward:false,
+      ConsistentRead:false,
+      ExpressionAttributeNames:{
+        '#key':'primarykey',
+        '#sortkey':'sortkey'
+  
+      },
+      ExpressionAttributeValues: {
+        ':key':  config.deviceName,
+        ':start': parseInt(req.params.start),
+        ':end': parseInt(req.params.end)
+    },
+    };
+    const data = await db.query(params).promise();
+    if ( data.ScannedCount == 0 || data == null || data == undefined || !data || data.Count == 0) {
+      const ob =  [ 
+        {registros:0,Connextion:ConnectionName,Timestamp:[],lunes:{registros:0, amperios: 0,watts: 0, Timestamp:[]}
+        ,martes:{registros:  0, amperios:  0,watts: 0,Timestamp:[]}
+        ,miercoles:{registros: 0, amperios:  0,watts: 0,Timestamp:[]}
+        ,jueves:{registros: 0, amperios:  0,watts:0,Timestamp:[]}
+        ,viernes:{registros:0 , amperios:  0,watts:0, Timestamp:[]}
+        ,sabado:{registros: 0 , amperios:  0 ,watts: 0, Timestamp:[] }
+        ,domingo:{registros:0, amperios:  0,watts:0, Timestamp:[]  },
+        totalWatts: 0, totalAmps:0 , diaConsulta: new Date().toISOString(),
+        promedioWattsSemanal: 0, promedioAmpsSemanal:0, promedioKwhSemanal:  0,uso:data.Items
+       }];
+       res.status(200).json({ usage:ob});
+    
+    }else{
+      try {
+        const week  =await dailyHelperFromConnections(ConnectionName,data.Items);
+        res.status(200).json({usage:week});
+      } catch (error) {
+        const ob =  [ 
+          {registros:0,Connextion:ConnectionName,Timestamp:[],lunes:{registros:0, amperios: 0,watts: 0, Timestamp:[]}
+          ,martes:{registros:  0, amperios:  0,watts: 0,Timestamp:[]}
+          ,miercoles:{registros: 0, amperios:  0,watts: 0,Timestamp:[]}
+          ,jueves:{registros: 0, amperios:  0,watts:0,Timestamp:[]}
+          ,viernes:{registros:0 , amperios:  0,watts:0, Timestamp:[]}
+          ,sabado:{registros: 0 , amperios:  0 ,watts: 0, Timestamp:[] }
+          ,domingo:{registros:0, amperios:  0,watts:0, Timestamp:[]  },
+          totalWatts: 0, totalAmps:0 , diaConsulta: new Date().toISOString(),
+          promedioWattsSemanal: 0, promedioAmpsSemanal:0, promedioKwhSemanal:  0
+         }];
+         res.status(200).json({ usage:ob});
+      }
+    }
+  }
 
+
+});
+
+routes.get("/Connections/getAllDeviceReadingsByGivenMonth/:day/:ConnectionName", async (req,res) =>{
+  let day = parseInt(req.params.day);
+  var ConnectionName = req.params.ConnectionName;
+  let completedDay = new Date(day * 1000);
+  let firstDayOfMonth = findFirstDay(completedDay.getFullYear(),completedDay.getMonth());
+  let secondDayOfMonth = findLastDay(completedDay.getFullYear(),completedDay.getMonth());
+
+  firstDayOfMonth.setHours(0);
+  secondDayOfMonth.setHours(24);
+  let firstEpoch = firstDayOfMonth / 1000;
+  let secondEpoch = secondDayOfMonth/ 1000;
+  const params = {
+    TableName: config.dynamoBB.deviceReadings.name,
+    KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
+    ScanIndexForward:false,
+    ConsistentRead:false,
+    ExpressionAttributeNames:{
+      '#key':'primarykey',
+      '#sortkey':'sortkey'
+
+    },
+    ExpressionAttributeValues: {
+      ':key':  config.deviceName,
+      ':start':firstEpoch,
+      ':end': secondEpoch
+    },
+  };
+  const data = await db.query(params).promise();
+  if ( data.ScannedCount == 0  || data == null || data == undefined || !data || data.Count ==0 ){
+    var MonthInformation = {
+      MonthName:'',
+      allMonthAmps:0,
+      allMonthWatts:0,
+      allMonthKiloWatts:0,
+      MonthDetails:{
+          firstWeek:{ 
+              monday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0,
+            
+              },
+              tuesday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              wednesday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              thursday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              friday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              saturday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              sunday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              totalKwhPerWeek:0,
+              TimeStamp:[]
+  
+          },
+          secondWeek:{ 
+              monday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              tuesday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              wednesday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              thursday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              friday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              saturday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              sunday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              totalKwhPerWeek:0,
+              TimeStamp:[]
+          },
+          thirdweek:{ 
+              monday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              tuesday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              wednesday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              thursday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              friday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              saturday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              sunday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              totalKwhPerWeek:0,
+              TimeStamp:[]
+  
+          },
+          fourthweek:{ 
+              monday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              tuesday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              wednesday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              thursday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              friday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              saturday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              sunday:{
+                  Night:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Day:{
+                      count:0,
+                      kilowatts:0,
+                      watts:0,
+                      amps:0
+                  },
+                  Total:0
+              },
+              totalKwhPerWeek:0,
+              TimeStamp:[]
+  
+          }
+      }
+    };
+    const ob =  [{Detail:MonthInformation}];
+    res.status(200).json({ usage: ob, message:'Not Found'});
+  }
+  else{
+    const month = await getByMonthConnections(ConnectionName,data.Items);
+    res.status(200).json({ usage: month});
+  }
+
+
+});
 
   
 module.exports = {
