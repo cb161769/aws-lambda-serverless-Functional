@@ -1169,7 +1169,8 @@ routes.get("/getAllDeviceReadingsByGivenMonth/:day", async (req,res) => {
   }
  
 
-})
+});
+
 
 
 
