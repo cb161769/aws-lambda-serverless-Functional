@@ -8,7 +8,8 @@ const {getMonthlyHelper} = require('../helpers/monthlyHelper');
 const {dailyHelper} = require('../helpers/dailyHelper');
 const {findLastDay,findFirstDay,getByMonth} = require('../helpers/getByMonthHelper');
 const {dailyHelperFromConnections} = require('../helpers/connectionHelpers/dailyHelper');
-const {findLastDayConnection,findFirstDayConnection,getByMonthConnections} = require('../helpers/connectionHelpers/getByMonthHelper')
+const {getByMonthConnections} = require('../helpers/connectionHelpers/getByMonthHelper');
+const {getMonthlyHelperConnection} = require('../helpers/connectionHelpers/monthlyHelper');
 const routes = express.Router({
     mergeParams: true
 });
@@ -1778,6 +1779,21 @@ routes.get("/Connections/getAllDeviceReadingsByGivenMonth/:day/:ConnectionName",
 
 
 });
+
+routes.get("/Connections/GetConnectionYearly/allConfig/:ConnectionName", async (req, res) => {
+  let connectionName = req.params.ConnectionName;
+  
+  const params = {
+    TableName: config.dynamoBB.deviceReadings.name,
+  };
+  try {
+    const result = await db.scan(params).promise();
+    const data = await getMonthlyHelperConnection(connectionName,result.Items);
+    res.status(200).json({ usage:data});
+  } catch (error) {
+    res.status(400).json({error: error})
+  }
+})
 
   
 module.exports = {

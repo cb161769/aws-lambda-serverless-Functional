@@ -514,7 +514,7 @@ module.exports.getByMonthConnections = async function(ConnectionName,Params){
            break; 
         }
         var sortKeyDate = dataElement.sortkey;
-         var seconkeyDate = secondDataElement.sortkey;
+        var seconkeyDate = secondDataElement.sortkey;
         
        var sortKeyDate = dataElement.sortkey;
         if (seconkeyDate == undefined && sortKeyDate == undefined) {
