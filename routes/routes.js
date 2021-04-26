@@ -10,6 +10,7 @@ const {findLastDay,findFirstDay,getByMonth} = require('../helpers/getByMonthHelp
 const {dailyHelperFromConnections} = require('../helpers/connectionHelpers/dailyHelper');
 const {getByMonthConnections} = require('../helpers/connectionHelpers/getByMonthHelper');
 const {getMonthlyHelperConnection} = require('../helpers/connectionHelpers/monthlyHelper');
+const {connectionsDailyHelper} = require('../helpers/connectionHelpers/ConnectionDailyHelper')
 const routes = express.Router({
     mergeParams: true
 });
@@ -1793,9 +1794,65 @@ routes.get("/Connections/GetConnectionYearly/allConfig/:ConnectionName", async (
   } catch (error) {
     res.status(400).json({error: error})
   }
-})
+});
 
+routes.get("/Connections/GetConnectionsReadingsByGivenDay/:day/:ConnectionName", async (req,res) =>{
+  let day = parseInt(req.params.day);
+  let connectionName = req.params.ConnectionName;
+  const moment = require('moment');
+  let completedDay = new Date(day * 1000);
+  let completedDay2 = new Date(day * 1000);
+  completedDay.setHours(0);
+  completedDay2.setHours(24);
+  let firstEpoch = completedDay / 1000;
+  let secondEpoch = completedDay2/ 1000;
+  if (day != undefined || day != null) {
+    const params = {
+      TableName: config.dynamoBB.deviceReadings.name,
+      KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
+      ScanIndexForward:false,
+      ConsistentRead:false,
+      ExpressionAttributeNames:{
+        '#key':'primarykey',
+        '#sortkey':'sortkey'
   
+      },
+      ExpressionAttributeValues: {
+        ':key':  config.deviceName,
+        ':start':firstEpoch,
+        ':end': secondEpoch
+      },
+    };
+    const data = await db.query(params).promise();
+    if ( data.ScannedCount == 0  || data == null || data == undefined || !data || data.Count == 0){
+      var dayInformation = {
+        AlldayName:'',
+        AlldayAmps:0,
+        AlldayWatts:0,
+        AlldayKiloWatts:0,
+        DayDetails:{
+            Night:{
+                amps:0,
+                watts:0,
+                kilowatts:0,
+            },
+            Day:{
+                amps:0,
+                watts:0,
+                kilowatts:0,
+
+            }
+        }
+      }
+      const ob =  [{Detail:dayInformation}];
+      res.status(200).json({ usage: ob, message:'Not Found', countedRows: data.ScannedCount});
+
+    }
+  }else{
+    const day = await connectionsDailyHelper(connectionName,data.Items);
+    res.status(200).json({ usage:day});
+  }
+});
 module.exports = {
     routes,
 };
