@@ -5336,6 +5336,9 @@ module.exports.getMonthlyHelperConnection = async function (ConnectionName,Param
     var  NovemberAmps = 0;
     var DecemberAmps = 0;
     var totalAmpsProm = 0;
+    var TimesTamp = [];
+
+
     const fixedParams = Params.filter(x => x.Relays[0].Name == ConnectionName);
     for (let index = 0; index <= fixedParams.length; index++) {
         var dataElement = fixedParams[index];
@@ -5374,6 +5377,7 @@ module.exports.getMonthlyHelperConnection = async function (ConnectionName,Param
         var filteredReadings = readings2.filter(x => x.Name === ConnectionName);
         for (let j = 0; j <= Object.keys(filteredReadings).length; j++) {
             //january
+            TimesTamp.push({t:sortKeyEpoch.toISOString(),y:filteredReadings[0].CT1_Watts});
             if (month ==0) { 
 
                 januaryAmps += filteredReadings[0].CT1_Amps;
@@ -12665,6 +12669,7 @@ module.exports.getMonthlyHelperConnection = async function (ConnectionName,Param
             year:LocalDate.year(),
             totalAmpsProm:totalAmpsProm,
             totalWattsProm:totalWAttsProm,
+            timeStamp:TimesTamp,
         january:{
             amps:januaryAmps,
             watts:januaryWatts,

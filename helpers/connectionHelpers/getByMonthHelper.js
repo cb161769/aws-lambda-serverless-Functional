@@ -499,7 +499,10 @@ module.exports.getByMonthConnections = async function(ConnectionName,Params){
                 totalKwhPerWeek:0,
                 TimeStamp:[]
     
-            }
+            },
+            TimeStamp:[],
+            kwhTimesTamp:[],
+            ampsTimestamp:[]
         }
     };
     var counter = 0 ;
@@ -544,6 +547,9 @@ module.exports.getByMonthConnections = async function(ConnectionName,Params){
             const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
              const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
             MonthInformation.allMonthKiloWatts += kwh;
+            MonthInformation.MonthDetails.TimeStamp.push({t:sortKeyEpoch.toISOString(),y:filteredReadings[0].CT1_Watts});
+            MonthInformation.MonthDetails.ampsTimestamp.push({t:sortKeyEpoch.toISOString(),y:filteredReadings[0].CT1_Amps});
+            MonthInformation.MonthDetails.kwhTimesTamp.push({t:sortKeyEpoch.toISOString(),y:kwh});
             if (weekMonth ==1) {
                 const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                  const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
