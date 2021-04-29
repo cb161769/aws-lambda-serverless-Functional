@@ -5337,6 +5337,9 @@ module.exports.getMonthlyHelperConnection = async function (ConnectionName,Param
     var DecemberAmps = 0;
     var totalAmpsProm = 0;
     var TimesTamp = [];
+    var KiloWattsTimeStamp = [];
+    var AmpsTimeStamp = [];
+    var totalKwh = 0;
 
 
     const fixedParams = Params.filter(x => x.Relays[0].Name == ConnectionName);
@@ -5377,7 +5380,12 @@ module.exports.getMonthlyHelperConnection = async function (ConnectionName,Param
         var filteredReadings = readings2.filter(x => x.Name === ConnectionName);
         for (let j = 0; j <= Object.keys(filteredReadings).length; j++) {
             //january
+            const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
+            // to do
+            const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/590;
             TimesTamp.push({t:sortKeyEpoch.toISOString(),y:filteredReadings[0].CT1_Watts});
+            KiloWattsTimeStamp.push({t:sortKeyEpoch.toISOString(),y:kwh});
+            AmpsTimeStamp.push({t:sortKeyEpoch.toISOString(),y:filteredReadings[0].CT1_Amps});
             if (month ==0) { 
 
                 januaryAmps += filteredReadings[0].CT1_Amps;
@@ -12658,9 +12666,13 @@ module.exports.getMonthlyHelperConnection = async function (ConnectionName,Param
             
             
         }
+        const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
+        // to do
+        const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/590;
         counter++;
         totalAmps += filteredReadings[0].CT1_Amps;
         totalWatts += filteredReadings[0].CT1_Watts;
+        totalKwh += kwh;
     }
     totalAmpsProm = totalAmps/ fixedParams.length;
     totalWAttsProm = totalWatts/ fixedParams.length;
@@ -12669,7 +12681,12 @@ module.exports.getMonthlyHelperConnection = async function (ConnectionName,Param
             year:LocalDate.year(),
             totalAmpsProm:totalAmpsProm,
             totalWattsProm:totalWAttsProm,
+            KiloWattsTimeStamp:KiloWattsTimeStamp,
+            AmpsTimeStamp:AmpsTimeStamp,
             timeStamp:TimesTamp,
+            totalAmps:totalAmps.toPrecision(3),
+            totalWatts:totalWatts.toPrecision(3),
+            totalKwh: totalKwh.toPrecision(3),
         january:{
             amps:januaryAmps,
             watts:januaryWatts,

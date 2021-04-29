@@ -546,10 +546,10 @@ module.exports.getByMonthConnections = async function(ConnectionName,Params){
             MonthInformation.allMonthWatts += filteredReadings[0].CT1_Watts;
             const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
              const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
-            MonthInformation.allMonthKiloWatts += kwh;
+            MonthInformation.allMonthKiloWatts += kwh * ( -1);
             MonthInformation.MonthDetails.TimeStamp.push({t:sortKeyEpoch.toISOString(),y:filteredReadings[0].CT1_Watts});
             MonthInformation.MonthDetails.ampsTimestamp.push({t:sortKeyEpoch.toISOString(),y:filteredReadings[0].CT1_Amps});
-            MonthInformation.MonthDetails.kwhTimesTamp.push({t:sortKeyEpoch.toISOString(),y:kwh});
+            MonthInformation.MonthDetails.kwhTimesTamp.push({t:sortKeyEpoch.toISOString(),y:kwh * (-1)});
             if (weekMonth ==1) {
                 const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                  const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;

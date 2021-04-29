@@ -65,6 +65,9 @@ module.exports.dailyHelperFromConnections = async function(connectionName,params
    var  saturdayTimesTamp =[];
    var  sundayTimesTamp =[];
    var weekTimeStamp = [];
+   let totalKwhInWeek = 0;
+   let totalAmpsInWeek = 0;
+   let totalWattsInWeek = 0;
    let kw2 = 0;
    const filteredArray = params.filter(x => x.Relays[0].Name == connectionName);
    for (let index = 0; index <= filteredArray.length; index++) {
@@ -94,7 +97,8 @@ module.exports.dailyHelperFromConnections = async function(connectionName,params
     for (let j = 0; j <= Object.keys(filteredReadings).length; j++) {
         const seconds = (secondKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
-        weekTimeStamp.push({time:sortKeyEpoch/1000,valueAmps:filteredReadings[0].CT1_Amp,valueKwh:kwh,valueWatts:filteredReadings[0].CT1_Watts});
+
+        weekTimeStamp.push({t:sortKeyEpoch.toISOString(),y:kwh});
         kw2+= kwh;
         if (weekDay == 1) {
             const seconds = (secondKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
@@ -196,7 +200,8 @@ module.exports.dailyHelperFromConnections = async function(connectionName,params
         ,sabado:{registros:saturday || 0 , amperios: saturdayAmps || 0 ,watts:saturdayWatts || 0, Timestamp:saturdayTimesTamp }
         ,domingo:{registros:sunday || 0, amperios: sundayAmps || 0,watts:sundayWatts ||0, Timestamp:sundayTimesTamp  },
         totalWatts:totalWatts || 0, totalAmps:totalAmps || 0 , diaConsulta: new Date().toISOString(),
-        promedioWattsSemanal: totalWAttsProm ||0, promedioAmpsSemanal: totalAmpsProm || 0, promedioKwhSemanal: weekKhwProm || 0
+        promedioWattsSemanal: totalWAttsProm ||0, promedioAmpsSemanal: totalAmpsProm || 0, promedioKwhSemanal: weekKhwProm || 0,
+        totalWatts:totalWatts || 0, totalAmps:totalAmps || 0 , diaConsulta: new Date().toISOString(), totalKhw: totalKhw
     }];
     return ob;
 
