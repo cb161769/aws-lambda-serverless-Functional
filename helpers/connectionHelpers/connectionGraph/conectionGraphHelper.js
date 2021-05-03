@@ -1,28 +1,39 @@
 /**
+ * 
+ * @param {*} date1 
+ * @param {*} date2 
+ * @returns {String}
+ */
+module.exports.elapsedTime = function(date1,date2){
+    const moment = require('moment');
+    var a = moment(date1,'M/D/YYYY');
+    var b = moment(date2,'M/D/YYYY');
+    var diffDaysMoment = b.diff(a, 'days',true);
+    let months = b.diff(a,'months',true);
+    let years = b.diff(a,'years',true);
+    let fullElapsedTime = {
+        Years: years,
+       Months:months,
+       days:diffDaysMoment
+    };
+    return fullElapsedTime;
+}
+/**
  * this Function determines if the user consumed 
  * @param {*} epochDate date 
+ * @returns {Date}
  */
-module.exports.convertEpochDateToHumanDate = function(epochDate){
+ module.exports.convertEpochDateToHumanDate = function (epochDate)   {
     var epoch = new Date(epochDate * 1000);
     return epoch;
-}
+};
+
 /**
- * This function determines if the given date is in the current year
- * @function isInCurrentYear
- * @param {*} date date Object
- * @returns boolean
+ * This function determines if the given date is in the night
+ * @param {*} dateObj date Object
+ * @returns Boolean
  */
-module.exports.isInCurrentYear = function(date){
-    const moment = require('moment');
-    var now = moment();
-    var input = moment(date);
-    var isThisYear = (now.year() == input.year());
-    return isThisYear;
-}
-/**
- * 
- */
-module.exports.isNightTarif = function(dateObj){
+ module.exports.isNightTarif = function(dateObj){
     if (typeof dateObj ==='number') {
         dateObj = new Date(date);
         
@@ -37,7 +48,19 @@ module.exports.isNightTarif = function(dateObj){
 
 	return false;
 }
-
+/**
+ * This function determines if the given date is in the current year
+ * @function isInCurrentYear
+ * @param {*} date date Object
+ * @returns boolean
+ */
+ module.exports.isInCurrentYear = function(date){
+    const moment = require('moment');
+    var now = moment();
+    var input = moment(date);
+    var isThisYear = (now.year() == input.year());
+    return isThisYear;
+}
 /**
  * 
  * @param {} params parameter's object
@@ -45,7 +68,7 @@ module.exports.isNightTarif = function(dateObj){
  * @function getMonthlyHelper
  * @author Claudio Raul Brito Mercedes
  */
- module.exports.getMonthlyHelper = async function (params){
+ module.exports.DeviceGraphHelper = async function (params){
     const moment = require('moment');
     let counter = 0;
     var totalWatts = 0;
@@ -5315,6 +5338,12 @@ module.exports.isNightTarif = function(dateObj){
         }
 
     };
+    var wattsTimeStamp = [];
+    var ampsTimeStamp = [];
+    var kwhTimeStamps = [];
+    var NightWattsTimeStamp = [];
+    var NightAmpsTimeStamp = [];
+    var NightKwhTimeStamps = [];
     //Variables
     var FebruaryWatts = 0;
     var MarchWatts = 0;
@@ -5347,6 +5376,9 @@ module.exports.isNightTarif = function(dateObj){
     for (let index = 0; index < params.length; index++) {
         var dataElement = params[index];
         var secondDataElement = params[index + 1];
+        if (secondDataElement == undefined) {
+            break;
+        }
         var sortkeyDate = dataElement.sortkey;
         var seconkeyDate = secondDataElement.sortkey;
         var sortKeyEpoch = module.exports.convertEpochDateToHumanDate(sortkeyDate);
@@ -5356,10 +5388,6 @@ module.exports.isNightTarif = function(dateObj){
         LocalDate.locale(false);
         var readings2 = params[index].readings;
         var year = module.exports.isInCurrentYear(sortKeyEpoch);
-        if (year === false) {
-            break;
-            
-        }
         if( readings2 === undefined){
             break;
         }
@@ -5370,6 +5398,19 @@ module.exports.isNightTarif = function(dateObj){
         var weekMonth = (LocalDate.week() - (month* 4));
         var isNight = module.exports.isNightTarif(sortKeyEpoch);
         for (let j = 0; j <= Object.keys(readings2).length; j++) {
+            const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
+            // to do
+            const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/590;
+            kwhTimeStamps.push({t:sortKeyEpoch.toISOString(),x:kwh * (-1)});
+            ampsTimeStamp.push({t:sortKeyEpoch.toISOString(),x:readings2.device_amps});
+            wattsTimeStamp.push({t:sortKeyEpoch.toISOString(),x:readings2.device_watts});
+            if (isNight == true) {
+                const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
+                const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/590;
+                NightKwhTimeStamps.push({t:sortKeyEpoch.toISOString,x:kwh * (-1)});
+                NightAmpsTimeStamp.push({t:sortKeyEpoch.toISOString,x:readings2.device_amps});
+                NightWattsTimeStamp.push({t:sortKeyEpoch.toISOString,x:readings2.device_watts});
+            }
             //january
             if (month ==0) { 
 
@@ -5382,6 +5423,7 @@ module.exports.isNightTarif = function(dateObj){
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
+                     
                         if (isNight == true) {
                             januaryWeekDays.firstWeek.monday.Night.count += 1;
                             januaryWeekDays.firstWeek.monday.Night.kilowatts += kwh;
@@ -12665,6 +12707,15 @@ module.exports.isNightTarif = function(dateObj){
             year:LocalDate.year(),
             totalAmpsProm:totalAmpsProm,
             totalWattsProm:totalWAttsProm,
+            kwhTimeStamps:kwhTimeStamps,
+            ampsTimeStamp:ampsTimeStamp,
+            wattsTimeStamp:wattsTimeStamp,
+            Night:{
+                NightKwhTimeStamps:NightKwhTimeStamps,
+                NightAmpsTimeStamp:NightAmpsTimeStamp,
+                NightWattsTimeStamp:NightWattsTimeStamp
+            },
+
         january:{
             amps:januaryAmps,
             watts:januaryWatts,
@@ -12693,7 +12744,9 @@ module.exports.isNightTarif = function(dateObj){
             mayDetails:[MayWeekDays]
         },
         june:{
-            amps:JuneAmps
+            amps:JuneAmps,
+            watts:JuneWatts,
+            juneDetails:[JuneWeekDays]
         },
         july:{
             amps:JulyAmps,
@@ -12709,7 +12762,7 @@ module.exports.isNightTarif = function(dateObj){
         },
         September:{
             amps:SeptemberAmps,
-            watts:SeptemberAmps,
+            watts:SeptemberWatts,
             SeptemberDetails:[SeptemberWeekDays]
 
         },
@@ -12740,5 +12793,3 @@ module.exports.isNightTarif = function(dateObj){
      
       
 }
-
-
