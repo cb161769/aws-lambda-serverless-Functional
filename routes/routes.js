@@ -11,7 +11,7 @@ const {dailyHelperFromConnections} = require('../helpers/connectionHelpers/daily
 const {getByMonthConnections} = require('../helpers/connectionHelpers/getByMonthHelper');
 const {getMonthlyHelperConnection} = require('../helpers/connectionHelpers/monthlyHelper');
 const {connectionsDailyHelper} = require('../helpers/connectionHelpers/ConnectionDailyHelper');
-const {DeviceGraphHelper,elapsedTime } = require('../helpers/connectionHelpers/connectionGraph/conectionGraphHelper');
+const {DeviceGraphHelper,elapsedTime,ConnectionGrahphHelper } = require('../helpers/connectionHelpers/connectionGraph/conectionGraphHelper');
 const routes = express.Router({
     mergeParams: true
 });
@@ -1664,6 +1664,55 @@ routes.get("/getAllDeviceReadingsByGivenParametersMonthly/:startDate/:endDate", 
     res.status(200).json({ usage: month,elapsedTime:elapsedT});
   }
 });
+routes.get("/Connections/getAllDeviceReadingsByGivenParametersMonthly/:startDate/:endDate/:ConnectionName", async (req,res) => {
+  let day = parseInt(req.params.startDate);
+  let finalDay = parseInt(req.params.endDate);
+  let completedDay = new Date(day * 1000);
+  let secondCompletedDay = new Date(finalDay * 1000);
+  let firstDayOfMonth = findFirstDay(completedDay.getFullYear(),completedDay.getMonth());
+  let secondDayOfMonth = findLastDay(secondCompletedDay.getFullYear(),secondCompletedDay.getMonth());
+  firstDayOfMonth.setHours(0);
+  secondDayOfMonth.setHours(24);
+  let firstEpoch = firstDayOfMonth / 1000;
+  let secondEpoch = secondDayOfMonth/ 1000;
+  var ConnectionName = req.params.ConnectionName;
+  const params = {
+    TableName: config.dynamoBB.deviceReadings.name,
+    KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
+    ScanIndexForward:false,
+    ConsistentRead:false,
+    ExpressionAttributeNames:{
+      '#key':'primarykey',
+      '#sortkey':'sortkey'
+
+    },
+    ExpressionAttributeValues: {
+      ':key':  config.deviceName,
+      ':start':firstEpoch,
+      ':end': secondEpoch
+    },
+  };
+  const data = await db.query(params).promise();
+  if (data.ScannedCount == 0 || data == null || data == undefined || data.Count ==0) {
+    const ob =  [ 
+      {registros:0,Connextion:ConnectionName,Timestamp:[],lunes:{registros:0, amperios: 0,watts: 0, Timestamp:[]}
+      ,martes:{registros:  0, amperios:  0,watts: 0,Timestamp:[]}
+      ,miercoles:{registros: 0, amperios:  0,watts: 0,Timestamp:[]}
+      ,jueves:{registros: 0, amperios:  0,watts:0,Timestamp:[]}
+      ,viernes:{registros:0 , amperios:  0,watts:0, Timestamp:[]}
+      ,sabado:{registros: 0 , amperios:  0 ,watts: 0, Timestamp:[] }
+      ,domingo:{registros:0, amperios:  0,watts:0, Timestamp:[]  },
+      totalWatts: 0, totalAmps:0 , diaConsulta: new Date().toISOString(),
+      promedioWattsSemanal: 0, promedioAmpsSemanal:0, promedioKwhSemanal:  0,uso:data.Items
+  }];
+  res.status(200).json({ usage:ob});
+  }
+  else{
+    const usage = await ConnectionGrahphHelper(ConnectionName,data.Items);
+    const elapsedT = await elapsedTime(completedDay,secondCompletedDay);
+    res.status(200).json({ usage: usage,elapsedTime:elapsedT});
+  }
+})
 
 
 routes.get("/Connections/getConnectionReadingsCurrentWeek/:start/:end/:ConnectionName", async (req,res)=>{
