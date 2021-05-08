@@ -73,8 +73,16 @@ module.exports.elapsedTime = function(date1,date2){
  module.exports.DeviceGraphHelper = async function (params){
     const moment = require('moment');
     let counter = 0;
+    let CountAtNight =0;
     var totalWatts = 0;
     var januaryWatts = 0;
+    var NightTimeStamp = [];
+    var NightTotAmps= 0;
+    var NightTotalWatts = 0;
+    var NightTotalAmpsProm = 0;
+    var NightTotalWattsProm = 0;
+    let countAtDay = 0;
+    // TODO: day and night stats
     var januaryWeekDays = {
         firstWeek:{ 
             monday:{
@@ -5402,6 +5410,7 @@ module.exports.elapsedTime = function(date1,date2){
         for (let j = 0; j <= Object.keys(readings2).length; j++) {
             const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
             // to do
+
             const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/590;
             kwhTimeStamps.push({t:sortKeyEpoch.toISOString(),x:kwh * (-1)});
             ampsTimeStamp.push({t:sortKeyEpoch.toISOString(),x:readings2.device_amps});
@@ -5412,7 +5421,11 @@ module.exports.elapsedTime = function(date1,date2){
                 NightKwhTimeStamps.push({t:sortKeyEpoch.toISOString,x:kwh * (-1)});
                 NightAmpsTimeStamp.push({t:sortKeyEpoch.toISOString,x:readings2.device_amps});
                 NightWattsTimeStamp.push({t:sortKeyEpoch.toISOString,x:readings2.device_watts});
+                CountAtNight++;
+                NightTotalWatts += readings2.device_watts;
+                NightTotalWatts +=readings2.device_amps;
             }
+
             //january
             if (month ==0) { 
 
