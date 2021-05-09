@@ -81,7 +81,14 @@ module.exports.elapsedTime = function(date1,date2){
     var NightTotalWatts = 0;
     var NightTotalAmpsProm = 0;
     var NightTotalWattsProm = 0;
+
     let countAtDay = 0;
+    // DAY
+    var DayTotalAmps= 0;
+    var DayTotalWatts = 0;
+    var DayTotalAmpsProm = 0;
+    var DayTotalWattsProm = 0;
+
     // TODO: day and night stats
     var januaryWeekDays = {
         firstWeek:{ 
@@ -5423,9 +5430,15 @@ module.exports.elapsedTime = function(date1,date2){
                 NightWattsTimeStamp.push({t:sortKeyEpoch.toISOString,x:readings2.device_watts});
                 CountAtNight++;
                 NightTotalWatts += readings2.device_watts;
-                NightTotalWatts +=readings2.device_amps;
+                NightTotAmps +=readings2.device_amps;
             }
+            if (isNight == false) {
+                countAtDay++;
+                DayTotalWatts += readings2.device_watts;
+                DayTotalAmps +=readings2.device_amps;
 
+            }
+                
             //january
             if (month ==0) { 
 
@@ -12717,6 +12730,10 @@ module.exports.elapsedTime = function(date1,date2){
     
     totalAmpsProm = totalAmps/ params.length;
     totalWAttsProm = totalWatts/ params.length;
+    NightTotalAmpsProm = NightTotAmps/CountAtNight;
+    NightTotalWattsProm = NightTotalWatts/CountAtNight;
+    DayTotalAmpsProm = DayTotalAmps/countAtDay;
+    DayTotalWattsProm = DayTotalWatts /countAtDay;
     const ob = [
         {registros:counter,
             year:LocalDate.year(),
@@ -12726,6 +12743,10 @@ module.exports.elapsedTime = function(date1,date2){
             kwhTimeStamps:kwhTimeStamps,
             ampsTimeStamp:ampsTimeStamp,
             wattsTimeStamp:wattsTimeStamp,
+            NightTotalAmpsProm:NightTotalAmpsProm,
+            NightTotalWattsProm:NightTotalWattsProm,
+            DayTotalAmpsProm:DayTotalAmpsProm || 0,
+            DayTotalWattsProm:DayTotalWattsProm ||0,
             Night:{
                 NightKwhTimeStamps:NightKwhTimeStamps,
                 NightAmpsTimeStamp:NightAmpsTimeStamp,
@@ -12814,6 +12835,17 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
     let counter = 0;
     var totalWatts = 0;
     var januaryWatts = 0;
+    var NightTotAmps= 0;
+    var NightTotalWatts = 0;
+    var NightTotalAmpsProm = 0;
+    var NightTotalWattsProm = 0;
+
+    let countAtDay = 0;
+    // DAY
+    var DayTotalAmps= 0;
+    var DayTotalWatts = 0;
+    var DayTotalAmpsProm = 0;
+    var DayTotalWattsProm = 0;
     var januaryWeekDays = {
         firstWeek:{ 
             monday:{
@@ -18153,6 +18185,17 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
             wattsTimeStamp.push({t:sortKeyEpoch.toISOString(),y:filteredReadings[0].CT1_Watts});
             KiloWattsTimeStamp.push({t:sortKeyEpoch.toISOString(),y:kwh});
             AmpsTimeStamp.push({t:sortKeyEpoch.toISOString(),y:filteredReadings[0].CT1_Amps});
+            if (isNight == true) {
+                CountAtNight++;
+                NightTotalWatts += filteredReadings[0].CT1_Watts;
+                NightTotAmps += filteredReadings[0].CT1_Amps;
+            } 
+            if (isNight == false) {
+                countAtDay++;
+                 DayTotalWatts += filteredReadings[0].CT1_Watts;
+                 DayTotalAmps +=filteredReadings[0].CT1_Amps;
+            }
+            
             if (month ==0) { 
 
                 januaryAmps += filteredReadings[0].CT1_Amps;
@@ -25443,6 +25486,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
     }
     totalAmpsProm = totalAmps/ fixedParams.length;
     totalWAttsProm = totalWatts/ fixedParams.length;
+    NightTotalAmpsProm = NightTotAmps/CountAtNight;
+    NightTotalWattsProm = NightTotalWatts/CountAtNight;
+    DayTotalAmpsProm = DayTotalAmps/countAtDay;
+    DayTotalWattsProm = DayTotalWatts /countAtDay;
     const ob = [
         {registros:counter,
             year:LocalDate.year(),
@@ -25451,6 +25498,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
             KiloWattsTimeStamp:KiloWattsTimeStamp,
             AmpsTimeStamp:AmpsTimeStamp,
             wattsTimeStamp:wattsTimeStamp,
+            NightTotalAmpsProm:NightTotalAmpsProm,
+            NightTotalWattsProm:NightTotalWattsProm,
+            DayTotalAmpsProm:DayTotalAmpsProm,
+            DayTotalWattsProm:DayTotalWattsProm,
             totalAmps:totalAmps.toPrecision(3),
             totalWatts:totalWatts.toPrecision(3),
             totalKwh: totalKwh.toPrecision(3),
