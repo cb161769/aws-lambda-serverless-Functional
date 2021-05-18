@@ -12743,8 +12743,8 @@ module.exports.elapsedTime = function(date1,date2){
             kwhTimeStamps:kwhTimeStamps,
             ampsTimeStamp:ampsTimeStamp,
             wattsTimeStamp:wattsTimeStamp,
-            NightTotalAmpsProm:NightTotalAmpsProm,
-            NightTotalWattsProm:NightTotalWattsProm,
+            NightTotalAmpsProm:NightTotalAmpsProm || 0,
+            NightTotalWattsProm:NightTotalWattsProm || 0,
             DayTotalAmpsProm:DayTotalAmpsProm || 0,
             DayTotalWattsProm:DayTotalWattsProm ||0,
             Night:{
@@ -12753,83 +12753,124 @@ module.exports.elapsedTime = function(date1,date2){
                 NightWattsTimeStamp:NightWattsTimeStamp
             },
 
-        january:{
-            amps:januaryAmps,
-            watts:januaryWatts,
-            januaryDetail: [
-                januaryWeekDays
-            ]
-        },
-        February:{
-            amps:FebruaryAmps,
-            watts:FebruaryWatts,
-            februaryDetails:[februaryWeekDays]
-        },
-        march:{
-            amps:MarchAmps,
-            watts:MarchWatts,
-            marchDetails: [MarchWeekDays]
-        },
-        april:{
-            amps:AprilAmps,
-            watts:AprilWatts,
-            aprilDetails:[aprilWeekDays]
-        },
-        may:{
-            amps:MayAmps,
-            watts:MayWatts,
-            mayDetails:[MayWeekDays]
-        },
-        june:{
-            amps:JuneAmps,
-            watts:JuneWatts,
-            juneDetails:[JuneWeekDays]
-        },
-        july:{
-            amps:JulyAmps,
-            watts:JulyWatts,
-            julyDetails:[JulyWeekDays]                
-            
-        },
-        augustus:{
-            amps:AugustAmps,
-            watts:AugustWatts,
-            augustDetails:[AugustWeekDays]
-
-        },
-        September:{
-            amps:SeptemberAmps,
-            watts:SeptemberWatts,
-            SeptemberDetails:[SeptemberWeekDays]
-
-        },
-        october:{
-            amps:OctoberAmps,
-            watts:OctoberWatts,
-            OctoberDetails:[OctoberWeekDays]
-
-        },
-        november:{
-            amps:NovemberAmps,
-            watts:NovemberWatts,
-            NovemberDetails:[NovemberWeekDays]
-
-        },
-        december:{
-            amps:DecemberAmps,
-            watts:DecemberWatts,
-            DecemberDetails:[DecemberWeekDays]
-        }
+            details:[{
+                MonthName:'Enero',
+                amps:januaryAmps,
+                watts:januaryWatts,
+                januaryDetail: [
+                    januaryWeekDays
+                ]
+            },
+            {
+                MonthName:'Febrero',
+                amps:FebruaryAmps,
+                watts:FebruaryWatts,
+                februaryDetails:[februaryWeekDays]
+            },
+            {
+                MonthName:'Marzo',
+                amps:MarchAmps,
+                watts:MarchWatts,
+                marchDetails: [MarchWeekDays]
+            },
+            {
+                MonthName:'Abril',
+                amps:AprilAmps,
+                watts:AprilWatts,
+                aprilDetails:[aprilWeekDays]
+            },
+            {
+                MonthName:'Abril',
+                amps:MayAmps,
+                watts:MayWatts,
+                mayDetails:[MayWeekDays]
+            },
+            {
+                MonthName:'Junio',
+                amps:JuneAmps,
+                watts: JuneWatts,
+                juneDetails:[JuneWeekDays]
+            },
+            {
+                MonthName:'Julio',
+                amps:JulyAmps,
+                watts:JulyWatts,
+                julyDetails:[JulyWeekDays]                
+                
+            },
+            {
+                MonthName:'Agosto',
+                amps:AugustAmps,
+                watts:AugustWatts,
+                augustDetails:[AugustWeekDays]
+    
+            },
+            {
+                MonthName:'Septiembre',
+                amps:SeptemberAmps,
+                watts:SeptemberWatts,
+                SeptemberDetails:[SeptemberWeekDays]
+    
+            },
+            {
+                MonthName:'Octubre',
+                amps:OctoberAmps,
+                watts:OctoberWatts,
+                OctoberDetails:[OctoberWeekDays]
+    
+            },
+            {
+                MonthName:'Noviembre',
+                amps:NovemberAmps,
+                watts:NovemberWatts,
+                NovemberDetails:[NovemberWeekDays]
+    
+            },
+           {
+                MonthName:'Diciembre',
+                amps:DecemberAmps,
+                watts:DecemberWatts,
+                DecemberDetails:[DecemberWeekDays]
+            },
+            ],
+            maxConsumption: [],
 
         
-    }
+        }
     
     ];
-
+    ob[0].maxConsumption = module.exports.getMaxConsumption(ob[0].details,"watts");
+    ob[0].minConsumption = module.exports.getMinConsumption(ob[0].details,"watts");
     return ob;
      
       
 }
+/**
+ * @function getMaxConsumption()
+ * @author Claudio Raul Brito Mercedes
+ * @description this function gets the getMaxConsumption of the given Array
+ */
+module.exports.getMaxConsumption = function (arr, prop) {
+    var max;
+    for (var i=0 ; i<arr.length ; i++) {
+        if (!max || parseInt(arr[i][prop]) > parseInt(max[prop]))
+            max = arr[i];
+    }
+    return max;
+}
+module.exports.getMinConsumption = function(arr, prop) {
+    var max;
+    for (var i=0 ; i<arr.length ; i++) {
+        if (!max || parseInt(arr[i][prop]) < parseInt(max[prop]))
+            max = arr[i];
+    }
+    return max;
+}
+/**
+ * @description 
+ * @author Claudio Raul Brito Mercedes
+ * @function ConnectionGrahphHelper
+ */
 module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
     const moment = require('moment');
     let counter = 0;
@@ -25505,79 +25546,96 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
             totalAmps:totalAmps.toPrecision(3),
             totalWatts:totalWatts.toPrecision(3),
             totalKwh: totalKwh.toPrecision(3),
-        january:{
+       details:[{
+            MonthName:'Enero',
             amps:januaryAmps,
             watts:januaryWatts,
             januaryDetail: [
                 januaryWeekDays
             ]
         },
-        February:{
+        {
+            MonthName:'Febrero',
             amps:FebruaryAmps,
             watts:FebruaryWatts,
             februaryDetails:[februaryWeekDays]
         },
-        march:{
+        {
+            MonthName:'Marzo',
             amps:MarchAmps,
             watts:MarchWatts,
             marchDetails: [MarchWeekDays]
         },
-        april:{
+        {
+            MonthName:'Abril',
             amps:AprilAmps,
             watts:AprilWatts,
             aprilDetails:[aprilWeekDays]
         },
-        may:{
+        {
+            MonthName:'Abril',
             amps:MayAmps,
             watts:MayWatts,
             mayDetails:[MayWeekDays]
         },
-        june:{
+        {
+            MonthName:'Junio',
             amps:JuneAmps,
             watts: JuneWatts,
             juneDetails:[JuneWeekDays]
         },
-        july:{
+        {
+            MonthName:'Julio',
             amps:JulyAmps,
             watts:JulyWatts,
             julyDetails:[JulyWeekDays]                
             
         },
-        augustus:{
+        {
+            MonthName:'Agosto',
             amps:AugustAmps,
             watts:AugustWatts,
             augustDetails:[AugustWeekDays]
 
         },
-        September:{
+        {
+            MonthName:'Septiembre',
             amps:SeptemberAmps,
             watts:SeptemberWatts,
             SeptemberDetails:[SeptemberWeekDays]
 
         },
-        october:{
+        {
+            MonthName:'Octubre',
             amps:OctoberAmps,
             watts:OctoberWatts,
             OctoberDetails:[OctoberWeekDays]
 
         },
-        november:{
+        {
+            MonthName:'Noviembre',
             amps:NovemberAmps,
             watts:NovemberWatts,
             NovemberDetails:[NovemberWeekDays]
 
         },
-        december:{
+       {
+            MonthName:'Diciembre',
             amps:DecemberAmps,
             watts:DecemberWatts,
             DecemberDetails:[DecemberWeekDays]
         },
+        ],
+        maxConsumption: [],
+        minConsumption: [],
         ConnectionName:ConnectionName
 
         
     }
     
     ];
+    ob[0].maxConsumption = module.exports.getMaxConsumption(ob[0].details,"watts");
+    ob[0].minConsumption = module.exports.getMinConsumption(ob[0].details,"watts");
 
     return ob;
     
