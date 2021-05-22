@@ -10532,7 +10532,7 @@ module.exports.elapsedTime = function(date1,date2){
                     }
                     if (day == 4) {
                         AugustWeekObject.semana = 'Uno';
-                        AugustWeekObject.Dia = 'Miercoles';
+                        AugustWeekObject.Dia = 'Jueves';
                         AugustWeekObject.watts += readings2.device_watts;
                         augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.firstWeek.thursday.Total += readings2.device_watts;
@@ -10555,6 +10555,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==5) {
+                        AugustWeekObject.semana = 'Uno';
+                        AugustWeekObject.Dia = 'Viernes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.firstWeek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -10576,6 +10580,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 6) {
+                        AugustWeekObject.semana = 'Uno';
+                        AugustWeekObject.Dia = 'Sabado';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.firstWeek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -10597,6 +10605,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 7) {
+                        AugustWeekObject.semana = 'Uno';
+                        AugustWeekObject.Dia = 'Domingo';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.firstWeek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -10622,6 +10634,10 @@ module.exports.elapsedTime = function(date1,date2){
                 if (weekMonth ==2) {
                     AugustWeekDays.secondWeek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
+                        AugustWeekObject.semana = 'Dos';
+                        AugustWeekObject.Dia = 'Lunes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.secondWeek.monday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -10643,6 +10659,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 2) {
+                        AugustWeekObject.semana = 'Dos';
+                        AugustWeekObject.Dia = 'Martes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.secondWeek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -10664,6 +10684,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==3) {
+                        AugustWeekObject.semana = 'Dos';
+                        AugustWeekObject.Dia = 'Miercoles';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.secondWeek.wednesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -10685,6 +10709,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 4) {
+                        AugustWeekObject.semana = 'Dos';
+                        AugustWeekObject.Dia = 'Jueves';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.secondWeek.thursday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -10705,6 +10733,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==5) {
+                        AugustWeekObject.semana = 'Dos';
+                        AugustWeekObject.Dia = 'Viernes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.secondWeek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -10726,6 +10758,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 6) {
+                        AugustWeekObject.semana = 'Dos';
+                        AugustWeekObject.Dia = 'Sabado';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.secondWeek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -10747,6 +10783,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 7) {
+                        AugustWeekObject.semana = 'Dos';
+                        AugustWeekObject.Dia = 'Domingo';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.secondWeek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -10773,6 +10813,10 @@ module.exports.elapsedTime = function(date1,date2){
                 if (weekMonth ==3) {
                     AugustWeekDays.thirdweek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
+                        AugustWeekObject.semana = 'Tres';
+                        AugustWeekObject.Dia = 'Lunes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.thirdweek.monday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -10793,6 +10837,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 2) {
+                        AugustWeekObject.semana = 'Tres';
+                        AugustWeekObject.Dia = 'Martes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.thirdweek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -10814,6 +10862,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==3) {
+                        AugustWeekObject.semana = 'Tres';
+                        AugustWeekObject.Dia = 'Miercoles';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.thirdweek.wednesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -10835,6 +10887,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 4) {
+                        AugustWeekObject.semana = 'Tres';
+                        AugustWeekObject.Dia = 'Jueves';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.thirdweek.thursday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -10855,6 +10911,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==5) {
+                        AugustWeekObject.semana = 'Tres';
+                        AugustWeekObject.Dia = 'Viernes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.thirdweek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -10876,6 +10936,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 6) {
+                        AugustWeekObject.semana = 'Tres';
+                        AugustWeekObject.Dia = 'Sabado';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.thirdweek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -10897,6 +10961,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 7) {
+                        AugustWeekObject.semana = 'Tres';
+                        AugustWeekObject.Dia = 'Domingo';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.thirdweek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -10926,6 +10994,10 @@ module.exports.elapsedTime = function(date1,date2){
                         AugustWeekDays.fourthweek.monday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
+                        AugustWeekObject.semana = 'Cuatro';
+                        AugustWeekObject.Dia = 'Lunes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
                             AugustWeekDays.fourthweek.monday.Night.count += 1;
@@ -10944,6 +11016,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 2) {
+                        AugustWeekObject.semana = 'Cuatro';
+                        AugustWeekObject.Dia = 'Martes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.fourthweek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -10965,6 +11041,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==3) {
+                        AugustWeekObject.semana = 'Cuatro';
+                        AugustWeekObject.Dia = 'Miercoles';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.fourthweek.wednesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -10986,6 +11066,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 4) {
+                        AugustWeekObject.semana = 'Cuatro';
+                        AugustWeekObject.Dia = 'Jueves';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.fourthweek.thursday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11006,6 +11090,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==5) {
+                        AugustWeekObject.semana = 'Cuatro';
+                        AugustWeekObject.Dia = 'Viernes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.fourthweek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11027,6 +11115,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 6) {
+                        AugustWeekObject.semana = 'Cuatro';
+                        AugustWeekObject.Dia = 'Sabado';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.fourthweek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11048,6 +11140,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 7) {
+                        AugustWeekObject.semana = 'Cuatro';
+                        AugustWeekObject.Dia = 'Domingo';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.fourthweek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11076,6 +11172,10 @@ module.exports.elapsedTime = function(date1,date2){
                 if (weekMonth ==1) {
                     SeptemberWeekDays.firstWeek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
+                        SeptemberWeekObject.semana = 'Uno';
+                        SeptemberWeekObject.Dia = 'Lunes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.firstWeek.monday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -11097,6 +11197,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 2) {
+                        SeptemberWeekObject.semana = 'Uno';
+                        SeptemberWeekObject.Dia = 'Martes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.firstWeek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11118,6 +11222,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==3) {
+                        SeptemberWeekObject.semana = 'Uno';
+                        SeptemberWeekObject.Dia = 'Miercoles';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.firstWeek.wednesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11139,6 +11247,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 4) {
+                        SeptemberWeekObject.semana = 'Uno';
+                        SeptemberWeekObject.Dia = 'Jueves';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.firstWeek.thursday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11159,6 +11271,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==5) {
+                        SeptemberWeekObject.semana = 'Uno';
+                        SeptemberWeekObject.Dia = 'Viernes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.firstWeek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11180,6 +11296,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 6) {
+                        SeptemberWeekObject.semana = 'Uno';
+                        SeptemberWeekObject.Dia = 'Sabado';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.firstWeek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11201,6 +11321,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 7) {
+                        SeptemberWeekObject.semana = 'Uno';
+                        SeptemberWeekObject.Dia = 'Domingo';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.firstWeek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11226,6 +11350,10 @@ module.exports.elapsedTime = function(date1,date2){
                 if (weekMonth ==2) {
                     SeptemberWeekDays.secondWeek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
+                        SeptemberWeekObject.semana = 'Dos';
+                        SeptemberWeekObject.Dia = 'Lunes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.secondWeek.monday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -11247,6 +11375,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 2) {
+                        SeptemberWeekObject.semana = 'Dos';
+                        SeptemberWeekObject.Dia = 'Martes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.secondWeek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11268,6 +11400,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==3) {
+                        SeptemberWeekObject.semana = 'Dos';
+                        SeptemberWeekObject.Dia = 'Miercoles';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.secondWeek.wednesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11289,6 +11425,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 4) {
+                        SeptemberWeekObject.semana = 'Dos';
+                        SeptemberWeekObject.Dia = 'Jueves';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.secondWeek.thursday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11309,6 +11449,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==5) {
+                        SeptemberWeekObject.semana = 'Dos';
+                        SeptemberWeekObject.Dia = 'Viernes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.secondWeek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11330,6 +11474,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 6) {
+                        SeptemberWeekObject.semana = 'Dos';
+                        SeptemberWeekObject.Dia = 'Sabado';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.secondWeek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11351,6 +11499,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 7) {
+                        SeptemberWeekObject.semana = 'Dos';
+                        SeptemberWeekObject.Dia = 'Domingo';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.secondWeek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11377,6 +11529,10 @@ module.exports.elapsedTime = function(date1,date2){
                 if (weekMonth ==3) {
                     SeptemberWeekDays.thirdweek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
+                        SeptemberWeekObject.semana = 'Tres';
+                        SeptemberWeekObject.Dia = 'Lunes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.thirdweek.monday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11397,6 +11553,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 2) {
+                        SeptemberWeekObject.semana = 'Tres';
+                        SeptemberWeekObject.Dia = 'Martes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.thirdweek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11418,6 +11578,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==3) {
+                        SeptemberWeekObject.semana = 'Tres';
+                        SeptemberWeekObject.Dia = 'Miercoles';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.thirdweek.wednesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11439,6 +11603,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 4) {
+                        SeptemberWeekObject.semana = 'Tres';
+                        SeptemberWeekObject.Dia = 'Jueves';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.thirdweek.thursday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11459,6 +11627,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==5) {
+                        SeptemberWeekObject.semana = 'Tres';
+                        SeptemberWeekObject.Dia = 'Viernes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.thirdweek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11480,6 +11652,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 6) {
+                        SeptemberWeekObject.semana = 'Tres';
+                        SeptemberWeekObject.Dia = 'Sabado';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.thirdweek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11501,6 +11677,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 7) {
+                        SeptemberWeekObject.semana = 'Tres';
+                        SeptemberWeekObject.Dia = 'Domingo';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.thirdweek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11527,6 +11707,10 @@ module.exports.elapsedTime = function(date1,date2){
                 if (weekMonth ==4) {
                     SeptemberWeekDays.fourthweek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
+                        SeptemberWeekObject.semana = 'Cuatro';
+                        SeptemberWeekObject.Dia = 'Lunes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.fourthweek.monday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -11548,6 +11732,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 2) {
+                        SeptemberWeekObject.semana = 'Cuatro';
+                        SeptemberWeekObject.Dia = 'Martes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.fourthweek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11569,6 +11757,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==3) {
+                        SeptemberWeekObject.semana = 'Cuatro';
+                        SeptemberWeekObject.Dia = 'Miercoles';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.fourthweek.wednesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11590,6 +11782,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 4) {
+                        SeptemberWeekObject.semana = 'Cuatro';
+                        SeptemberWeekObject.Dia = 'Jueves';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.fourthweek.thursday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11610,6 +11806,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==5) {
+                        SeptemberWeekObject.semana = 'Cuatro';
+                        SeptemberWeekObject.Dia = 'Viernes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.fourthweek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11631,6 +11831,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 6) {
+                        SeptemberWeekObject.semana = 'Cuatro';
+                        SeptemberWeekObject.Dia = 'Sabado';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.fourthweek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11652,6 +11856,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 7) {
+                        SeptemberWeekObject.semana = 'Cuatro';
+                        SeptemberWeekObject.Dia = 'Domingo';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.fourthweek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11681,6 +11889,10 @@ module.exports.elapsedTime = function(date1,date2){
                 if (weekMonth ==1) {
                     OctoberWeekDays.firstWeek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
+                        OctoberWeekObject.semana = 'Uno';
+                        OctoberWeekObject.Dia = 'Lunes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.firstWeek.monday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -11702,6 +11914,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 2) {
+                        OctoberWeekObject.semana = 'Uno';
+                        OctoberWeekObject.Dia = 'Martes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.firstWeek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11723,6 +11939,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==3) {
+                        OctoberWeekObject.semana = 'Uno';
+                        OctoberWeekObject.Dia = 'Miercoles';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.firstWeek.wednesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11744,6 +11964,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 4) {
+                        OctoberWeekObject.semana = 'Uno';
+                        OctoberWeekObject.Dia = 'Jueves';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.firstWeek.thursday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11764,6 +11988,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==5) {
+                        OctoberWeekObject.semana = 'Uno';
+                        OctoberWeekObject.Dia = 'Viernes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.firstWeek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11785,6 +12013,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 6) {
+                        OctoberWeekObject.semana = 'Uno';
+                        OctoberWeekObject.Dia = 'Sabado';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.firstWeek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11806,6 +12038,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 7) {
+                        OctoberWeekObject.semana = 'Uno';
+                        OctoberWeekObject.Dia = 'Domingo';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.firstWeek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11831,6 +12067,10 @@ module.exports.elapsedTime = function(date1,date2){
                 if (weekMonth ==2) {
                     OctoberWeekDays.secondWeek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
+                        OctoberWeekObject.semana = 'Dos';
+                        OctoberWeekObject.Dia = 'Lunes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.secondWeek.monday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -11852,6 +12092,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 2) {
+                        OctoberWeekObject.semana = 'Dos';
+                        OctoberWeekObject.Dia = 'Martes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.secondWeek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11873,6 +12117,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==3) {
+                        OctoberWeekObject.semana = 'Dos';
+                        OctoberWeekObject.Dia = 'Miercoles';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.secondWeek.wednesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11894,6 +12142,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 4) {
+                        OctoberWeekObject.semana = 'Dos';
+                        OctoberWeekObject.Dia = 'Jueves';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.secondWeek.thursday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11914,6 +12166,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==5) {
+                        OctoberWeekObject.semana = 'Dos';
+                        OctoberWeekObject.Dia = 'Viernes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.secondWeek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11935,6 +12191,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 6) {
+                        OctoberWeekObject.semana = 'Dos';
+                        OctoberWeekObject.Dia = 'Sabado';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.secondWeek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11956,6 +12216,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 7) {
+                        OctoberWeekObject.semana = 'Dos';
+                        OctoberWeekObject.Dia = 'Domingo';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.secondWeek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -11982,6 +12246,10 @@ module.exports.elapsedTime = function(date1,date2){
                 if (weekMonth ==3) {
                     OctoberWeekDays.thirdweek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
+                        OctoberWeekObject.semana = 'Tres';
+                        OctoberWeekObject.Dia = 'Lunes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.thirdweek.monday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12002,6 +12270,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 2) {
+                        OctoberWeekObject.semana = 'Tres';
+                        OctoberWeekObject.Dia = 'Martes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.thirdweek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12023,6 +12295,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==3) {
+                        OctoberWeekObject.semana = 'Tres';
+                        OctoberWeekObject.Dia = 'Miercoles';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.thirdweek.wednesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12044,6 +12320,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 4) {
+                        OctoberWeekObject.semana = 'Tres';
+                        OctoberWeekObject.Dia = 'Jueves';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.thirdweek.thursday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12064,6 +12344,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==5) {
+                        OctoberWeekObject.semana = 'Tres';
+                        OctoberWeekObject.Dia = 'Viernes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.thirdweek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12085,6 +12369,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 6) {
+                        OctoberWeekObject.semana = 'Tres';
+                        OctoberWeekObject.Dia = 'Sabado';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.thirdweek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12106,6 +12394,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 7) {
+                        OctoberWeekObject.semana = 'Tres';
+                        OctoberWeekObject.Dia = 'Domingo';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.thirdweek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12132,6 +12424,10 @@ module.exports.elapsedTime = function(date1,date2){
                 if (weekMonth ==4) {
                     OctoberWeekDays.fourthweek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
+                        OctoberWeekObject.semana = 'Cuatro';
+                        OctoberWeekObject.Dia = 'Lunes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.fourthweek.monday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -12153,6 +12449,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 2) {
+                        OctoberWeekObject.semana = 'Cuatro';
+                        OctoberWeekObject.Dia = 'Martes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.fourthweek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12174,6 +12474,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==3) {
+                        OctoberWeekObject.semana = 'Cuatro';
+                        OctoberWeekObject.Dia = 'Miercoles';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.fourthweek.wednesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12195,6 +12499,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 4) {
+                        OctoberWeekObject.semana = 'Cuatro';
+                        OctoberWeekObject.Dia = 'Jueves';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.fourthweek.thursday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12215,6 +12523,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==5) {
+                        OctoberWeekObject.semana = 'Cuatro';
+                        OctoberWeekObject.Dia = 'Viernes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.fourthweek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12236,6 +12548,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 6) {
+                        OctoberWeekObject.semana = 'Cuatro';
+                        OctoberWeekObject.Dia = 'Sabado';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.fourthweek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12257,6 +12573,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 7) {
+                        OctoberWeekObject.semana = 'Cuatro';
+                        OctoberWeekObject.Dia = 'Domingo';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.fourthweek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12286,6 +12606,10 @@ module.exports.elapsedTime = function(date1,date2){
                 if (weekMonth ==1) {
                     NovemberWeekDays.firstWeek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
+                        NovemberWeekObject.semana = 'Uno';
+                        NovemberWeekObject.Dia = 'Lunes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.firstWeek.monday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -12307,6 +12631,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 2) {
+                        NovemberWeekObject.semana = 'Uno';
+                        NovemberWeekObject.Dia = 'Martes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.firstWeek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12328,6 +12656,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==3) {
+                        NovemberWeekObject.semana = 'Uno';
+                        NovemberWeekObject.Dia = 'Miercoles';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.firstWeek.wednesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12349,6 +12681,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 4) {
+                        NovemberWeekObject.semana = 'Uno';
+                        NovemberWeekObject.Dia = 'Jueves';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.firstWeek.thursday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12369,6 +12705,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==5) {
+                        NovemberWeekObject.semana = 'Uno';
+                        NovemberWeekObject.Dia = 'Viernes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.firstWeek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12390,6 +12730,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 6) {
+                        NovemberWeekObject.semana = 'Uno';
+                        NovemberWeekObject.Dia = 'Sabado';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.firstWeek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12411,6 +12755,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 7) {
+                        NovemberWeekObject.semana = 'Uno';
+                        NovemberWeekObject.Dia = 'Domingo';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.firstWeek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12436,6 +12784,10 @@ module.exports.elapsedTime = function(date1,date2){
                 if (weekMonth ==2) {
                     NovemberWeekDays.secondWeek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
+                        NovemberWeekObject.semana = 'Dos';
+                        NovemberWeekObject.Dia = 'Lunes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.secondWeek.monday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -12457,6 +12809,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 2) {
+                        NovemberWeekObject.semana = 'Dos';
+                        NovemberWeekObject.Dia = 'Martes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.secondWeek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12478,6 +12834,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==3) {
+                        NovemberWeekObject.semana = 'Dos';
+                        NovemberWeekObject.Dia = 'Miercoles';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.secondWeek.wednesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12499,6 +12859,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 4) {
+                        NovemberWeekObject.semana = 'Dos';
+                        NovemberWeekObject.Dia = 'Jueves';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.secondWeek.thursday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12519,6 +12883,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==5) {
+                        NovemberWeekObject.semana = 'Dos';
+                        NovemberWeekObject.Dia = 'Viernes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.secondWeek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12540,6 +12908,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 6) {
+                        NovemberWeekObject.semana = 'Dos';
+                        NovemberWeekObject.Dia = 'Sabado';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.secondWeek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12561,6 +12933,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 7) {
+                        NovemberWeekObject.semana = 'Dos';
+                        NovemberWeekObject.Dia = 'Domingo';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.secondWeek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12587,6 +12963,10 @@ module.exports.elapsedTime = function(date1,date2){
                 if (weekMonth ==3) {
                     NovemberWeekDays.thirdweek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
+                        NovemberWeekObject.semana = 'Tres';
+                        NovemberWeekObject.Dia = 'Lunes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.thirdweek.monday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12607,6 +12987,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 2) {
+                        NovemberWeekObject.semana = 'Tres';
+                        NovemberWeekObject.Dia = 'Martes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.thirdweek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12628,6 +13012,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==3) {
+                        NovemberWeekObject.semana = 'Tres';
+                        NovemberWeekObject.Dia = 'Miercoles';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.thirdweek.wednesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12649,6 +13037,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 4) {
+                        NovemberWeekObject.semana = 'Tres';
+                        NovemberWeekObject.Dia = 'Jueves';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.thirdweek.thursday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12669,6 +13061,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==5) {
+                        NovemberWeekObject.semana = 'Tres';
+                        NovemberWeekObject.Dia = 'Viernes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.thirdweek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12690,6 +13086,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 6) {
+                        NovemberWeekObject.semana = 'Tres';
+                        NovemberWeekObject.Dia = 'Sabado';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.thirdweek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12711,6 +13111,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 7) {
+                        NovemberWeekObject.semana = 'Tres';
+                        NovemberWeekObject.Dia = 'Domingo';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.thirdweek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12740,6 +13144,10 @@ module.exports.elapsedTime = function(date1,date2){
                         NovemberWeekDays.fourthweek.monday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
+                        NovemberWeekObject.semana = 'Cuatro';
+                        NovemberWeekObject.Dia = 'Lunes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
                             NovemberWeekDays.fourthweek.monday.Night.count += 1;
@@ -12758,6 +13166,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 2) {
+                        NovemberWeekObject.semana = 'Cuatro';
+                        NovemberWeekObject.Dia = 'Martes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.fourthweek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12779,6 +13191,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==3) {
+                        NovemberWeekObject.semana = 'Cuatro';
+                        NovemberWeekObject.Dia = 'Miercoles';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.fourthweek.wednesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12800,6 +13216,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 4) {
+                        NovemberWeekObject.semana = 'Cuatro';
+                        NovemberWeekObject.Dia = 'Jueves';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.fourthweek.thursday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12820,6 +13240,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==5) {
+                        NovemberWeekObject.semana = 'Cuatro';
+                        NovemberWeekObject.Dia = 'Viernes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.fourthweek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12841,6 +13265,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 6) {
+                        NovemberWeekObject.semana = 'Cuatro';
+                        NovemberWeekObject.Dia = 'Sabado';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.fourthweek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12862,6 +13290,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 7) {
+                        NovemberWeekObject.semana = 'Cuatro';
+                        NovemberWeekObject.Dia = 'Domingo';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.fourthweek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12890,6 +13322,10 @@ module.exports.elapsedTime = function(date1,date2){
                 if (weekMonth ==1) {
                     DecemberWeekDays.firstWeek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
+                        DecemberWeekObject.semana = 'Uno';
+                        DecemberWeekObject.Dia = 'Lunes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.firstWeek.monday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -12911,6 +13347,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 2) {
+                        DecemberWeekObject.semana = 'Uno';
+                        DecemberWeekObject.Dia = 'Martes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.firstWeek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12932,6 +13372,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==3) {
+                        DecemberWeekObject.semana = 'Uno';
+                        DecemberWeekObject.Dia = 'Miercoles';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.firstWeek.wednesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12953,6 +13397,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 4) {
+                        DecemberWeekObject.semana = 'Uno';
+                        DecemberWeekObject.Dia = 'Jueves';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.firstWeek.thursday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12973,6 +13421,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==5) {
+                        DecemberWeekObject.semana = 'Uno';
+                        DecemberWeekObject.Dia = 'Viernes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.firstWeek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -12994,6 +13446,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 6) {
+                        DecemberWeekObject.semana = 'Uno';
+                        DecemberWeekObject.Dia = 'Sabado';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.firstWeek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -13015,6 +13471,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 7) {
+                        DecemberWeekObject.semana = 'Uno';
+                        DecemberWeekObject.Dia = 'Domingo';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.firstWeek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -13040,6 +13500,10 @@ module.exports.elapsedTime = function(date1,date2){
                 if (weekMonth ==2) {
                     DecemberWeekDays.secondWeek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
+                        DecemberWeekObject.semana = 'Dos';
+                        DecemberWeekObject.Dia = 'Lunes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.secondWeek.monday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -13061,6 +13525,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 2) {
+                        DecemberWeekObject.semana = 'Dos';
+                        DecemberWeekObject.Dia = 'Martes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.secondWeek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -13082,6 +13550,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==3) {
+                        DecemberWeekObject.semana = 'Dos';
+                        DecemberWeekObject.Dia = 'Miercoles';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.secondWeek.wednesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -13103,6 +13575,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 4) {
+                        DecemberWeekObject.semana = 'Dos';
+                        DecemberWeekObject.Dia = 'Jueves';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.secondWeek.thursday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -13123,6 +13599,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==5) {
+                        DecemberWeekObject.semana = 'Dos';
+                        DecemberWeekObject.Dia = 'Viernes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.secondWeek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -13144,6 +13624,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 6) {
+                        DecemberWeekObject.semana = 'Dos';
+                        DecemberWeekObject.Dia = 'Sabado';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.secondWeek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -13165,6 +13649,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 7) {
+                        DecemberWeekObject.semana = 'Dos';
+                        DecemberWeekObject.Dia = 'Domingo';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.secondWeek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -13191,6 +13679,10 @@ module.exports.elapsedTime = function(date1,date2){
                 if (weekMonth ==3) {
                     DecemberWeekDays.thirdweek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
+                        DecemberWeekObject.semana = 'Tres';
+                        DecemberWeekObject.Dia = 'Lunes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.thirdweek.monday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -13211,6 +13703,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 2) {
+                        DecemberWeekObject.semana = 'Tres';
+                        DecemberWeekObject.Dia = 'Martes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.thirdweek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -13232,6 +13728,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==3) {
+                        DecemberWeekObject.semana = 'Tres';
+                        DecemberWeekObject.Dia = 'Miercoles';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.thirdweek.wednesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -13253,6 +13753,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 4) {
+                        DecemberWeekObject.semana = 'Tres';
+                        DecemberWeekObject.Dia = 'Jueves';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.thirdweek.thursday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -13273,6 +13777,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==5) {
+                        DecemberWeekObject.semana = 'Tres';
+                        DecemberWeekObject.Dia = 'Viernes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.thirdweek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -13294,6 +13802,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 6) {
+                        DecemberWeekObject.semana = 'Tres';
+                        DecemberWeekObject.Dia = 'Domingo';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.thirdweek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -13315,6 +13827,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 7) {
+                        DecemberWeekObject.semana = 'Tres';
+                        DecemberWeekObject.Dia = 'Domingo';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.thirdweek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -13341,6 +13857,10 @@ module.exports.elapsedTime = function(date1,date2){
                 if (weekMonth ==4) {
                     DecemberWeekDays.fourthweek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
+                        DecemberWeekObject.semana = 'Cuatro';
+                        DecemberWeekObject.Dia = 'Lunes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.fourthweek.monday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -13362,6 +13882,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 2) {
+                        DecemberWeekObject.semana = 'Cuatro';
+                        DecemberWeekObject.Dia = 'Martes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.fourthweek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -13383,6 +13907,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==3) {
+                        DecemberWeekObject.semana = 'Cuatro';
+                        DecemberWeekObject.Dia = 'Miercoles';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.fourthweek.wednesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -13404,6 +13932,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 4) {
+                        DecemberWeekObject.semana = 'Cuatro';
+                        DecemberWeekObject.Dia = 'Jueves';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.fourthweek.thursday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -13424,6 +13956,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day ==5) {
+                        DecemberWeekObject.semana = 'Cuatro';
+                        DecemberWeekObject.Dia = 'Viernes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.fourthweek.friday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -13445,6 +13981,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 6) {
+                        DecemberWeekObject.semana = 'Cuatro';
+                        DecemberWeekObject.Dia = 'Sabado';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.fourthweek.saturday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -13466,6 +14006,10 @@ module.exports.elapsedTime = function(date1,date2){
                         
                     }
                     if (day == 7) {
+                        DecemberWeekObject.semana = 'Cuatro';
+                        DecemberWeekObject.Dia = 'Domingo';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.fourthweek.sunday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
@@ -13522,7 +14066,14 @@ module.exports.elapsedTime = function(date1,date2){
                 NightAmpsTimeStamp:NightAmpsTimeStamp,
                 NightWattsTimeStamp:NightWattsTimeStamp
             },
-            OtherDetails:AbrilWeekLyTimeStamp,
+            OtherDetails:[
+                januaryWeekLyTimeStamp,
+                februaryWeekLyTimeStamp,marchWeekLyTimeStamp,
+                AbrilWeekLyTimeStamp,
+                mayWeekLyTimeStamp,juneWeekLyTimeStamp,
+                julyWeekLyTimeStamp,augustWeekLyTimeStamp,
+                septemberWeekLyTimeStamp,
+                octoberWeekLyTimeStamp,NovemberWeekLyTimeStamp,DecemberWeekLyTimeStamp],
 
             details:[{
                 MonthName:'Enero',
@@ -13530,78 +14081,90 @@ module.exports.elapsedTime = function(date1,date2){
                 watts:januaryWatts,
                 januaryDetail: [
                     januaryWeekDays
-                ]
+                ],
+                MonthDetail:januaryWeekLyTimeStamp
             },
             {
                 MonthName:'Febrero',
                 amps:FebruaryAmps,
                 watts:FebruaryWatts,
-                februaryDetails:[februaryWeekDays]
+                februaryDetails:[februaryWeekDays],
+                MonthDetail:februaryWeekLyTimeStamp
             },
             {
                 MonthName:'Marzo',
                 amps:MarchAmps,
                 watts:MarchWatts,
-                marchDetails: [MarchWeekDays]
+                marchDetails: [MarchWeekDays],
+                MonthDetail:marchWeekLyTimeStamp
             },
             {
                 MonthName:'Abril',
                 amps:AprilAmps,
                 watts:AprilWatts,
-                aprilDetails:[aprilWeekDays]
+                aprilDetails:[aprilWeekDays],
+                MonthDetail:AbrilWeekLyTimeStamp
             },
             {
                 MonthName:'Mayo',
                 amps:MayAmps,
                 watts:MayWatts,
-                mayDetails:[MayWeekDays]
+                mayDetails:[MayWeekDays],
+                MonthDetail:mayWeekLyTimeStamp,
             },
             {
                 MonthName:'Junio',
                 amps:JuneAmps,
                 watts: JuneWatts,
-                juneDetails:[JuneWeekDays]
+                juneDetails:[JuneWeekDays],
+                MonthDetail:juneWeekLyTimeStamp,
             },
             {
                 MonthName:'Julio',
                 amps:JulyAmps,
                 watts:JulyWatts,
-                julyDetails:[JulyWeekDays]                
+                julyDetails:[JulyWeekDays],
+                MonthDetail:julyWeekLyTimeStamp,                
                 
             },
             {
                 MonthName:'Agosto',
                 amps:AugustAmps,
                 watts:AugustWatts,
-                augustDetails:[AugustWeekDays]
+                augustDetails:[AugustWeekDays],
+                MonthDetail:augustWeekLyTimeStamp,  
     
             },
             {
                 MonthName:'Septiembre',
                 amps:SeptemberAmps,
                 watts:SeptemberWatts,
-                SeptemberDetails:[SeptemberWeekDays]
+                SeptemberDetails:[SeptemberWeekDays],
+                MonthDetail:septemberWeekLyTimeStamp,  
     
             },
             {
                 MonthName:'Octubre',
                 amps:OctoberAmps,
                 watts:OctoberWatts,
-                OctoberDetails:[OctoberWeekDays]
+                OctoberDetails:[OctoberWeekDays],
+                MonthDetail:octoberWeekLyTimeStamp,  
     
             },
             {
                 MonthName:'Noviembre',
                 amps:NovemberAmps,
                 watts:NovemberWatts,
-                NovemberDetails:[NovemberWeekDays]
+                NovemberDetails:[NovemberWeekDays],
+                MonthDetail:NovemberWeekLyTimeStamp, 
     
             },
            {
                 MonthName:'Diciembre',
                 amps:DecemberAmps,
                 watts:DecemberWatts,
-                DecemberDetails:[DecemberWeekDays]
+                DecemberDetails:[DecemberWeekDays],
+                MonthDetail:DecemberWeekLyTimeStamp, 
             },
             ],
             maxConsumption: [],
