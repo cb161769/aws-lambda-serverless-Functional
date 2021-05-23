@@ -7665,7 +7665,7 @@ module.exports.elapsedTime = function(date1,date2){
                         aprilWeekDays.firstWeek.tuesday.Total += readings2.device_watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
-                        AbrilWeekLyTimeStamp.push({semana:'Uno',Dia: 'Lunes', watts: (firstWeekAbril  += readings2.device_watts)});
+                        AbrilWeekLyTimeStamp.push({semana:'Uno',Dia: 'Martes', watts: (firstWeekAbril  += readings2.device_watts)});
                         
                         if (isNight == true) {
                             aprilWeekDays.firstWeek.tuesday.Night.count += 1;
@@ -14073,7 +14073,8 @@ module.exports.elapsedTime = function(date1,date2){
                 mayWeekLyTimeStamp,juneWeekLyTimeStamp,
                 julyWeekLyTimeStamp,augustWeekLyTimeStamp,
                 septemberWeekLyTimeStamp,
-                octoberWeekLyTimeStamp,NovemberWeekLyTimeStamp,DecemberWeekLyTimeStamp],
+                octoberWeekLyTimeStamp,
+                NovemberWeekLyTimeStamp,DecemberWeekLyTimeStamp],
 
             details:[{
                 MonthName:'Enero',
@@ -14140,36 +14141,31 @@ module.exports.elapsedTime = function(date1,date2){
                 amps:SeptemberAmps,
                 watts:SeptemberWatts,
                 SeptemberDetails:[SeptemberWeekDays],
-                MonthDetail:septemberWeekLyTimeStamp,  
+                MonthDetail:augustWeekLyTimeStamp,  
     
             },
             {
                 MonthName:'Octubre',
                 amps:OctoberAmps,
                 watts:OctoberWatts,
-                OctoberDetails:[OctoberWeekDays],
-                MonthDetail:octoberWeekLyTimeStamp,  
+                OctoberDetails:[OctoberWeekDays]
     
             },
             {
                 MonthName:'Noviembre',
                 amps:NovemberAmps,
                 watts:NovemberWatts,
-                NovemberDetails:[NovemberWeekDays],
-                MonthDetail:NovemberWeekLyTimeStamp, 
+                NovemberDetails:[NovemberWeekDays]
     
             },
            {
                 MonthName:'Diciembre',
                 amps:DecemberAmps,
                 watts:DecemberWatts,
-                DecemberDetails:[DecemberWeekDays],
-                MonthDetail:DecemberWeekLyTimeStamp, 
+                DecemberDetails:[DecemberWeekDays]
             },
             ],
             maxConsumption: [],
-            minConsumptionDetail:[],
-            maxConsumptionDetail:[]
 
         
         }
@@ -14177,10 +14173,6 @@ module.exports.elapsedTime = function(date1,date2){
     ];
     ob[0].maxConsumption = module.exports.getMaxConsumption(ob[0].details,"watts");
     ob[0].minConsumption = module.exports.getMinConsumption(ob[0].details,"watts");
-     var marConsumption = module.exports.getMaxConsumption(ob[0].details,"watts");
-    ob[0].maxConsumptionDetail = module.exports.detailsMaximunConsumption(marConsumption.MonthDetail,"watts");
-    var minConsumption = module.exports.getMinConsumption(ob[0].details,"watts");
-    ob[0].minConsumptionDetail = module.exports.detailsMinConsumption(minConsumption.MonthDetail,"watts");
     return ob;
      
       
@@ -14198,13 +14190,6 @@ module.exports.getMaxConsumption = function (arr, prop) {
     }
     return max;
 }
-/**
- * @author Claudio Raul Brito Mercedes
- * @function getMinConsumption()
- * @param {*} arr array
- * @param {*} prop property
- * @returns Array<any>
- */
 module.exports.getMinConsumption = function(arr, prop) {
     var max;
     for (var i=0 ; i<arr.length ; i++) {
@@ -14213,39 +14198,6 @@ module.exports.getMinConsumption = function(arr, prop) {
     }
     return max;
 }
-/**
- * @function detailsMaximunConsumption()
- * @author Claudio Raul Brito Mercedes
- * @param {*} arr array
- * @param {*} prop property
- * @returns Array<any>
- */
-module.exports.detailsMaximunConsumption = function(arr,prop){
-    var max;
-    for (var i=0 ; i<arr.length ; i++) {
-        if (!max || parseInt(arr[i][prop]) > parseInt(max[prop]))
-            max = arr[i];
-    }
-
-    return max;
-}
-/**
- * @function detailsMinConsumption()
- * @author Claudio Raul Brito Mercedes
- * @param {*} arr array
- * @param {*} prop property
- * @returns Array<any>
- */
-module.exports.detailsMinConsumption = function(arr,prop){
-    var max;
-    for (var i=0 ; i<arr.length ; i++) {
-        if (!max || parseInt(arr[i][prop]) > parseInt(max[prop]))
-            max = arr[i];
-    }
-
-    return max;
-}
-
 /**
  * @description 
  * @author Claudio Raul Brito Mercedes
