@@ -14141,7 +14141,7 @@ module.exports.elapsedTime = function(date1,date2){
                 amps:SeptemberAmps,
                 watts:SeptemberWatts,
                 SeptemberDetails:[SeptemberWeekDays],
-                MonthDetail:augustWeekLyTimeStamp,  
+                MonthDetail:septemberWeekLyTimeStamp,  
     
             },
             {
@@ -14170,12 +14170,19 @@ module.exports.elapsedTime = function(date1,date2){
     
             },
             ],
+            minConsumption: [],
             maxConsumption: [],
+            minConsumptionDetail:[],
+            maxConsumptionDetail:[]
 
         
         }
     
     ];
+    var marConsumption = module.exports.getMaxConsumption(ob[0].details,"watts");
+    var minConsumption = module.exports.getMinConsumption(ob[0].details,"watts");
+    ob[0].maxConsumptionDetail = module.exports.detailsMaximunConsumption(marConsumption.MonthDetail,"watts");
+    ob[0].minConsumptionDetail = module.exports.detailsMinConsumption(minConsumption.MonthDetail,"watts");
     ob[0].maxConsumption = module.exports.getMaxConsumption(ob[0].details,"watts");
     ob[0].minConsumption = module.exports.getMinConsumption(ob[0].details,"watts");
     return ob;
@@ -19560,6 +19567,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
     var DecemberWatts = 0;
     var totalWAttsProm = 0;
     // Amps
+    var firstWeekAbril = 0;
+    var secondWeekAbril = 0;
+    var thirdWeekAbril = 0;
+    var fourthWeekAbril = 0;
     var totalAmps = 0;
     var januaryAmps = 0
     var FebruaryAmps = 0;
@@ -28285,40 +28296,47 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
             amps:SeptemberAmps,
             watts:SeptemberWatts,
             SeptemberDetails:[SeptemberWeekDays],
-            MonthDetail:augustWeekLyTimeStamp
+            MonthDetail:septemberWeekLyTimeStamp
 
         },
         {
             MonthName:'Octubre',
             amps:OctoberAmps,
             watts:OctoberWatts,
-            OctoberDetails:[OctoberWeekDays]
+            OctoberDetails:[OctoberWeekDays],
+            MonthDetail:octoberWeekLyTimeStamp
 
         },
         {
             MonthName:'Noviembre',
             amps:NovemberAmps,
             watts:NovemberWatts,
-            NovemberDetails:[NovemberWeekDays]
+            NovemberDetails:[NovemberWeekDays],
+            MonthDetail:NovemberWeekLyTimeStamp
 
         },
        {
             MonthName:'Diciembre',
             amps:DecemberAmps,
             watts:DecemberWatts,
-            DecemberDetails:[DecemberWeekDays]
+            DecemberDetails:[DecemberWeekDays],
+            MonthDetail:DecemberWeekLyTimeStamp
         },
         ],
-       
-        maxConsumption: [],
         minConsumption: [],
-
+        maxConsumption: [],
+        minConsumptionDetail:[],
+        maxConsumptionDetail:[],
         ConnectionName:ConnectionName
 
         
     }
     
     ];
+    var marConsumption = module.exports.getMaxConsumption(ob[0].details,"watts");
+    var minConsumption = module.exports.getMinConsumption(ob[0].details,"watts");
+    ob[0].maxConsumptionDetail = module.exports.detailsMaximunConsumption(marConsumption.MonthDetail,"watts");
+    ob[0].minConsumptionDetail = module.exports.detailsMinConsumption(minConsumption.MonthDetail,"watts");
     ob[0].maxConsumption = module.exports.getMaxConsumption(ob[0].details,"watts");
     ob[0].minConsumption = module.exports.getMinConsumption(ob[0].details,"watts");
 
