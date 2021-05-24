@@ -14148,21 +14148,26 @@ module.exports.elapsedTime = function(date1,date2){
                 MonthName:'Octubre',
                 amps:OctoberAmps,
                 watts:OctoberWatts,
-                OctoberDetails:[OctoberWeekDays]
+                OctoberDetails:[OctoberWeekDays],
+                MonthDetail:octoberWeekLyTimeStamp
     
             },
             {
                 MonthName:'Noviembre',
                 amps:NovemberAmps,
                 watts:NovemberWatts,
-                NovemberDetails:[NovemberWeekDays]
+                NovemberDetails:[NovemberWeekDays],
+                MonthDetail:NovemberWeekLyTimeStamp
+    
     
             },
            {
                 MonthName:'Diciembre',
                 amps:DecemberAmps,
                 watts:DecemberWatts,
-                DecemberDetails:[DecemberWeekDays]
+                DecemberDetails:[DecemberWeekDays],
+                MonthDetail:DecemberWeekLyTimeStamp
+    
             },
             ],
             maxConsumption: [],
@@ -14188,6 +14193,38 @@ module.exports.getMaxConsumption = function (arr, prop) {
         if (!max || parseInt(arr[i][prop]) > parseInt(max[prop]))
             max = arr[i];
     }
+    return max;
+}
+/**
+ * @function detailsMaximunConsumption()
+ * @author Claudio Raul Brito Mercedes
+ * @param {*} arr array
+ * @param {*} prop property
+ * @returns Array<any>
+ */
+ module.exports.detailsMaximunConsumption = function(arr,prop){
+    var max;
+    for (var i=0 ; i<arr.length ; i++) {
+        if (!max || parseInt(arr[i][prop]) > parseInt(max[prop]))
+            max = arr[i];
+    }
+
+    return max;
+}
+/**
+ * @function detailsMinConsumption()
+ * @author Claudio Raul Brito Mercedes
+ * @param {*} arr array
+ * @param {*} prop property
+ * @returns Array<any>
+ */
+module.exports.detailsMinConsumption = function(arr,prop){
+    var max;
+    for (var i=0 ; i<arr.length ; i++) {
+        if (!max || parseInt(arr[i][prop]) > parseInt(max[prop]))
+            max = arr[i];
+    }
+
     return max;
 }
 module.exports.getMinConsumption = function(arr, prop) {
@@ -19484,6 +19521,32 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
         }
 
     };
+    var mayWeekObject = {semana:'', Dia:'',watts:0};
+    var mayWeekLyTimeStamp = [];
+    var AbrilWeekLyTimeStamp = [];
+    var februaryWeekLyTimeStamp = [];
+    var februaryWeekObject = {semana:'', Dia:'',watts:0};
+    var januaryWeekLyTimeStamp = [];
+    var januaryWeekObject = {semana:'', Dia:'',watts:0};
+    var marchWeekLyTimeStamp = [];
+    var marchWeekObject = {semana:'', Dia:'',watts:0};
+    var mayWeekObject = {semana:'', Dia:'',watts:0};
+    var mayWeekLyTimeStamp = [];
+    var JuneWeekObject = {semana:'', Dia:'',watts:0};
+    var juneWeekLyTimeStamp = [];
+    var julyWeekLyTimeStamp = [];
+    var JulyWeekObject = {semana:'', Dia:'',watts:0};
+    var AugustWeekObject = {semana:'', Dia:'',watts:0};
+    var augustWeekLyTimeStamp = [];
+    var SeptemberWeekObject = {semana:'', Dia:'',watts:0};
+    var septemberWeekLyTimeStamp = [];
+    var octoberWeekLyTimeStamp = [];
+    var OctoberWeekObject = {semana:'', Dia:'',watts:0};
+    var NovemberWeekObject = {semana:'', Dia:'',watts:0};
+    var NovemberWeekLyTimeStamp = [];
+    var DecemberWeekLyTimeStamp = [];
+    var DecemberWeekObject = {semana:'', Dia:'',watts:0};
+
     var FebruaryWatts = 0;
     var MarchWatts = 0;
     var AprilWatts = 0
@@ -19579,6 +19642,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         januaryWeekDays.firstWeek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
+                        januaryWeekObject.semana = 'Uno';
+                        januaryWeekObject.Dia = 'Lunes';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
                             januaryWeekDays.firstWeek.monday.Night.count += 1;
@@ -19600,6 +19667,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         januaryWeekDays.firstWeek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
+                        januaryWeekObject.semana = 'Uno';
+                        januaryWeekObject.Dia = 'Martes';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         if (isNight == true) {
                             januaryWeekDays.firstWeek.tuesday.Night.count += 1;
                             januaryWeekDays.firstWeek.tuesday.Night.kilowatts += kwh;
@@ -19618,6 +19689,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        januaryWeekObject.semana = 'Uno';
+                        januaryWeekObject.Dia = 'Miercoles';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.firstWeek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -19639,6 +19714,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        januaryWeekObject.semana = 'Uno';
+                        januaryWeekObject.Dia = 'Jueves';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.firstWeek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -19659,6 +19738,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        januaryWeekObject.semana = 'Uno';
+                        januaryWeekObject.Dia = 'Viernes';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.firstWeek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -19680,6 +19763,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        januaryWeekObject.semana = 'Uno';
+                        januaryWeekObject.Dia = 'Sabado';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.firstWeek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -19701,6 +19788,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        januaryWeekObject.semana = 'Uno';
+                        januaryWeekObject.Dia = 'Domingo';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.firstWeek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -19729,6 +19820,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         januaryWeekDays.secondWeek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
+                        januaryWeekObject.semana = 'Dos';
+                        januaryWeekObject.Dia = 'Lunes';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
                             januaryWeekDays.secondWeek.monday.Night.count += 1;
@@ -19747,6 +19842,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        januaryWeekObject.semana = 'Dos';
+                        januaryWeekObject.Dia = 'Martes';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.secondWeek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -19768,6 +19867,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        januaryWeekObject.semana = 'Dos';
+                        januaryWeekObject.Dia = 'Miercoles';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.secondWeek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -19789,6 +19892,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        januaryWeekObject.semana = 'Dos';
+                        januaryWeekObject.Dia = 'Jueves';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.secondWeek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -19809,6 +19916,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        januaryWeekObject.semana = 'Dos';
+                        januaryWeekObject.Dia = 'Viernes';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.secondWeek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -19830,6 +19941,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        januaryWeekObject.semana = 'Dos';
+                        januaryWeekObject.Dia = 'Sabado';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.secondWeek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -19851,6 +19966,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        januaryWeekObject.semana = 'Dos';
+                        januaryWeekObject.Dia = 'Domingo';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.secondWeek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -19880,6 +19999,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         januaryWeekDays.thirdweek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
+                        januaryWeekObject.semana = 'Tres';
+                        januaryWeekObject.Dia = 'Lunes';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
                             januaryWeekDays.thirdweek.monday.Night.count += 1;
@@ -19898,6 +20021,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        januaryWeekObject.semana = 'Tres';
+                        januaryWeekObject.Dia = 'Martes';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.thirdweek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -19919,6 +20046,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        januaryWeekObject.semana = 'Tres';
+                        januaryWeekObject.Dia = 'Miercoles';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.thirdweek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -19940,6 +20071,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        januaryWeekObject.semana = 'Tres';
+                        januaryWeekObject.Dia = 'Jueves';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.thirdweek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -19960,6 +20095,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        januaryWeekObject.semana = 'Tres';
+                        januaryWeekObject.Dia = 'Viernes';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.thirdweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -19981,6 +20120,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        januaryWeekObject.semana = 'Tres';
+                        januaryWeekObject.Dia = 'Sabado';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.thirdweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20002,6 +20145,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        januaryWeekObject.semana = 'Tres';
+                        januaryWeekObject.Dia = 'Domingo';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.thirdweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20029,6 +20176,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
 
                     januaryWeekDays.fourthweek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        januaryWeekObject.semana = 'Cuatro';
+                        januaryWeekObject.Dia = 'Lunes';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.fourthweek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -20050,6 +20201,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        januaryWeekObject.semana = 'Cuatro';
+                        januaryWeekObject.Dia = 'Martes';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.fourthweek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20071,6 +20226,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        januaryWeekObject.semana = 'Cuatro';
+                        januaryWeekObject.Dia = 'Miercoles';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.fourthweek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20092,6 +20251,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        januaryWeekObject.semana = 'Cuatro';
+                        januaryWeekObject.Dia = 'Jueves';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.fourthweek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20112,6 +20275,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        januaryWeekObject.semana = 'Cuatro';
+                        januaryWeekObject.Dia = 'Viernes';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.fourthweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20133,6 +20300,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        januaryWeekObject.semana = 'Cuatro';
+                        januaryWeekObject.Dia = 'Sabado';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.fourthweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20154,7 +20325,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
-
+                        januaryWeekObject.semana = 'Cuatro';
+                        januaryWeekObject.Dia = 'Domingo';
+                        januaryWeekObject.watts += readings2.device_watts;
+                        januaryWeekLyTimeStamp.push(januaryWeekObject);
                         januaryWeekDays.fourthweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20188,6 +20362,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         februaryWeekDays.firstWeek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
+                        februaryWeekObject.semana = 'Uno';
+                        februaryWeekObject.Dia = 'Lunes';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
                             februaryWeekDays.firstWeek.monday.Night.count += 1;
@@ -20206,6 +20384,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        februaryWeekObject.semana = 'Uno';
+                        februaryWeekObject.Dia = 'Lunes';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         februaryWeekDays.firstWeek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20227,6 +20409,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        februaryWeekObject.semana = 'Uno';
+                        februaryWeekObject.Dia = 'Miercoles';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         februaryWeekDays.firstWeek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20248,6 +20434,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        februaryWeekObject.semana = 'Uno';
+                        februaryWeekObject.Dia = 'Jueves';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         februaryWeekDays.firstWeek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20268,6 +20458,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        februaryWeekObject.semana = 'Uno';
+                        februaryWeekObject.Dia = 'Viernes';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         februaryWeekDays.firstWeek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20289,6 +20483,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        februaryWeekObject.semana = 'Uno';
+                        februaryWeekObject.Dia = 'Sabado';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         februaryWeekDays.firstWeek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20310,6 +20508,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        februaryWeekObject.semana = 'Uno';
+                        februaryWeekObject.Dia = 'Domingo';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         januaryWeekDays.firstWeek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20338,6 +20540,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         februaryWeekDays.secondWeek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
+                        februaryWeekObject.semana = 'Dos';
+                        februaryWeekObject.Dia = 'Lunes';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
                             februaryWeekDays.secondWeek.monday.Night.count += 1;
@@ -20359,6 +20565,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         februaryWeekDays.secondWeek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
+                        februaryWeekObject.semana = 'Dos';
+                        februaryWeekObject.Dia = 'Martes';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         if (isNight == true) {
                             februaryWeekDays.secondWeek.tuesday.Night.count += 1;
                             februaryWeekDays.secondWeek.tuesday.Night.kilowatts += kwh;
@@ -20377,6 +20587,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        februaryWeekObject.semana = 'Dos';
+                        februaryWeekObject.Dia = 'Miercoles';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         februaryWeekDays.secondWeek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20398,6 +20612,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        februaryWeekObject.semana = 'Dos';
+                        februaryWeekObject.Dia = 'Jueves';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         februaryWeekDays.secondWeek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20418,6 +20636,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        februaryWeekObject.semana = 'Dos';
+                        februaryWeekObject.Dia = 'Viernes';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         februaryWeekDays.secondWeek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20439,6 +20661,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        februaryWeekObject.semana = 'Dos';
+                        februaryWeekObject.Dia = 'Sabado';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         februaryWeekDays.secondWeek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20460,6 +20686,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        februaryWeekObject.semana = 'Dos';
+                        februaryWeekObject.Dia = 'Domingo';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         februaryWeekDays.secondWeek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20486,6 +20716,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==3) {
                     februaryWeekDays.thirdweek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        februaryWeekObject.semana = 'Tres';
+                        februaryWeekObject.Dia = 'Lunes';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         februaryWeekDays.thirdweek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -20510,6 +20744,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         februaryWeekDays.thirdweek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
+                        februaryWeekObject.semana = 'Tres';
+                        februaryWeekObject.Dia = 'Martes';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         if (isNight == true) {
                             februaryWeekDays.thirdweek.tuesday.Night.count += 1;
                             februaryWeekDays.thirdweek.tuesday.Night.kilowatts += kwh;
@@ -20531,6 +20769,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         februaryWeekDays.thirdweek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
+                        februaryWeekObject.semana = 'Tres';
+                        februaryWeekObject.Dia = 'Miercoles';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject)
                         if (isNight == true) {
                             februaryWeekDays.thirdweek.wednesday.Night.count += 1;
                             februaryWeekDays.thirdweek.wednesday.Night.kilowatts += kwh;
@@ -20552,6 +20794,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         februaryWeekDays.thirdweek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
+                        februaryWeekObject.semana = 'Tres';
+                        februaryWeekObject.Dia = 'Jueves';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         if (isNight == true) {
                             februaryWeekDays.thirdweek.thursday.Night.count += 1;
                             februaryWeekDays.thirdweek.thursday.Night.kilowatts += kwh;
@@ -20572,6 +20818,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         februaryWeekDays.thirdweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
+                        februaryWeekObject.semana = 'Tres';
+                        februaryWeekObject.Dia = 'Viernes';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         if (isNight == true) {
                             februaryWeekDays.thirdweek.friday.Night.count += 1;
                             februaryWeekDays.thirdweek.friday.Night.kilowatts += kwh;
@@ -20593,6 +20843,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         februaryWeekDays.thirdweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
+                        februaryWeekObject.semana = 'Tres';
+                        februaryWeekObject.Dia = 'Sabado';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         if (isNight == true) {
                             februaryWeekDays.thirdweek.saturday.Night.count += 1;
                             februaryWeekDays.thirdweek.saturday.Night.kilowatts += kwh;
@@ -20614,6 +20868,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         februaryWeekDays.thirdweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
+                        februaryWeekObject.semana = 'Tres';
+                        februaryWeekObject.Dia = 'Domingo';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         if (isNight == true) {
                             februaryWeekDays.thirdweek.sunday.Night.count += 1;
                             februaryWeekDays.thirdweek.sunday.Night.kilowatts += kwh;
@@ -20636,6 +20894,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth == 4) {
                     februaryWeekDays.fourthweek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        februaryWeekObject.semana = 'Cuatro';
+                        februaryWeekObject.Dia = 'Lunes';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         februaryWeekDays.fourthweek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -20657,6 +20919,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        februaryWeekObject.semana = 'Cuatro';
+                        februaryWeekObject.Dia = 'Martes';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         februaryWeekDays.fourthweek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20678,6 +20944,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        februaryWeekObject.semana = 'Cuatro';
+                        februaryWeekObject.Dia = 'Miercoles';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         februaryWeekDays.fourthweek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20699,6 +20969,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        februaryWeekObject.semana = 'Cuatro';
+                        februaryWeekObject.Dia = 'Jueves';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         februaryWeekDays.fourthweek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20719,6 +20993,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        februaryWeekObject.semana = 'Cuatro';
+                        februaryWeekObject.Dia = 'Viernes';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         februaryWeekDays.fourthweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20740,6 +21018,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        februaryWeekObject.semana = 'Cuatro';
+                        februaryWeekObject.Dia = 'Sabado';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         februaryWeekDays.fourthweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20761,6 +21043,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        februaryWeekObject.semana = 'Cuatro';
+                        februaryWeekObject.Dia = 'Domingo';
+                        februaryWeekObject.watts += readings2.device_watts;
+                        februaryWeekLyTimeStamp.push(februaryWeekObject);
                         februaryWeekDays.fourthweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -20792,6 +21078,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==1) {
                     MarchWeekDays.firstWeek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        marchWeekObject.semana = 'Uno';
+                        marchWeekObject.Dia = 'Lunes';
+                        marchWeekObject.watts += readings2.device_watts;
+                        marchWeekLyTimeStamp.push(marchWeekObject);
                         MarchWeekDays.firstWeek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -21784,9 +22074,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
-                        aprilWeekDays.thirdweek.friday.Total += filteredReadings[0].CT1_Watts;
+                         aprilWeekDays.thirdweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
+                        AbrilWeekLyTimeStamp.push({semana:'Tres',Dia: 'Viernes', watts: (thirdWeekAbril   += readings2.device_watts)});
                         if (isNight == true) {
                             aprilWeekDays.thirdweek.friday.Night.count += 1;
                             aprilWeekDays.thirdweek.friday.Night.kilowatts += kwh;
@@ -21805,6 +22096,7 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        AbrilWeekLyTimeStamp.push({semana:'Tres',Dia: 'Sabado', watts: (thirdWeekAbril   += readings2.device_watts)});
                         aprilWeekDays.thirdweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -21826,6 +22118,7 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        AbrilWeekLyTimeStamp.push({semana:'Tres',Dia: 'Domingo', watts: (thirdWeekAbril   += readings2.device_watts)});
                         aprilWeekDays.thirdweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -21852,6 +22145,7 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==4) {
                     aprilWeekDays.fourthweek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        AbrilWeekLyTimeStamp.push({semana:'Cuatro',Dia: 'Lunes', watts: (fourthWeekAbril   += readings2.device_watts)});
                         aprilWeekDays.fourthweek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -21873,6 +22167,8 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        AbrilWeekLyTimeStamp.push({semana:'Cuatro',Dia: 'Martes', watts: (fourthWeekAbril   += readings2.device_watts)});
+
                         aprilWeekDays.fourthweek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -21894,6 +22190,7 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        AbrilWeekLyTimeStamp.push({semana:'Cuatro',Dia: 'Miercoles', watts: (fourthWeekAbril   += readings2.device_watts)});
                         aprilWeekDays.fourthweek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -21918,6 +22215,7 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         aprilWeekDays.fourthweek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
+                        AbrilWeekLyTimeStamp.push({semana:'Cuatro',Dia: 'Jueves', watts: (fourthWeekAbril   += readings2.device_watts)});
                         if (isNight == true) {
                             aprilWeekDays.fourthweek.thursday.Night.count += 1;
                             aprilWeekDays.fourthweek.thursday.Night.kilowatts += kwh;
@@ -21938,6 +22236,7 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         aprilWeekDays.fourthweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
+                        AbrilWeekLyTimeStamp.push({semana:'Cuatro',Dia: 'Viernes', watts: (fourthWeekAbril   += readings2.device_watts)});
                         if (isNight == true) {
                             aprilWeekDays.fourthweek.friday.Night.count += 1;
                             aprilWeekDays.fourthweek.friday.Night.kilowatts += kwh;
@@ -21959,6 +22258,7 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         aprilWeekDays.fourthweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
+                        AbrilWeekLyTimeStamp.push({semana:'Cuatro',Dia: 'Sabado', watts: (fourthWeekAbril   += readings2.device_watts)});
                         if (isNight == true) {
                             aprilWeekDays.fourthweek.saturday.Night.count += 1;
                             aprilWeekDays.fourthweek.saturday.Night.kilowatts += kwh;
@@ -21980,6 +22280,7 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         aprilWeekDays.fourthweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
+                        AbrilWeekLyTimeStamp.push({semana:'Cuatro',Dia: 'Domingo', watts: (fourthWeekAbril   += readings2.device_watts)});
                         if (isNight == true) {
                             aprilWeekDays.fourthweek.sunday.Night.count += 1;
                             aprilWeekDays.fourthweek.sunday.Night.kilowatts += kwh;
@@ -22010,6 +22311,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==1) {
                     MayWeekDays.firstWeek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        mayWeekObject.semana = 'Uno';
+                        mayWeekObject.Dia = 'Lunes';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject); 
                         MayWeekDays.firstWeek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -22031,6 +22336,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        mayWeekObject.semana = 'Uno';
+                        mayWeekObject.Dia = 'Martes';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.firstWeek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22052,6 +22361,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        mayWeekObject.semana = 'Uno';
+                        mayWeekObject.Dia = 'Miercoles';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.firstWeek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22073,6 +22386,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        mayWeekObject.semana = 'Uno';
+                        mayWeekObject.Dia = 'Jueves';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.firstWeek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22093,6 +22410,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        mayWeekObject.semana = 'Uno';
+                        mayWeekObject.Dia = 'Viernes';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.firstWeek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22114,6 +22435,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        mayWeekObject.semana = 'Uno';
+                        mayWeekObject.Dia = 'Sabado';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.firstWeek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22135,6 +22460,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        mayWeekObject.semana = 'Uno';
+                        mayWeekObject.Dia = 'Domingo';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.firstWeek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22160,6 +22489,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==2) {
                     MayWeekDays.secondWeek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        mayWeekObject.semana = 'Dos';
+                        mayWeekObject.Dia = 'Lunes';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.secondWeek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -22181,6 +22514,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        mayWeekObject.semana = 'Dos';
+                        mayWeekObject.Dia = 'Martes';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.secondWeek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22202,6 +22539,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        mayWeekObject.semana = 'Dos';
+                        mayWeekObject.Dia = 'Miercoles';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.secondWeek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22223,6 +22564,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        mayWeekObject.semana = 'Dos';
+                        mayWeekObject.Dia = 'Jueves';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.secondWeek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22243,6 +22588,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        mayWeekObject.semana = 'Dos';
+                        mayWeekObject.Dia = 'Miercoles';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.secondWeek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22264,6 +22613,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        mayWeekObject.semana = 'Dos';
+                        mayWeekObject.Dia = 'Sabado';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.secondWeek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22285,6 +22638,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        mayWeekObject.semana = 'Dos';
+                        mayWeekObject.Dia = 'Domingo';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.secondWeek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22311,6 +22668,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==3) {
                     MayWeekDays.thirdweek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        mayWeekObject.semana = 'Tres';
+                        mayWeekObject.Dia = 'Lunes';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.thirdweek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22331,6 +22692,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        mayWeekObject.semana = 'Tres';
+                        mayWeekObject.Dia = 'Martes';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.thirdweek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22352,6 +22717,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        mayWeekObject.semana = 'Tres';
+                        mayWeekObject.Dia = 'Miercoles';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.thirdweek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22373,6 +22742,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        mayWeekObject.semana = 'Tres';
+                        mayWeekObject.Dia = 'Jueves';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.thirdweek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22393,6 +22766,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        mayWeekObject.semana = 'Tres';
+                        mayWeekObject.Dia = 'Viernes';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.thirdweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22414,6 +22791,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        mayWeekObject.semana = 'Tres';
+                        mayWeekObject.Dia = 'Sabado';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.thirdweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22435,6 +22816,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        mayWeekObject.semana = 'Tres';
+                        mayWeekObject.Dia = 'Domingo';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.thirdweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22461,6 +22846,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==4) {
                     MayWeekDays.fourthweek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        mayWeekObject.semana = 'Cuatro';
+                        mayWeekObject.Dia = 'Lunes';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.fourthweek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -22482,6 +22871,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        mayWeekObject.semana = 'Cuatro';
+                        mayWeekObject.Dia = 'Martes';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.fourthweek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22503,6 +22896,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        mayWeekObject.semana = 'Cuatro';
+                        mayWeekObject.Dia = 'Miercoles';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.fourthweek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22524,6 +22921,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        mayWeekObject.semana = 'Cuatro';
+                        mayWeekObject.Dia = 'Jueves';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.fourthweek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22544,6 +22945,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        mayWeekObject.semana = 'Cuatro';
+                        mayWeekObject.Dia = 'Viernes';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.fourthweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22565,6 +22970,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        mayWeekObject.semana = 'Cuatro';
+                        mayWeekObject.Dia = 'Sabado';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.fourthweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22586,6 +22995,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        mayWeekObject.semana = 'Cuatro';
+                        mayWeekObject.Dia = 'Domingo';
+                        mayWeekObject.watts += readings2.device_watts;
+                        mayWeekLyTimeStamp.push(mayWeekObject);
                         MayWeekDays.fourthweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22619,6 +23032,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==1) {
                     JuneWeekDays.firstWeek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        JuneWeekObject.semana = 'Uno';
+                        JuneWeekObject.Dia = 'Lunes';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.firstWeek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -22640,6 +23057,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        JuneWeekObject.semana = 'Uno';
+                        JuneWeekObject.Dia = 'Martes';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.firstWeek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22661,6 +23082,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        JuneWeekObject.semana = 'Uno';
+                        JuneWeekObject.Dia = 'Miercoles';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.firstWeek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22682,6 +23107,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        JuneWeekObject.semana = 'Uno';
+                        JuneWeekObject.Dia = 'Jueves';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.firstWeek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22702,6 +23131,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        JuneWeekObject.semana = 'Uno';
+                        JuneWeekObject.Dia = 'Jueves';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.firstWeek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22723,6 +23156,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        JuneWeekObject.semana = 'Uno';
+                        JuneWeekObject.Dia = 'Sabado';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.firstWeek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22744,6 +23181,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        JuneWeekObject.semana = 'Uno';
+                        JuneWeekObject.Dia = 'Domingo';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.firstWeek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22769,6 +23210,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==2) {
                     JuneWeekDays.secondWeek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        JuneWeekObject.semana = 'Dos';
+                        JuneWeekObject.Dia = 'Lunes';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.secondWeek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -22790,6 +23235,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        JuneWeekObject.semana = 'Dos';
+                        JuneWeekObject.Dia = 'Martes';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.secondWeek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22811,6 +23260,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        JuneWeekObject.semana = 'Dos';
+                        JuneWeekObject.Dia = 'Miercoles';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.secondWeek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22832,6 +23285,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        JuneWeekObject.semana = 'Dos';
+                        JuneWeekObject.Dia = 'Jueves';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.secondWeek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22852,6 +23309,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        JuneWeekObject.semana = 'Dos';
+                        JuneWeekObject.Dia = 'Viernes';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.secondWeek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22873,6 +23334,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        JuneWeekObject.semana = 'Dos';
+                        JuneWeekObject.Dia = 'Sabado';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.secondWeek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22894,6 +23359,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        JuneWeekObject.semana = 'Dos';
+                        JuneWeekObject.Dia = 'Domingo';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.secondWeek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22920,6 +23389,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==3) {
                     JuneWeekDays.thirdweek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        JuneWeekObject.semana = 'Tres';
+                        JuneWeekObject.Dia = 'Lunes';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         MayWeekDays.thirdweek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22940,6 +23413,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        JuneWeekObject.semana = 'Tres';
+                        JuneWeekObject.Dia = 'Martes';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.thirdweek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22961,6 +23438,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        JuneWeekObject.semana = 'Tres';
+                        JuneWeekObject.Dia = 'Miercoles';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.thirdweek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -22982,6 +23463,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        JuneWeekObject.semana = 'Tres';
+                        JuneWeekObject.Dia = 'Jueves';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.thirdweek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23002,6 +23487,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        JuneWeekObject.semana = 'Tres';
+                        JuneWeekObject.Dia = 'Viernes';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.thirdweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23023,6 +23512,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        JuneWeekObject.semana = 'Tres';
+                        JuneWeekObject.Dia = 'Sabado';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.thirdweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23044,6 +23537,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        JuneWeekObject.semana = 'Tres';
+                        JuneWeekObject.Dia = 'Domingo';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.thirdweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23070,6 +23567,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==4) {
                     JuneWeekDays.fourthweek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        JuneWeekObject.semana = 'Cuatro';
+                        JuneWeekObject.Dia = 'Lunes';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.fourthweek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -23091,6 +23592,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        JuneWeekObject.semana = 'Cuatro';
+                        JuneWeekObject.Dia = 'Martes';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.fourthweek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23112,6 +23617,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        JuneWeekObject.semana = 'Cuatro';
+                        JuneWeekObject.Dia = 'Miercoles';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.fourthweek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23133,6 +23642,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        JuneWeekObject.semana = 'Cuatro';
+                        JuneWeekObject.Dia = 'Jueves';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.fourthweek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23153,6 +23666,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        JuneWeekObject.semana = 'Cuatro';
+                        JuneWeekObject.Dia = 'Viernes';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.fourthweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23174,6 +23691,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        JuneWeekObject.semana = 'Cuatro';
+                        JuneWeekObject.Dia = 'Sabado';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.fourthweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23195,6 +23716,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        JuneWeekObject.semana = 'Cuatro';
+                        JuneWeekObject.Dia = 'Domingo';
+                        JuneWeekObject.watts += readings2.device_watts;
+                        juneWeekLyTimeStamp.push(JuneWeekObject);
                         JuneWeekDays.fourthweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23224,6 +23749,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==1) {
                     JulyWeekDays.firstWeek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        JulyWeekObject.semana = 'Uno';
+                        JulyWeekObject.Dia = 'Lunes';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.firstWeek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -23245,6 +23774,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        JulyWeekObject.semana = 'Uno';
+                        JulyWeekObject.Dia = 'Martes';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.firstWeek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23266,6 +23799,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        JulyWeekObject.semana = 'Uno';
+                        JulyWeekObject.Dia = 'Miercoles';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.firstWeek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23287,6 +23824,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        JulyWeekObject.semana = 'Uno';
+                        JulyWeekObject.Dia = 'Jueves';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.firstWeek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23307,6 +23848,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        JulyWeekObject.semana = 'Uno';
+                        JulyWeekObject.Dia = 'Viernes';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.firstWeek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23328,6 +23873,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        JulyWeekObject.semana = 'Uno';
+                        JulyWeekObject.Dia = 'Sabado';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.firstWeek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23349,6 +23898,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        JulyWeekObject.semana = 'Uno';
+                        JulyWeekObject.Dia = 'Domingo';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.firstWeek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23374,6 +23927,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==2) {
                     JulyWeekDays.secondWeek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        JulyWeekObject.semana = 'Dos';
+                        JulyWeekObject.Dia = 'Lunes';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.secondWeek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -23395,6 +23952,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        JulyWeekObject.semana = 'Dos';
+                        JulyWeekObject.Dia = 'Martes';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.secondWeek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23416,6 +23977,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        JulyWeekObject.semana = 'Dos';
+                        JulyWeekObject.Dia = 'Miercoles';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.secondWeek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23437,6 +24002,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        JulyWeekObject.semana = 'Dos';
+                        JulyWeekObject.Dia = 'Jueves';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.secondWeek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23457,6 +24026,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        JulyWeekObject.semana = 'Dos';
+                        JulyWeekObject.Dia = 'Viernes';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.secondWeek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23478,6 +24051,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        JulyWeekObject.semana = 'Dos';
+                        JulyWeekObject.Dia = 'Sabado';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.secondWeek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23499,6 +24076,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        JulyWeekObject.semana = 'Dos';
+                        JulyWeekObject.Dia = 'Domingo';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.secondWeek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23525,6 +24106,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==3) {
                     JulyWeekDays.thirdweek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        JulyWeekObject.semana = 'Tres';
+                        JulyWeekObject.Dia = 'Lunes';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         MayWeekDays.thirdweek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23545,6 +24130,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        JulyWeekObject.semana = 'Tres';
+                        JulyWeekObject.Dia = 'Martes';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.thirdweek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23566,6 +24155,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        JulyWeekObject.semana = 'Tres';
+                        JulyWeekObject.Dia = 'Miercoles';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.thirdweek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23587,6 +24180,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        JulyWeekObject.semana = 'Tres';
+                        JulyWeekObject.Dia = 'Jueves';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.thirdweek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23607,6 +24204,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        JulyWeekObject.semana = 'Tres';
+                        JulyWeekObject.Dia = 'Jueves';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.thirdweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23628,6 +24229,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        JulyWeekObject.semana = 'Tres';
+                        JulyWeekObject.Dia = 'Sabado';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.thirdweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23649,6 +24254,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        JulyWeekObject.semana = 'Tres';
+                        JulyWeekObject.Dia = 'Domingo';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.thirdweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23675,6 +24284,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==4) {
                     JulyWeekDays.fourthweek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        JulyWeekObject.semana = 'Cuatro';
+                        JulyWeekObject.Dia = 'Miercoles';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.fourthweek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -23696,6 +24309,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        JulyWeekObject.semana = 'Cuatro';
+                        JulyWeekObject.Dia = 'Martes';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.fourthweek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23717,6 +24334,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        JulyWeekObject.semana = 'Cuatro';
+                        JulyWeekObject.Dia = 'Miercoles';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.fourthweek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23738,6 +24359,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        JulyWeekObject.semana = 'Cuatro';
+                        JulyWeekObject.Dia = 'Jueves';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.fourthweek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23758,6 +24383,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        JulyWeekObject.semana = 'Cuatro';
+                        JulyWeekObject.Dia = 'Viernes';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.fourthweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23779,6 +24408,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        JulyWeekObject.semana = 'Cuatro';
+                        JulyWeekObject.Dia = 'Sabado';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.fourthweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23800,6 +24433,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        JulyWeekObject.semana = 'Cuatro';
+                        JulyWeekObject.Dia = 'Martes';
+                        JulyWeekObject.watts += readings2.device_watts;
+                        julyWeekLyTimeStamp.push(JulyWeekObject);
                         JulyWeekDays.fourthweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23833,6 +24470,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         AugustWeekDays.firstWeek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
+                        AugustWeekObject.semana = 'Uno';
+                        AugustWeekObject.Dia = 'Martes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
                             AugustWeekDays.firstWeek.monday.Night.count += 1;
@@ -23851,6 +24492,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        AugustWeekObject.semana = 'Uno';
+                        AugustWeekObject.Dia = 'Martes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.firstWeek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23872,6 +24517,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        AugustWeekObject.semana = 'Uno';
+                        AugustWeekObject.Dia = 'Miercoles';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.firstWeek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23893,6 +24542,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        AugustWeekObject.semana = 'Uno';
+                        AugustWeekObject.Dia = 'Jueves';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.firstWeek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23913,6 +24566,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        AugustWeekObject.semana = 'Uno';
+                        AugustWeekObject.Dia = 'Viernes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.firstWeek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23934,6 +24591,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        AugustWeekObject.semana = 'Uno';
+                        AugustWeekObject.Dia = 'Sabado';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.firstWeek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23955,6 +24616,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        AugustWeekObject.semana = 'Uno';
+                        AugustWeekObject.Dia = 'Domingo';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.firstWeek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -23980,6 +24645,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==2) {
                     AugustWeekDays.secondWeek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        AugustWeekObject.semana = 'Dos';
+                        AugustWeekObject.Dia = 'Lunes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.secondWeek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -24001,6 +24670,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        AugustWeekObject.semana = 'Dos';
+                        AugustWeekObject.Dia = 'Martes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.secondWeek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24022,6 +24695,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        AugustWeekObject.semana = 'Dos';
+                        AugustWeekObject.Dia = 'Miercoles';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.secondWeek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24043,6 +24720,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        AugustWeekObject.semana = 'Dos';
+                        AugustWeekObject.Dia = 'Jueves';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.secondWeek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24063,6 +24744,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        AugustWeekObject.semana = 'Dos';
+                        AugustWeekObject.Dia = 'Viernes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.secondWeek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24084,6 +24769,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        AugustWeekObject.semana = 'Dos';
+                        AugustWeekObject.Dia = 'Sabado';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.secondWeek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24105,6 +24794,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        AugustWeekObject.semana = 'Dos';
+                        AugustWeekObject.Dia = 'Domingo';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.secondWeek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24131,6 +24824,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==3) {
                     AugustWeekDays.thirdweek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        AugustWeekObject.semana = 'Tres';
+                        AugustWeekObject.Dia = 'Lunes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.thirdweek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24151,6 +24848,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        AugustWeekObject.semana = 'Tres';
+                        AugustWeekObject.Dia = 'Martes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.thirdweek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24172,6 +24873,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        AugustWeekObject.semana = 'Tres';
+                        AugustWeekObject.Dia = 'Miercoles';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.thirdweek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24193,6 +24898,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        AugustWeekObject.semana = 'Tres';
+                        AugustWeekObject.Dia = 'Jueves';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.thirdweek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24213,6 +24922,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        AugustWeekObject.semana = 'Tres';
+                        AugustWeekObject.Dia = 'Viernes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.thirdweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24234,6 +24947,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        AugustWeekObject.semana = 'Tres';
+                        AugustWeekObject.Dia = 'Sabado';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.thirdweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24255,6 +24972,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        AugustWeekObject.semana = 'Tres';
+                        AugustWeekObject.Dia = 'Domingo';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.thirdweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24284,6 +25005,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         AugustWeekDays.fourthweek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
+                        AugustWeekObject.semana = 'Cuatro';
+                        AugustWeekObject.Dia = 'Lunes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
                             AugustWeekDays.fourthweek.monday.Night.count += 1;
@@ -24302,6 +25027,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        AugustWeekObject.semana = 'Cuatro';
+                        AugustWeekObject.Dia = 'Martes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.fourthweek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24323,6 +25052,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        AugustWeekObject.semana = 'Cuatro';
+                        AugustWeekObject.Dia = 'Miercoles';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.fourthweek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24344,6 +25077,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        AugustWeekObject.semana = 'Cuatro';
+                        AugustWeekObject.Dia = 'Jueves';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.fourthweek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24364,6 +25101,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        AugustWeekObject.semana = 'Cuatro';
+                        AugustWeekObject.Dia = 'Viernes';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.fourthweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24385,6 +25126,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        AugustWeekObject.semana = 'Cuatro';
+                        AugustWeekObject.Dia = 'Sabado';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.fourthweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24406,6 +25151,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        AugustWeekObject.semana = 'Cuatro';
+                        AugustWeekObject.Dia = 'Domingo';
+                        AugustWeekObject.watts += readings2.device_watts;
+                        augustWeekLyTimeStamp.push(AugustWeekObject);
                         AugustWeekDays.fourthweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24437,6 +25186,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         SeptemberWeekDays.firstWeek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
+                        SeptemberWeekObject.semana = 'Uno';
+                        SeptemberWeekObject.Dia = 'Lunes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
                             SeptemberWeekDays.firstWeek.monday.Night.count += 1;
@@ -24455,6 +25208,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        SeptemberWeekObject.semana = 'Uno';
+                        SeptemberWeekObject.Dia = 'Martes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.firstWeek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24476,6 +25233,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        SeptemberWeekObject.semana = 'Uno';
+                        SeptemberWeekObject.Dia = 'Miercoles';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.firstWeek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24497,6 +25258,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        SeptemberWeekObject.semana = 'Uno';
+                        SeptemberWeekObject.Dia = 'Jueves';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.firstWeek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24517,6 +25282,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        SeptemberWeekObject.semana = 'Uno';
+                        SeptemberWeekObject.Dia = 'Viernes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.firstWeek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24538,6 +25307,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        SeptemberWeekObject.semana = 'Uno';
+                        SeptemberWeekObject.Dia = 'Sabado';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.firstWeek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24559,6 +25332,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        SeptemberWeekObject.semana = 'Uno';
+                        SeptemberWeekObject.Dia = 'Domingo';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.firstWeek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24584,6 +25361,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==2) {
                     SeptemberWeekDays.secondWeek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        SeptemberWeekObject.semana = 'Dos';
+                        SeptemberWeekObject.Dia = 'Lunes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.secondWeek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -24605,6 +25386,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        SeptemberWeekObject.semana = 'Dos';
+                        SeptemberWeekObject.Dia = 'Martes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.secondWeek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24626,6 +25411,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        SeptemberWeekObject.semana = 'Tres';
+                        SeptemberWeekObject.Dia = 'Miercoles';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.secondWeek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24647,6 +25436,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        SeptemberWeekObject.semana = 'Tres';
+                        SeptemberWeekObject.Dia = 'Jueves';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.secondWeek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24667,6 +25460,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        SeptemberWeekObject.semana = 'Tres';
+                        SeptemberWeekObject.Dia = 'Viernes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.secondWeek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24688,6 +25485,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        SeptemberWeekObject.semana = 'Tres';
+                        SeptemberWeekObject.Dia = 'Sabado';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.secondWeek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24709,6 +25510,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        SeptemberWeekObject.semana = 'Tres';
+                        SeptemberWeekObject.Dia = 'Domingo';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.secondWeek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24735,6 +25540,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==3) {
                     SeptemberWeekDays.thirdweek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        SeptemberWeekObject.semana = 'Tres';
+                        SeptemberWeekObject.Dia = 'Lunes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.thirdweek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24755,6 +25564,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        SeptemberWeekObject.semana = 'Tres';
+                        SeptemberWeekObject.Dia = 'Martes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.thirdweek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24776,6 +25589,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        SeptemberWeekObject.semana = 'Tres';
+                        SeptemberWeekObject.Dia = 'Miercoles';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.thirdweek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24797,6 +25614,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        SeptemberWeekObject.semana = 'Tres';
+                        SeptemberWeekObject.Dia = 'Jueves';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.thirdweek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24817,6 +25638,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        SeptemberWeekObject.semana = 'Tres';
+                        SeptemberWeekObject.Dia = 'Viernes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.thirdweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24838,6 +25663,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        SeptemberWeekObject.semana = 'Tres';
+                        SeptemberWeekObject.Dia = 'Sabado';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.thirdweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24859,6 +25688,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        SeptemberWeekObject.semana = 'Tres';
+                        SeptemberWeekObject.Dia = 'Domingo';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.thirdweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24885,6 +25718,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==4) {
                     SeptemberWeekDays.fourthweek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        SeptemberWeekObject.semana = 'Cuatro';
+                        SeptemberWeekObject.Dia = 'Lunes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.fourthweek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -24906,6 +25743,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        SeptemberWeekObject.semana = 'Cuatro';
+                        SeptemberWeekObject.Dia = 'Martes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.fourthweek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24927,6 +25768,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        SeptemberWeekObject.semana = 'Cuatro';
+                        SeptemberWeekObject.Dia = 'Miercoles';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.fourthweek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24948,6 +25793,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        SeptemberWeekObject.semana = 'Cuatro';
+                        SeptemberWeekObject.Dia = 'Jueves';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.fourthweek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24968,6 +25817,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        SeptemberWeekObject.semana = 'Cuatro';
+                        SeptemberWeekObject.Dia = 'Viernes';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.fourthweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -24989,6 +25842,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        SeptemberWeekObject.semana = 'Cuatro';
+                        SeptemberWeekObject.Dia = 'Sabado';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.fourthweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25010,6 +25867,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        SeptemberWeekObject.semana = 'Cuatro';
+                        SeptemberWeekObject.Dia = 'Domingo';
+                        SeptemberWeekObject.watts += readings2.device_watts;
+                        septemberWeekLyTimeStamp.push(SeptemberWeekObject);
                         SeptemberWeekDays.fourthweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25039,6 +25900,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==1) {
                     OctoberWeekDays.firstWeek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        OctoberWeekObject.semana = 'Uno';
+                        OctoberWeekObject.Dia = 'Lunes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.firstWeek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -25060,6 +25925,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        OctoberWeekObject.semana = 'Uno';
+                        OctoberWeekObject.Dia = 'Martes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.firstWeek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25081,6 +25950,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        OctoberWeekObject.semana = 'Uno';
+                        OctoberWeekObject.Dia = 'Miercoles';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.firstWeek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25102,6 +25975,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        OctoberWeekObject.semana = 'Uno';
+                        OctoberWeekObject.Dia = 'Jueves';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.firstWeek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25122,6 +25999,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        OctoberWeekObject.semana = 'Uno';
+                        OctoberWeekObject.Dia = 'Viernes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.firstWeek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25143,6 +26024,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        OctoberWeekObject.semana = 'Uno';
+                        OctoberWeekObject.Dia = 'Sabado';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.firstWeek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25164,6 +26049,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        OctoberWeekObject.semana = 'Uno';
+                        OctoberWeekObject.Dia = 'Domingo';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.firstWeek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25189,6 +26078,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==2) {
                     OctoberWeekDays.secondWeek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        OctoberWeekObject.semana = 'Dos';
+                        OctoberWeekObject.Dia = 'Lunes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.secondWeek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -25210,6 +26103,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        OctoberWeekObject.semana = 'Dos';
+                        OctoberWeekObject.Dia = 'Martes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.secondWeek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25231,6 +26128,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        OctoberWeekObject.semana = 'Dos';
+                        OctoberWeekObject.Dia = 'Miercoles';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.secondWeek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25252,6 +26153,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        OctoberWeekObject.semana = 'Dos';
+                        OctoberWeekObject.Dia = 'Jueves';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.secondWeek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25272,6 +26177,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        OctoberWeekObject.semana = 'Dos';
+                        OctoberWeekObject.Dia = 'Viernes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.secondWeek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25293,6 +26202,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        OctoberWeekObject.semana = 'Dos';
+                        OctoberWeekObject.Dia = 'Sabado';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.secondWeek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25314,6 +26227,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        OctoberWeekObject.semana = 'Dos';
+                        OctoberWeekObject.Dia = 'Domingo';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.secondWeek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25340,6 +26257,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==3) {
                     OctoberWeekDays.thirdweek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        OctoberWeekObject.semana = 'Tres';
+                        OctoberWeekObject.Dia = 'Lunes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.thirdweek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25360,6 +26281,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        OctoberWeekObject.semana = 'Tres';
+                        OctoberWeekObject.Dia = 'Martes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.thirdweek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25381,6 +26306,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        OctoberWeekObject.semana = 'Tres';
+                        OctoberWeekObject.Dia = 'Miercoles';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.thirdweek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25402,6 +26331,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        OctoberWeekObject.semana = 'Tres';
+                        OctoberWeekObject.Dia = 'Jueves';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.thirdweek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25422,6 +26355,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        OctoberWeekObject.semana = 'Tres';
+                        OctoberWeekObject.Dia = 'Viernes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.thirdweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25443,6 +26380,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        OctoberWeekObject.semana = 'Tres';
+                        OctoberWeekObject.Dia = 'Sabado';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.thirdweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25464,6 +26405,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        OctoberWeekObject.semana = 'Tres';
+                        OctoberWeekObject.Dia = 'Domingo';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.thirdweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25490,6 +26435,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==4) {
                     OctoberWeekDays.fourthweek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        OctoberWeekObject.semana = 'Cuatro';
+                        OctoberWeekObject.Dia = 'Lunes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.fourthweek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -25511,6 +26460,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        OctoberWeekObject.semana = 'Cuatro';
+                        OctoberWeekObject.Dia = 'Martes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.fourthweek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25532,6 +26485,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        OctoberWeekObject.semana = 'Cuatro';
+                        OctoberWeekObject.Dia = 'Miercoles';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.fourthweek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25553,6 +26510,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        OctoberWeekObject.semana = 'Cuatro';
+                        OctoberWeekObject.Dia = 'Jueves';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.fourthweek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25573,6 +26534,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        OctoberWeekObject.semana = 'Cuatro';
+                        OctoberWeekObject.Dia = 'Viernes';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.fourthweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25594,6 +26559,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        OctoberWeekObject.semana = 'Cuatro';
+                        OctoberWeekObject.Dia = 'Sabado';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.fourthweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25615,6 +26584,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        OctoberWeekObject.semana = 'Cuatro';
+                        OctoberWeekObject.Dia = 'Domingo';
+                        OctoberWeekObject.watts += readings2.device_watts;
+                        octoberWeekLyTimeStamp.push(OctoberWeekObject);
                         OctoberWeekDays.fourthweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25644,6 +26617,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==1) {
                     NovemberWeekDays.firstWeek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        NovemberWeekObject.semana = 'Uno';
+                        NovemberWeekObject.Dia = 'Lunes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.firstWeek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -25665,6 +26642,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        NovemberWeekObject.semana = 'Uno';
+                        NovemberWeekObject.Dia = 'Martes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.firstWeek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25686,6 +26667,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        NovemberWeekObject.semana = 'Uno';
+                        NovemberWeekObject.Dia = 'Miercoles';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.firstWeek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25707,6 +26692,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        NovemberWeekObject.semana = 'Uno';
+                        NovemberWeekObject.Dia = 'Jueves';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.firstWeek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25727,6 +26716,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        NovemberWeekObject.semana = 'Uno';
+                        NovemberWeekObject.Dia = 'Viernes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.firstWeek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25748,6 +26741,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        NovemberWeekObject.semana = 'Uno';
+                        NovemberWeekObject.Dia = 'Sabado';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.firstWeek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25769,6 +26766,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        NovemberWeekObject.semana = 'Uno';
+                        NovemberWeekObject.Dia = 'Domingo';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.firstWeek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25794,6 +26795,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==2) {
                     NovemberWeekDays.secondWeek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        NovemberWeekObject.semana = 'Dos';
+                        NovemberWeekObject.Dia = 'Lunes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.secondWeek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -25815,6 +26820,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        NovemberWeekObject.semana = 'Dos';
+                        NovemberWeekObject.Dia = 'Martes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.secondWeek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25836,6 +26845,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        NovemberWeekObject.semana = 'Dos';
+                        NovemberWeekObject.Dia = 'Miercoles';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.secondWeek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25857,6 +26870,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        NovemberWeekObject.semana = 'Dos';
+                        NovemberWeekObject.Dia = 'Jueves';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.secondWeek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25877,6 +26894,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        NovemberWeekObject.semana = 'Dos';
+                        NovemberWeekObject.Dia = 'Viernes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.secondWeek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25898,6 +26919,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        NovemberWeekObject.semana = 'Dos';
+                        NovemberWeekObject.Dia = 'Sabado';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.secondWeek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25919,6 +26944,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        NovemberWeekObject.semana = 'Dos';
+                        NovemberWeekObject.Dia = 'Domingo';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.secondWeek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25945,6 +26974,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==3) {
                     NovemberWeekDays.thirdweek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        NovemberWeekObject.semana = 'Tres';
+                        NovemberWeekObject.Dia = 'Lunes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.thirdweek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25965,6 +26998,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        NovemberWeekObject.semana = 'Tres';
+                        NovemberWeekObject.Dia = 'Martes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.thirdweek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -25986,6 +27023,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        NovemberWeekObject.semana = 'Tres';
+                        NovemberWeekObject.Dia = 'Miercoles';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.thirdweek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26007,6 +27048,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        NovemberWeekObject.semana = 'Tres';
+                        NovemberWeekObject.Dia = 'Jueves';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.thirdweek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26027,6 +27072,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        NovemberWeekObject.semana = 'Tres';
+                        NovemberWeekObject.Dia = 'Viernes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.thirdweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26048,6 +27097,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        NovemberWeekObject.semana = 'Tres';
+                        NovemberWeekObject.Dia = 'Sabado';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.thirdweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26069,6 +27122,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        NovemberWeekObject.semana = 'Tres';
+                        NovemberWeekObject.Dia = 'Domingo';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.thirdweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26095,6 +27152,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==4) {
                     NovemberWeekDays.fourthweek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        NovemberWeekObject.semana = 'Cuatro';
+                        NovemberWeekObject.Dia = 'Lunes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.fourthweek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -26116,6 +27177,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        NovemberWeekObject.semana = 'Cuatro';
+                        NovemberWeekObject.Dia = 'Martes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.fourthweek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26137,6 +27202,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        NovemberWeekObject.semana = 'Cuatro';
+                        NovemberWeekObject.Dia = 'Miercoles';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.fourthweek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26158,6 +27227,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        NovemberWeekObject.semana = 'Cuatro';
+                        NovemberWeekObject.Dia = 'Jueves';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.fourthweek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26178,6 +27251,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        NovemberWeekObject.semana = 'Cuatro';
+                        NovemberWeekObject.Dia = 'Viernes';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.fourthweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26199,6 +27276,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        NovemberWeekObject.semana = 'Cuatro';
+                        NovemberWeekObject.Dia = 'Sabado';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.fourthweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26220,6 +27301,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        NovemberWeekObject.semana = 'Cuatro';
+                        NovemberWeekObject.Dia = 'Domingo';
+                        NovemberWeekObject.watts += readings2.device_watts;
+                        NovemberWeekLyTimeStamp.push(NovemberWeekObject);
                         NovemberWeekDays.fourthweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26248,6 +27333,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==1) {
                     DecemberWeekDays.firstWeek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        DecemberWeekObject.semana = 'Uno';
+                        DecemberWeekObject.Dia = 'Lunes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.firstWeek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -26269,6 +27358,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        DecemberWeekObject.semana = 'Uno';
+                        DecemberWeekObject.Dia = 'Martes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.firstWeek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26290,6 +27383,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        DecemberWeekObject.semana = 'Uno';
+                        DecemberWeekObject.Dia = 'Miercoles';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.firstWeek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26311,6 +27408,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        DecemberWeekObject.semana = 'Uno';
+                        DecemberWeekObject.Dia = 'Jueves';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.firstWeek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26331,6 +27432,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        DecemberWeekObject.semana = 'Uno';
+                        DecemberWeekObject.Dia = 'Viernes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.firstWeek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26352,6 +27457,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        DecemberWeekObject.semana = 'Uno';
+                        DecemberWeekObject.Dia = 'Sabado';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.firstWeek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26373,6 +27482,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        DecemberWeekObject.semana = 'Uno';
+                        DecemberWeekObject.Dia = 'Domingo';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.firstWeek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26398,6 +27511,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==2) {
                     DecemberWeekDays.secondWeek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        DecemberWeekObject.semana = 'Dos';
+                        DecemberWeekObject.Dia = 'Lunes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.secondWeek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
@@ -26419,6 +27536,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        DecemberWeekObject.semana = 'Dos';
+                        DecemberWeekObject.Dia = 'Martes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.secondWeek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26440,6 +27561,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        DecemberWeekObject.semana = 'Dos';
+                        DecemberWeekObject.Dia = 'Miercoles';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.secondWeek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26461,6 +27586,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        DecemberWeekObject.semana = 'Dos';
+                        DecemberWeekObject.Dia = 'Jueves';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.secondWeek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26481,6 +27610,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        DecemberWeekObject.semana = 'Dos';
+                        DecemberWeekObject.Dia = 'Viernes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.secondWeek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26502,6 +27635,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        DecemberWeekObject.semana = 'Dos';
+                        DecemberWeekObject.Dia = 'Sabado';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.secondWeek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26523,6 +27660,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        DecemberWeekObject.semana = 'Dos';
+                        DecemberWeekObject.Dia = 'Domingo';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.secondWeek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26549,6 +27690,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                 if (weekMonth ==3) {
                     DecemberWeekDays.thirdweek.totalKwhPerWeek += filteredReadings[0].CT1_Watts;
                     if (day ==1) {
+                        DecemberWeekObject.semana = 'Tres';
+                        DecemberWeekObject.Dia = 'Lunes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.thirdweek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26569,6 +27714,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        DecemberWeekObject.semana = 'Tres';
+                        DecemberWeekObject.Dia = 'Martes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.thirdweek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26590,6 +27739,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        DecemberWeekObject.semana = 'Tres';
+                        DecemberWeekObject.Dia = 'Miercoles';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.thirdweek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26611,6 +27764,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        DecemberWeekObject.semana = 'Tres';
+                        DecemberWeekObject.Dia = 'Jueves';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.thirdweek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26631,6 +27788,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        DecemberWeekObject.semana = 'Tres';
+                        DecemberWeekObject.Dia = 'Viernes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.thirdweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26652,6 +27813,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        DecemberWeekObject.semana = 'Tres';
+                        DecemberWeekObject.Dia = 'Domingo';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.thirdweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26673,6 +27838,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        DecemberWeekObject.semana = 'Tres';
+                        DecemberWeekObject.Dia = 'Domingo';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.thirdweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26702,6 +27871,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         DecemberWeekDays.fourthweek.monday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         // to do
+                        DecemberWeekObject.semana = 'Cuatro';
+                        DecemberWeekObject.Dia = 'Lunes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
                         if (isNight == true) {
                             DecemberWeekDays.fourthweek.monday.Night.count += 1;
@@ -26720,6 +27893,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 2) {
+                        DecemberWeekObject.semana = 'Cuatro';
+                        DecemberWeekObject.Dia = 'Martes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.fourthweek.tuesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26741,6 +27918,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==3) {
+                        DecemberWeekObject.semana = 'Cuatro';
+                        DecemberWeekObject.Dia = 'Miercoles';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.fourthweek.wednesday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26762,6 +27943,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 4) {
+                        DecemberWeekObject.semana = 'Cuatro';
+                        DecemberWeekObject.Dia = 'Jueves';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.fourthweek.thursday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26782,6 +27967,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day ==5) {
+                        DecemberWeekObject.semana = 'Cuatro';
+                        DecemberWeekObject.Dia = 'Viernes';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.fourthweek.friday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26803,6 +27992,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 6) {
+                        DecemberWeekObject.semana = 'Cuatro';
+                        DecemberWeekObject.Dia = 'Sabado';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.fourthweek.saturday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26824,6 +28017,10 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
                         
                     }
                     if (day == 7) {
+                        DecemberWeekObject.semana = 'Cuatro';
+                        DecemberWeekObject.Dia = 'Domingo';
+                        DecemberWeekObject.watts += readings2.device_watts;
+                        DecemberWeekLyTimeStamp.push(DecemberWeekObject);
                         DecemberWeekDays.fourthweek.sunday.Total += filteredReadings[0].CT1_Watts;
                         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
@@ -26884,57 +28081,66 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
             watts:januaryWatts,
             januaryDetail: [
                 januaryWeekDays
-            ]
+            ],
+            MonthDetail:januaryWeekLyTimeStamp
         },
         {
             MonthName:'Febrero',
             amps:FebruaryAmps,
             watts:FebruaryWatts,
-            februaryDetails:[februaryWeekDays]
+            februaryDetails:[februaryWeekDays],
+            MonthDetail:februaryWeekLyTimeStamp
         },
         {
             MonthName:'Marzo',
             amps:MarchAmps,
             watts:MarchWatts,
-            marchDetails: [MarchWeekDays]
+            marchDetails: [MarchWeekDays],
+            MonthDetail:marchWeekLyTimeStamp
         },
         {
             MonthName:'Abril',
             amps:AprilAmps,
             watts:AprilWatts,
-            aprilDetails:[aprilWeekDays]
+            aprilDetails:[aprilWeekDays],
+            MonthDetail:AbrilWeekLyTimeStamp
         },
         {
             MonthName:'Abril',
             amps:MayAmps,
             watts:MayWatts,
-            mayDetails:[MayWeekDays]
+            mayDetails:[MayWeekDays],
+            MonthDetail:mayWeekLyTimeStamp
         },
         {
             MonthName:'Junio',
             amps:JuneAmps,
             watts: JuneWatts,
-            juneDetails:[JuneWeekDays]
+            juneDetails:[JuneWeekDays],
+            MonthDetail:juneWeekLyTimeStamp
         },
         {
             MonthName:'Julio',
             amps:JulyAmps,
             watts:JulyWatts,
-            julyDetails:[JulyWeekDays]                
+            julyDetails:[JulyWeekDays],
+            MonthDetail:julyWeekLyTimeStamp              
             
         },
         {
             MonthName:'Agosto',
             amps:AugustAmps,
             watts:AugustWatts,
-            augustDetails:[AugustWeekDays]
+            augustDetails:[AugustWeekDays],
+            MonthDetail:augustWeekLyTimeStamp
 
         },
         {
             MonthName:'Septiembre',
             amps:SeptemberAmps,
             watts:SeptemberWatts,
-            SeptemberDetails:[SeptemberWeekDays]
+            SeptemberDetails:[SeptemberWeekDays],
+            MonthDetail:augustWeekLyTimeStamp
 
         },
         {
