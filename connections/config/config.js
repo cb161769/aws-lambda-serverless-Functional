@@ -19,5 +19,8 @@ module.exports.config = {
             
         }
     },
+    S3:{
+        BucketName: "devicetable-datasheet-readings"
+    },
     deviceName:'ArduinoDevice01'
 };
