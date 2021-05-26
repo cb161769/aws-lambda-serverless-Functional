@@ -12,22 +12,26 @@ const {getByMonthConnections} = require('../helpers/connectionHelpers/getByMonth
 const {getMonthlyHelperConnection} = require('../helpers/connectionHelpers/monthlyHelper');
 const {connectionsDailyHelper} = require('../helpers/connectionHelpers/ConnectionDailyHelper');
 const {DeviceGraphHelper,elapsedTime,ConnectionGrahphHelper } = require('../helpers/connectionHelpers/connectionGraph/conectionGraphHelper');
+const logger = require('../helpers/log/logsHelper');
 const routes = express.Router({
     mergeParams: true
 });
-/** 
- * this method gets all the device readings
- */
 
+/** 
+ * 
+ */
 routes.get("/getAllDeviceReadings", async (req, res) => {
     const params = {
         TableName: config.dynamoBB.deviceReadings.name,
       };
       const result = await db.scan(params).promise();
       if (result != undefined) {
+        logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {body: req.body, headers: req.headers }});
+      //const log =   LogInfo(config.LogGroups.Database.LogGroupName,`${config.LogGroups.Database.LogStreamName}[RESULT][${config.dynamoBB.deviceReadings.name}][${new Date().toISOString}]`,'Info','routes','GET','DATABASE','','/getAllDeviceReadings');
         res.status(200).json({readings: result.Items});
       }
       else{
+      //   logError(config.LogGroups.Database.LogGroupName,`${config.LogGroups.Database.LogStreamName}[RESULT][${config.dynamoBB.deviceReadings.name}][${new Date().toISOString}]`,'Info','routes','GET','DATABASE',result,'/getAllDeviceReadings')
         res.status(400).json({error: result});
       }
 });

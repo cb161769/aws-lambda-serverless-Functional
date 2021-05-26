@@ -15,12 +15,15 @@ module.exports.config = {
         deviceConfiguration:{
             name:"deviceConfiguration"
         },
-        test:{
-            
-        }
     },
     S3:{
         BucketName: "devicetable-datasheet-readings"
     },
-    deviceName:'ArduinoDevice01'
+    deviceName:'ArduinoDevice01',
+    LogGroups:{
+        Database:{
+            LogGroupName:'/aws/lambda/aws-dynamodb-cognito-api-dev-hello',
+            LogStreamName:'[Database]'
+        }
+    }
 };
