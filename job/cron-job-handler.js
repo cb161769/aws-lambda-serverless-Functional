@@ -2,6 +2,7 @@ const {dynamoDBConnection} = require('../connections/connections');
 const {config} = require('../connections/config/config');
 const {getYesterdayDate,getTodaysDate, writeToS3,firFormatToCvs,convertToCvs} = require('../functions/generalFunctions');
 const deviceName = config.deviceName;
+const logger = require('../helpers/log/logsHelper')
 /**
  * @function fetchYesterdaysData
  * @returns 
@@ -28,9 +29,12 @@ async function fetchYesterdaysData(){
                 ':end': endRange,
             },
         }).promise();
+        logger.log('info', `Requesting [fetchYesterdaysData]`, {tags: 'Method', additionalInfo: {operation: 'fetchYesterdaysData',databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
 
         return data;
     }catch(e){
+        logger.log('error', `Requesting [fetchYesterdaysData]`, {tags: 'Method', additionalInfo: {operation: 'fetchYesterdaysData',databaseOperation:'GET',error:e, table: config.dynamoBB.deviceReadings.name }});
+
         // pendig logs de cloudwatch
         console.log('Error');
         console.log(e);
@@ -46,12 +50,15 @@ module.exports.handler = async(event, context, callback) => {
         const filteredData = firFormatToCvs(data);
         const csv = convertToCvs(filteredData,[]);
         const time = getYesterdayDate();
-    
+        logger.log('info', `Requesting [cron-job]`, {tags: 'cron-job', additionalInfo: {operation: 'cron-job-handler', table: config.dynamoBB.deviceReadings.name }});
+
         // Write to S3
         await writeToS3(`lecturas/${deviceName}/${time.year}/${time.month}/${time.string}.csv`, csv);
-    
+        
         // Calculate the kWh consumed & write it to DynamoDB
     } catch (error) {
+        logger.log('error', `Requesting [cron-job]`, {tags: 'cron-job', additionalInfo: {operation: 'cron-job-handler',error:error, table: config.dynamoBB.deviceReadings.name }});
+
         console.error('problem')
     }
 };
