@@ -8,9 +8,13 @@ const {
     GraphQLInt, 
     GraphQLList
   } = require('graphql');
+  const logger = require('../helpers/log/logsHelper');
   const {dynamoDBConnection} = require("../connections/connections");
   const {config} = require("../connections/config/config");
 
+  /**
+   * 
+   */
 var deviceReadingsModel = new GraphQLObjectType({
     name:'device',
     fields: function () {
@@ -99,10 +103,13 @@ var queryType = new GraphQLObjectType({
                     let firstValidationDate = Math.floor(Date.now()/1000) -50;
                     let secondValidationDate = Math.floor(Date.now()/1000) + 50; 
                     if ((date >= firstValidationDate  && date <= secondValidationDate) ) {
+                        logger.log('info', `Requesting [GraphQLObjectType]`, {tags: 'graphQl', additionalInfo: {operation: 'Query',function:'device' }});
                         return data.Items[0].readings;
                         
                     }
                     else{
+                        logger.log('info', `Requesting [GraphQLObjectType]`, {tags: 'graphQl', additionalInfo: {operation: 'Query',function:'device' }});
+
                         return  [{device:'Not connected in realtime',error:400}];
                     }
                     
@@ -142,43 +149,19 @@ var queryType = new GraphQLObjectType({
                     let firstValidationDate = Math.floor(Date.now()/1000) -50;
                     let secondValidationDate = Math.floor(Date.now()/1000) + 50; 
                     if ((date >= firstValidationDate  && date <= secondValidationDate) ) {
+                        logger.log('info', `Requesting [GraphQLObjectType]`, {tags: 'graphQl', additionalInfo: {operation: 'Query',function:'Ct1_readings' }});
+
                         return data.Items[0].Relays[0];
                         
                     }
                     else{
                         return  [{device:'Not connected in realtime',error:400}];
+                        logger.log('info', `Requesting [GraphQLObjectType]`, {tags: 'graphQl', additionalInfo: {operation: 'Query',function:'Ct1_readings' }});
+
                         // return data.Items[0].Relays[0];
                     }
                 }
             }
-            // week:{
-            //     args:{
-            //         start:{
-            //             name:'start',
-            //             type: GraphQLFloat
-
-            //         },
-            //         end:{
-            //             name:'end',
-            //             type: GraphQLFloat
-
-            //         }
-            //     },
-            //     resolve: async (root,params) => {
-            //         const params = {
-            //             TableName: config.dynamoBB.deviceReadings.name,
-            //             KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
-            //             ScanIndexForward:false,
-            //             ConsistentRead:false,
-            //             ExpressionAttributeNames:{
-            //                 '#key':'primarykey',
-            //                 '#sortkey':'sortkey'
-                    
-            //             },
-
-            //         }
-            //     }
-            // }
         }
     }
 });

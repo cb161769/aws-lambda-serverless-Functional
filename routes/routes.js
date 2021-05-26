@@ -613,6 +613,7 @@ routes.get("/getAllDeviceReadingsByMonth", async (req, res ) => {
     res.status(200).json({readings: result});
   }
   else{
+    logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getArduinoDeviceConfiguration',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceConfiguration.name  }});
     res.status(400).json({error: result});
   }
 });
@@ -665,6 +666,8 @@ routes.get("/getAllDeviceReadingsByGivenDay/:day", async (req,res) =>{
         }
     }
     const ob =  [{Detail:dayInformation}];
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getAllDeviceReadingsByGivenDay',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
+
     res.status(200).json({ usage: ob, message:'Not Found', countedRows: data.ScannedCount});
     }
     else{
@@ -717,10 +720,14 @@ routes.get("/getAllDeviceReadingsByGivenDay/:day", async (req,res) =>{
         }
     }
     const ob =  [{Detail:dayInformation}];
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getAllDeviceReadingsByGivenDay',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
+
     res.status(200).json({ usage: ob, message:'Not Found'});
     }
     else{
       const day = await dailyHelper(data.Items);
+      logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getAllDeviceReadingsByGivenDay',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
+
       res.status(200).json({ usage:day, Items: data.Items});
     }
 
@@ -1205,10 +1212,14 @@ routes.get("/getAllDeviceReadingsByGivenMonth/:day", async (req,res) => {
       }
     };
   const ob =  [{Detail:MonthInformation}];
+  logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getAllDeviceReadingsByGivenMonth',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
+
   res.status(200).json({ usage: ob, message:'Not Found'});
 
   }else{
     const month = await getByMonth(data.Items);
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getAllDeviceReadingsByGivenMonth',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
+
     res.status(200).json({ usage: month});
   }
  
@@ -1695,11 +1706,15 @@ routes.get("/getAllDeviceReadingsByGivenParametersMonthly/:startDate/:endDate", 
       }
     };
   const ob =  [{Detail:MonthInformation}];
+  logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getAllDeviceReadingsByGivenParametersMonthly',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
+
   res.status(200).json({ usage: ob, message:'Not Found', dataFound:data});
 
   }else{
     const month = await DeviceGraphHelper(data.Items);
     const elapsedT = await elapsedTime(completedDay,secondCompletedDay);
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getAllDeviceReadingsByGivenParametersMonthly',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
+
     res.status(200).json({ usage: month,elapsedTime:elapsedT});
   }
 });
@@ -1744,11 +1759,15 @@ routes.get("/Connections/getAllDeviceReadingsByGivenParametersMonthly/:startDate
       totalWatts: 0, totalAmps:0 , diaConsulta: new Date().toISOString(),
       promedioWattsSemanal: 0, promedioAmpsSemanal:0, promedioKwhSemanal:  0,uso:data.Items
   }];
+  logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'Connections/getAllDeviceReadingsByGivenParametersMonthly',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
+
   res.status(200).json({ usage:ob});
   }
   else{
     const usage = await ConnectionGrahphHelper(ConnectionName,data.Items);
     const elapsedT = await elapsedTime(completedDay,secondCompletedDay);
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'Connections/getAllDeviceReadingsByGivenParametersMonthly',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
+
     res.status(200).json({ usage: usage,elapsedTime:elapsedT});
   }
 })
@@ -1757,6 +1776,7 @@ routes.get("/Connections/getAllDeviceReadingsByGivenParametersMonthly/:startDate
 routes.get("/Connections/getConnectionReadingsCurrentWeek/:start/:end/:ConnectionName", async (req,res)=>{
 var ConnectionName = req.params.ConnectionName;
   if (ConnectionName == '' || ConnectionName == null || ConnectionName == undefined) {
+
     res.status(404).json({ error:'The name is incorrect'});
   
   }
@@ -1793,12 +1813,15 @@ var ConnectionName = req.params.ConnectionName;
         promedioWattsSemanal: 0, promedioAmpsSemanal:0, promedioKwhSemanal:  0,uso:data.Items
     }];
     res.status(200).json({ usage:ob});
-      
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'Connections/getConnectionReadingsCurrentWeek',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
+
     }else{
       try {
         const week  =await dailyHelperFromConnections(ConnectionName,data.Items);
         res.status(200).json({uso:week});
       } catch (error) {
+        logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'Connections/getConnectionReadingsCurrentWeek',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name  }});
+
         const ob =  [ 
           {registros:0,Connextion:ConnectionName,Timestamp:[],lunes:{registros:0, amperios: 0,watts: 0, Timestamp:[]}
           ,martes:{registros:  0, amperios:  0,watts: 0,Timestamp:[]}
@@ -1850,6 +1873,8 @@ var ConnectionName = req.params.ConnectionName;
     }else{
       try {
         const week  =await dailyHelperFromConnections(ConnectionName,data.Items);
+        logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'Connections/getConnectionReadingsCurrentWeek',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
+
         res.status(200).json({usage:week});
       } catch (error) {
         const ob =  [ 
@@ -1863,6 +1888,7 @@ var ConnectionName = req.params.ConnectionName;
           totalWatts: 0, totalAmps:0 , diaConsulta: new Date().toISOString(),
           promedioWattsSemanal: 0, promedioAmpsSemanal:0, promedioKwhSemanal:  0
          }];
+         logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'Connections/getConnectionReadingsCurrentWeek',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name  }});
          res.status(200).json({ usage:ob});
       }
     }
@@ -2349,10 +2375,12 @@ routes.get("/Connections/getAllDeviceReadingsByGivenMonth/:day/:ConnectionName",
       }
     };
     const ob =  [{Detail:MonthInformation}];
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'Connections/getAllDeviceReadingsByGivenMonth',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
     res.status(200).json({ usage: ob, message:'Not Found'});
   }
   else{
     const month = await getByMonthConnections(ConnectionName,data.Items);
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'Connections/getAllDeviceReadingsByGivenMonth',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
     res.status(200).json({ usage: month});
   }
 
@@ -2368,8 +2396,11 @@ routes.get("/Connections/GetConnectionYearly/allConfig/:ConnectionName", async (
   try {
     const result = await db.scan(params).promise();
     const data = await getMonthlyHelperConnection(connectionName,result.Items);
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'Connections/GetConnectionYearly',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
+
     res.status(200).json({ usage:data});
   } catch (error) {
+    logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'Connections/GetConnectionYearly',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name  }});
     res.status(400).json({error: error})
   }
 });
@@ -2423,11 +2454,15 @@ routes.get("/Connections/GetConnectionsReadingsByGivenDay/:day/:ConnectionName",
         }
       }
       const ob =  [{Detail:dayInformation}];
+      logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'Connections/GetConnectionsReadingsByGivenDay',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
+
       res.status(200).json({ usage: ob, message:'Not Found', countedRows: data.ScannedCount});
 
     }
   }else{
     const day = await connectionsDailyHelper(connectionName,data.Items);
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'Connections/GetConnectionsReadingsByGivenDay',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
+
     res.status(200).json({ usage:day});
   }
 });
