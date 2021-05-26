@@ -26,11 +26,13 @@ routes.get("/getAllDeviceReadings", async (req, res) => {
       };
       const result = await db.scan(params).promise();
       if (result != undefined) {
-        logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {body: req.body, headers: req.headers }});
+        logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getAllDeviceReadings', headers: req.headers ,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
       //const log =   LogInfo(config.LogGroups.Database.LogGroupName,`${config.LogGroups.Database.LogStreamName}[RESULT][${config.dynamoBB.deviceReadings.name}][${new Date().toISOString}]`,'Info','routes','GET','DATABASE','','/getAllDeviceReadings');
         res.status(200).json({readings: result.Items});
+        
       }
       else{
+        logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getAllDeviceReadings',body: req.body, headers: req.headers, error:result,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name  }});
       //   logError(config.LogGroups.Database.LogGroupName,`${config.LogGroups.Database.LogStreamName}[RESULT][${config.dynamoBB.deviceReadings.name}][${new Date().toISOString}]`,'Info','routes','GET','DATABASE',result,'/getAllDeviceReadings')
         res.status(400).json({error: result});
       }
@@ -50,19 +52,18 @@ routes.get("/getDeviceByUserName/:deviceId", async (req,res) => {
   };
   try {
     const result = await db.query(params).promise();
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceByUserName',body: req.body, headers: req.headers, error:result,databaseOperation:'GET', table: config.dynamoBB.deviceTable.name }});
     res.status(200).json({readings: result});
     
   } catch (error) {
+    logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceByUserName',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceTable.name  }});
+
     res.status(400).json({error: error});
   }
 
 });
 
 routes.post("/createDevice", async (req,res) => {
-  // const headers = {
-  //   'Access-Control-Allow-Origin': '*',
-  //   'Access-Control-Allow-Credentials': true,
-  // }
   const data = req.body;
   let creationDate = new Date();
   creationDate.getDate();
@@ -86,10 +87,12 @@ routes.post("/createDevice", async (req,res) => {
   }
   try {
     await db.put(params).promise();
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'createDevice',body: req.body, headers: req.headers,databaseOperation:'POST', table: config.dynamoBB.deviceTable.name }});
     res.status(201).json({status:200,message:"Dispositivo creado Satisfactoriamente"});
 
     
   } catch (error) {
+    logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'createDevice',body: req.body, headers: req.headers, error:error,databaseOperation:'POST', table: config.dynamoBB.deviceTable.name  }});
     res.status(400).json({AwsDynamoDB:error});
   }
 });
@@ -114,9 +117,11 @@ routes.patch("/UpdateDevice/:deviceId", async (req,res) => {
     }
     try {
       await db.put(params).promise();
+      logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'UpdateDevice',body: req.body, headers: req.headers,databaseOperation:'POST', table: config.dynamoBB.deviceTable.name }});
       res.status(200).json({message:"Datos actualizados Satisfactoriamente"});
       
     } catch (error) {
+      logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'UpdateDevice',body: req.body, headers: req.headers, error:error,databaseOperation:'POST', table: config.dynamoBB.deviceTable.name  }});
       res.status(400).json({AwsDynamoDB:error});
     }
     
@@ -137,10 +142,14 @@ routes.get("/fareConfiguration/getFares", async (req,res) => {
     }
   }
   try {
-    const result = await db.query(params).promise();
+    const result = await db.query(params).promise()
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getFares',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.fareConfiguration.name }});
+
     res.status(200).json({readings:result});
     
   } catch (error) {
+    logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getFares',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.fareConfiguration.name  }});
+
     res.status(400).json({error: error});
   }
 
@@ -153,8 +162,11 @@ routes.get("/fareConfiguration/getAllFares", async (req,res) =>{
   };
   try {
     const result = await db.scan(params).promise();
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getAllFares',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.fareConfiguration.name }});
     res.status(200).json({readings:result});
   } catch (error) {
+    logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getAllFares',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.fareConfiguration.name  }});
+
     res.status(400).json({error:error});
   }
 });
@@ -220,9 +232,11 @@ routes.post("/fareConfiguration/createFare",async (req,res) => {
   }
   try {
     await db.put(params).promise();
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'createFare',body: req.body, headers: req.headers,databaseOperation:'POST', table: config.dynamoBB.fareConfiguration.name }});
     res.status(201).json({status:200,message:"Tarifas creadas satisfactoriamente"});
     
   } catch (error) {
+    logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'createFare',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.fareConfiguration.name  }});
     res.status(400).json({status:400,AwsDynamoDB:error});
   }
 
@@ -248,8 +262,10 @@ routes.post("/configureDevice", async (req,res) => {
     }
   }
   try {
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'configureDevice',body: req.body, headers: req.headers,databaseOperation:'POST', table: config.dynamoBB.fareConfiguration.name }});
     result = await db.query(parameters).promise();
   } catch (error) {
+    logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'configureDevice',body: req.body, headers: req.headers, error:error,databaseOperation:'POST', table: config.dynamoBB.fareConfiguration.name  }});
     res.status(400).json({error: error});
   }
 
@@ -273,10 +289,11 @@ routes.post("/configureDevice", async (req,res) => {
   };
   try {
     await db.put(params).promise();
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'configureDevice',body: req.body, headers: req.headers,databaseOperation:'POST', table: config.dynamoBB.deviceTable.name }});
     res.status(200).json({status:200,message: "El Dispsitivo fue configurado Stisfactoriamente"});
     
   } catch (error) {
-
+    logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'configureDevice',body: req.body, headers: req.headers, error:error,databaseOperation:'POST', table: config.dynamoBB.deviceTable.name  }});
     res.status(400).json({status:400, error:error});
     
   }
@@ -297,7 +314,6 @@ routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
       KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
       ScanIndexForward:false,
       ConsistentRead:false,
-      limit:10,
       ExpressionAttributeNames:{
         '#key':'primarykey',
         '#sortkey':'sortkey'
@@ -323,7 +339,7 @@ routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
             totalWatts:0  , totalAmps: 0 , diaConsulta: new Date().toISOString(),
             promedioWattsSemanal: 0, promedioAmpsSemanal:  0
         }];
-        
+        logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceWeekly',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
          res.status(200).json({ usage:ob});
     }
     else{
@@ -344,9 +360,8 @@ routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
           totalWatts:0  , totalAmps: 0 , diaConsulta: new Date().toISOString(),
           promedioWattsSemanal: 0, promedioAmpsSemanal:  0
       }];
-      
+        logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceWeekly',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name  }});
        res.status(200).json({ usage:ob});
-        //res.status(400).json({status:400, error:error});
       }
     }
 
@@ -391,7 +406,7 @@ routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
     else{
       try {
         const week = await getWeeklyHelper(data.Items)
-           
+        logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceWeekly',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
             res.status(200).json({ usage:week});
         
       } catch (error) {
@@ -406,7 +421,8 @@ routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
           totalWatts:0  , totalAmps: 0 , diaConsulta: new Date().toISOString(),
           promedioWattsSemanal: 0, promedioAmpsSemanal:  0
       }];
-      
+      logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceWeekly',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name  }});
+
        res.status(200).json({ usage:ob});
         //res.status(400).json({status:400, error:error});
       }
@@ -426,15 +442,20 @@ routes.get("/getDeviceYearly/allConfig", async (req,res) => {
   const result = await db.scan(params).promise();
   try {
     const data = await getMonthlyHelper(result.Items);
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceYearly',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
     res.status(200).json({result:data,database:result.Items});
     
   } catch (error) {
+    logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceYearly',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name  }});
     res.status(400).json({error: error})
   }
  
 
 
-})
+});
+/** 
+ * 
+ */
 routes.get("/getDeviceConfiguration/:userName", async (req,res) => {
   let userName = req.params.userName;
   const params = {
@@ -449,9 +470,11 @@ routes.get("/getDeviceConfiguration/:userName", async (req,res) => {
   }
   try {
     const result = await db.query(params).promise();
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceConfiguration',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceTable.name }});
     res.status(200).json({configuration:result.Items});
     
   } catch (error) {
+    logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceConfiguration',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceTable.name  }});
     res.status(400).json({error: error});
   }
 
@@ -499,8 +522,10 @@ routes.get("/getDeviceRelays/:userName", async (req,res) => {
         if (data.ScannedCount == 0 || data == null || data == undefined || !data || data.Count == 0){
           res.status(404).json({notfound:'NO ROWS'});
         }
+        logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceRelays',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
         res.status(200).json({data:data.Items[0].Relays});
       } catch (error) {
+        logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceRelays',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name  }});
         res.status(400).json({error: error});
       }
     }
@@ -508,6 +533,7 @@ routes.get("/getDeviceRelays/:userName", async (req,res) => {
       res.status(404).json({result:'not found'});
     }
   } catch (error) {
+    logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceRelays',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name  }});
     res.status(400).json({error: error});
   }
 
@@ -537,8 +563,10 @@ routes.post("/addDeviceConfiguration", async(req, res) => {
   };
   try {
     await db.put(params).promise();
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'addDeviceConfiguration',body: req.body, headers: req.headers,databaseOperation:'POST', table: config.dynamoBB.deviceConfiguration.name }});
     res.status(200).json({status:200,success:true});
   } catch (error) {
+    logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceRelays',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name  }});
     res.status(400).json({status:400,success:false, error:error});
   }
 
@@ -559,12 +587,18 @@ routes.get("/getArduinoDeviceConfiguration/:deviceId" , async (req,res) =>{
   try {
     const result = await db.query(params).promise();
     if ( result.ScannedCount == 1 || result.Count == 1 || result.Items.length == 1){
+      logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getArduinoDeviceConfiguration',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceConfiguration.name }});
+
       res.status(200).json({status:200,deviceConfiguration:result.Items})
     }
     else{
+      logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getArduinoDeviceConfiguration',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceConfiguration.name }});
+
       rest.status(200).json({status:200,deviceConfiguration:[]})
     }
   } catch (error) {
+    logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getArduinoDeviceConfiguration',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceConfiguration.name  }});
+
     res.status(400).json({status:400,error: error})
     
   }
@@ -575,6 +609,7 @@ routes.get("/getAllDeviceReadingsByMonth", async (req, res ) => {
   };
   const result = await db.scan(params).promise();
   if (result != undefined) {
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getArduinoDeviceConfiguration',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceConfiguration.name }});
     res.status(200).json({readings: result});
   }
   else{
