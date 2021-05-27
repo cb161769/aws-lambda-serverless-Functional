@@ -15,7 +15,10 @@ module.exports.config = {
         deviceConfiguration:{
             name:"deviceConfiguration"
         },
-    },
+        userLogs:{
+            name:"userLogs"
+        },
+    },    
     S3:{
         BucketName: "devicetable-datasheet-readings"
     },
@@ -24,6 +27,6 @@ module.exports.config = {
         Database:{
             LogGroupName:'/aws/lambda/aws-dynamodb-cognito-api-dev-hello',
             LogStreamName:'[Database]'
-        }
-    }
-};
+        },
+    },
+}

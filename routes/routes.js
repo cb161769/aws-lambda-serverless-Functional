@@ -62,7 +62,9 @@ routes.get("/getDeviceByUserName/:deviceId", async (req,res) => {
   }
 
 });
-
+/**
+ * @param req requirement 
+ */
 routes.post("/createDevice", async (req,res) => {
   const data = req.body;
   let creationDate = new Date();
@@ -96,6 +98,43 @@ routes.post("/createDevice", async (req,res) => {
     res.status(400).json({AwsDynamoDB:error});
   }
 });
+/** 
+ * @param req
+ * @author Claudio Raul Brito Mercedes
+ * @param res
+ */
+routes.post("/CreateLog", async (req, res) => {
+  const data = req.body;  
+  const logId = uuidv4();
+  const log = {
+    userName: data.userName,
+    timeStamp: data.timeStamp,
+    action:data.action,
+    logId: logId,
+    route: data.route,
+
+
+  };
+  let creationDate = new Date();
+  creationDate.toISOString()
+  const params = {
+    tableName: config.dynamoBB.userLogs.name,
+    Item:{
+      logId:logId,
+      logRecord:log,
+      date: creationDate
+    }
+  };
+  try {
+    await db.put(params).promise();
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'CreateLog',body: req.body, headers: req.headers,databaseOperation:'POST', table: config.dynamoBB.userLogs.name }});
+    res.status(201).json({status:200,success:true});
+  } catch (error) {
+    logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'CreateLog',body: req.body, headers: req.headers, error:error,databaseOperation:'POST', table: config.dynamoBB.userLogs.name  }});
+    res.status(400).json({status:400,success:false});
+  }
+
+})
 /** 
  * 
  */

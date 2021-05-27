@@ -105,6 +105,19 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5 
+    userLogs:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: "userLogs"
+        AttributeDefinitions:
+          - AttributeName: logId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: logId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5 
     fareConfiguration: 
       Type:  AWS::DynamoDB::Table
       Properties:
