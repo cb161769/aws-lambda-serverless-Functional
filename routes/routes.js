@@ -112,13 +112,15 @@ routes.post("/CreateLog", async (req, res) => {
     action:data.action,
     logId: logId,
     route: data.route,
+    logLevel:data.logLevel,
+    logError: data.logError
 
 
   };
   let creationDate = new Date();
   creationDate.toISOString()
   const params = {
-    tableName: config.dynamoBB.userLogs.name,
+    TableName: config.dynamoBB.userLogs.name,
     Item:{
       logId:logId,
       logRecord:log,
@@ -131,7 +133,7 @@ routes.post("/CreateLog", async (req, res) => {
     res.status(201).json({status:200,success:true});
   } catch (error) {
     logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'CreateLog',body: req.body, headers: req.headers, error:error,databaseOperation:'POST', table: config.dynamoBB.userLogs.name  }});
-    res.status(400).json({status:400,success:false});
+    res.status(400).json({status:400,success:false, error:error});
   }
 
 })
