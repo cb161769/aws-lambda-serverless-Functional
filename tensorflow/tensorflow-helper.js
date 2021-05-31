@@ -11,3 +11,12 @@
         x: new Date(x.sortkey *1000)
     })).filter(fill => fill.y >= 0);
 };
+
+module.exports.changeDates = function(dateOne, dateTwo,day) {
+    var initialMonth =  (dateOne.setMonth(dateOne.getMonth() - 1));
+    return {
+        initialDate:initialMonth.setDay(day),
+        finalDate: dateTwo.setDay(day)
+
+    };
+}
