@@ -13,6 +13,7 @@ const {getMonthlyHelperConnection} = require('../helpers/connectionHelpers/month
 const {connectionsDailyHelper} = require('../helpers/connectionHelpers/ConnectionDailyHelper');
 const {DeviceGraphHelper,elapsedTime,ConnectionGrahphHelper } = require('../helpers/connectionHelpers/connectionGraph/conectionGraphHelper');
 const logger = require('../helpers/log/logsHelper');
+const {mapDataToTensorFlow,changeDates} = require('../tensorflow/tensorflow-helper')
 const routes = express.Router({
     mergeParams: true
 });
@@ -2505,6 +2506,26 @@ routes.get("/Connections/GetConnectionsReadingsByGivenDay/:day/:ConnectionName",
     logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'Connections/GetConnectionsReadingsByGivenDay',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
 
     res.status(200).json({ usage:day});
+  }
+});
+routes.get('/Tensorflow/PredictConsumption/:deviceId', async (req, res) => {
+  let deviceId = req.params.deviceId;
+  const params ={
+    TableName: config.dynamoBB.deviceConfiguration.name,
+    ExpressionAttributeValues:{
+      ":userN":deviceId
+    },
+    KeyConditionExpression: `#user = :userN`,
+    ExpressionAttributeNames:{
+      "#user":"deviceId"
+    }
+  };
+  try {
+    const result = await db.query(params).promise();
+    logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'PredictConsumption',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceConfiguration.name }});
+    res.status(200).json({configuration:result.Items});
+  } catch (error) {
+    
   }
 });
 module.exports = {

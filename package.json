@@ -9,8 +9,6 @@
   "author": "Claudio Raul Brito Mercedes",
   "license": "ISC",
   "dependencies": {
-    "@tensorflow-models/mobilenet": "^2.1.0",
-    "@tensorflow/tfjs": "^3.6.0",
     "aws-sdk": "^2.824.0",
     "aws-serverless-express": "^3.4.0",
     "body-parser": "^1.19.0",
@@ -33,5 +31,8 @@
     "winston": "^3.3.3",
     "winston-cloudwatch": "^2.5.2",
     "zlib": "^1.0.5"
+  },
+  "devDependencies": {
+    "serverless-webpack": "^5.5.0"
   }
 }

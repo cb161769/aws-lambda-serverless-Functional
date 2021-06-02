@@ -11,7 +11,7 @@
         x: new Date(x.sortkey *1000)
     })).filter(fill => fill.y >= 0);
 };
-
+// TODO : appply monthly logic
 module.exports.changeDates = function(dateOne, dateTwo,day) {
     var initialMonth =  (dateOne.setMonth(dateOne.getMonth() - 1));
     return {
