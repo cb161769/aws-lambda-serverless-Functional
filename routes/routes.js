@@ -365,7 +365,7 @@ routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
         ':key':  config.deviceName,
         ':start':startChanged,
         ':end': endChanged
-    },
+      },
     };
     const data = await db.query(params).promise();
     if ( data.ScannedCount == 0 || data == null || data == undefined || !data || data.Count == 0) {
@@ -2508,24 +2508,49 @@ routes.get("/Connections/GetConnectionsReadingsByGivenDay/:day/:ConnectionName",
     res.status(200).json({ usage:day});
   }
 });
-routes.get('/Tensorflow/PredictConsumption/:deviceId', async (req, res) => {
+routes.get('/Tensorflow/PredictConsumption/', async (req, res) => {
   let deviceId = req.params.deviceId;
-  const params ={
-    TableName: config.dynamoBB.deviceConfiguration.name,
-    ExpressionAttributeValues:{
-      ":userN":deviceId
-    },
-    KeyConditionExpression: `#user = :userN`,
-    ExpressionAttributeNames:{
-      "#user":"deviceId"
-    }
+  const params = {
+    TableName: config.dynamoBB.deviceTable.name,
   };
+
   try {
-    const result = await db.query(params).promise();
+    const result = await db.scan(params).promise();
+    const data = result.Items[0];
+
     logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'PredictConsumption',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceConfiguration.name }});
-    res.status(200).json({configuration:result.Items});
-  } catch (error) {
+    if (data == null) {
+      res.status(200).json({success:false,message:'no configuration was found'});
+      
+    }
+    try {
+      let dates = changeDates(15,15);
+      const params2 = {
+        TableName: config.dynamoBB.deviceReadings.name,
+        KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
+        ScanIndexForward:false,
+        ConsistentRead:false,
+        ExpressionAttributeNames:{
+          '#key':'primarykey',
+          '#sortkey':'sortkey'
     
+        },
+        ExpressionAttributeValues: {
+          ':key':  config.deviceName,
+          ':start':dates.initialDate,
+          ':end': dates.finalDate
+        },
+      };
+      const data = await db.query(params2).promise();
+      let returnedData = mapDataToTensorFlow(data.Items);
+      res.status(200).json({success:true,data:returnedData,dates:dates});
+    } catch (error) {
+      res.status(400).json({success:false,error:error});
+    }
+
+    // res.status(200).json({configuration:result.Items, data:data});
+  } catch (error) {
+    logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'PredictConsumption',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceConfiguration.name  }});
   }
 });
 module.exports = {

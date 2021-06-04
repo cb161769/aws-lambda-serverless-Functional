@@ -6,17 +6,37 @@
  * @returns array (mapped)
  */
  module.exports.mapDataToTensorFlow = function(data) {
-    return data.map(x => ({
-        y: x.readings.device_watts,
-        x: new Date(x.sortkey *1000)
-    })).filter(fill => fill.y >= 0);
+     if (data.length) {
+        return data.map(x => ({
+            y: x.readings.device_watts,
+            x:  module.exports.convertEpochDateToHumanDate( new Date(x.sortkey *1000))
+        })).filter(fill => fill.y >= 0);
+     }
+     else{
+         return {x:0,y: new Date(),z:'No Data',data:data};
+     }
+
 };
+module.exports.convertEpochDateToHumanDate = function(epochDate){
+    return epochDate.getDate(epochDate);
+}
 // TODO : appply monthly logic
-module.exports.changeDates = function(dateOne, dateTwo,day) {
-    var initialMonth =  (dateOne.setMonth(dateOne.getMonth() - 1));
+/**
+ * 
+ * @param {*} day {Date}
+ * @returns {Date}
+ */
+module.exports.changeDates = function(day) {
+    var dateOne = new Date();
+    var dateTwo = new Date();
+    dateOne.setMonth(dateOne.getMonth() - 4);
+    let first = dateOne.setDate(day);
+
+    let second = dateTwo.setDate(day);
+   
     return {
-        initialDate:initialMonth.setDay(day),
-        finalDate: dateTwo.setDay(day)
+        initialDate:Math.floor(first/1000),
+        finalDate: Math.floor( second/1000)
 
     };
 }
