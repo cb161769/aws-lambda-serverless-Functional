@@ -5,6 +5,7 @@
  * @function mapDataToTensorFlow
  * @returns array (mapped)
  */
+const logger = require('../helpers/log/logsHelper');
  module.exports.mapDataToTensorFlow = function(data) {
      if (data.length) {
         return data.map(x => ({
@@ -20,7 +21,6 @@
 module.exports.convertEpochDateToHumanDate = function(epochDate){
     return epochDate.getDate(epochDate);
 }
-// TODO : appply monthly logic
 /**
  * 
  * @param {*} day {Date}
@@ -36,7 +36,7 @@ module.exports.changeDates = function(day) {
    
     return {
         initialDate:Math.floor(first/1000),
-        finalDate: Math.floor( second/1000)
+        finalDate: Math.floor(second/1000)
 
     };
 }

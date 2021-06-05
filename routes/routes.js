@@ -13,7 +13,8 @@ const {getMonthlyHelperConnection} = require('../helpers/connectionHelpers/month
 const {connectionsDailyHelper} = require('../helpers/connectionHelpers/ConnectionDailyHelper');
 const {DeviceGraphHelper,elapsedTime,ConnectionGrahphHelper } = require('../helpers/connectionHelpers/connectionGraph/conectionGraphHelper');
 const logger = require('../helpers/log/logsHelper');
-const {mapDataToTensorFlow,changeDates} = require('../tensorflow/tensorflow-helper')
+const {mapDataToTensorFlow,changeDates} = require('../tensorflow/tensorflow-helper');
+const {publishTopic} = require('../helpers/iot-helper/Iot');
 const routes = express.Router({
     mergeParams: true
 });
@@ -2450,7 +2451,6 @@ routes.get("/Connections/GetConnectionYearly/allConfig/:ConnectionName", async (
 routes.get("/Connections/GetConnectionsReadingsByGivenDay/:day/:ConnectionName", async (req,res) =>{
   let day = parseInt(req.params.day);
   let connectionName = req.params.ConnectionName;
-  const moment = require('moment');
   let completedDay = new Date(day * 1000);
   let completedDay2 = new Date(day * 1000);
   completedDay.setHours(0);
@@ -2547,12 +2547,21 @@ routes.get('/Tensorflow/PredictConsumption/', async (req, res) => {
     } catch (error) {
       res.status(400).json({success:false,error:error});
     }
-
-    // res.status(200).json({configuration:result.Items, data:data});
   } catch (error) {
     logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'PredictConsumption',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceConfiguration.name  }});
   }
 });
+routes.post('/Topics/publishTopic', async (req,res) =>{
+    const data = req.body; 
+    try {
+      logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'publishTopic',body: req.body, headers: req.headers,databaseOperation:'POST' }});
+      const iot = publishTopic(data.endpoint,data.topic,data.payload);
+      res.status(200).json({success:true, result:iot});
+    } catch (error) {
+      logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'publishTopic',body: req.body, headers: req.headers,databaseOperation:'POST' }});
+      res.status(200).json({success:false, error:error});
+    }
+})
 module.exports = {
     routes,
 };
