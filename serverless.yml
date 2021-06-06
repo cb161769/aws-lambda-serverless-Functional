@@ -208,6 +208,20 @@ resources:
                      - Ref: AWS::AccountId
                      - ":topic/$aws/rules/"
                      - Ref: iotRule
+    secondPolicy:
+      Type: AWS::IoT::Policy
+      Properties:
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            -
+              Effect: "Allow"
+              Action:
+                - "iot:"
+              Resource: "*"
+              Condition:
+                Bool:
+                  "iot:Connection.Thing.IsAttached": [true]
     ### 
     # Rol para el topico de la rol
     ####
