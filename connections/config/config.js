@@ -29,4 +29,7 @@ module.exports.config = {
             LogStreamName:'[Database]'
         },
     },
+    Iot:{
+        endpoint:"a3grg8s0qkek3y-ats.iot.us-west-2.amazonaws.com"
+    }
 }

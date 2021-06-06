@@ -39,10 +39,21 @@ functions:
           #   type: COGNITO_USER_POOLS
           #   authorizerId:
           #     Ref: ApiGatewayAuthorizer
+      # - http:
+      #     path: /{proxy+}
+      #     method: any
+      #     cors: true
+  iot:
+    handler: helpers/iot/iot-handler.handler
+    events:
       - http:
-          path: /{proxy+}
-          method: any
+          path: /iot
+          method: post
           cors: true
+          # authorizer:
+          #   type: COGNITO_USER_POOLS
+          #   authorizerId:
+          #     Ref: ApiGatewayAuthorizer
 resources:
   Description: Monitoreo Continuo de los dispositivos
   Resources:

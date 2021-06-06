@@ -1,6 +1,7 @@
 const express = require('express');
 const AWS = require('aws-sdk');
 const db = new AWS.DynamoDB.DocumentClient();
+
 const {v4: uuidv4} = require('uuid');
 const {config} = require('../connections/config/config');
 const  {getWeeklyHelper} = require('../helpers/weeklyHelper');
@@ -14,7 +15,10 @@ const {connectionsDailyHelper} = require('../helpers/connectionHelpers/Connectio
 const {DeviceGraphHelper,elapsedTime,ConnectionGrahphHelper } = require('../helpers/connectionHelpers/connectionGraph/conectionGraphHelper');
 const logger = require('../helpers/log/logsHelper');
 const {mapDataToTensorFlow,changeDates} = require('../tensorflow/tensorflow-helper');
-const {publishTopic} = require('../helpers/iot-helper/Iot');
+const {publishTopic} = require('../helpers/iot/Iot');
+const iotData = new AWS.IotData({
+  endpoint: config.Iot.endpoint
+});
 const routes = express.Router({
     mergeParams: true
 });
@@ -2551,17 +2555,28 @@ routes.get('/Tensorflow/PredictConsumption/', async (req, res) => {
     logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'PredictConsumption',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceConfiguration.name  }});
   }
 });
-routes.post('/Topics/publishTopic', async (req,res) =>{
-    const data = req.body; 
-    try {
-      logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'publishTopic',body: req.body, headers: req.headers,databaseOperation:'POST' }});
-      const iot = publishTopic(data.endpoint,data.topic,data.payload);
-      res.status(200).json({success:true, result:iot});
-    } catch (error) {
-      logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'publishTopic',body: req.body, headers: req.headers,databaseOperation:'POST' }});
-      res.status(200).json({success:false, error:error});
-    }
-})
+// routes.post('/Topics/publishTopic', async (req,res) =>{
+//     const data = req.body; 
+//     try {
+//       var params = {
+//         topic: data.topic,
+//         payload: data.payload,
+//         qos:0
+//       }
+//       iotData.publish(params, function(err,data){
+//         if(err){
+//           res.status(400).json({Error:err});
+//         }
+//         res.status(200).json({success:true, message:data})
+//       })
+     
+//       // const iot = publishTopic(data.topic,data.payload);
+//       // res.status(200).json({success:true, result:iot});
+//     } catch (error) {
+//       logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'publishTopic',body: req.body, headers: req.headers,databaseOperation:'POST' }});
+//       res.status(400).json({success:false, error:error});
+//     }
+// })
 module.exports = {
     routes,
 };
