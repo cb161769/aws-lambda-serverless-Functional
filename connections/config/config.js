@@ -1,4 +1,7 @@
 module.exports.config = {
+    region:{
+        name: 'us-west-2'
+    },
     dynamoBB: {
         deviceReadings: {
             name:"deviceReadings"

@@ -17,7 +17,11 @@ const logger = require('../helpers/log/logsHelper');
 const {mapDataToTensorFlow,changeDates} = require('../tensorflow/tensorflow-helper');
 const {publishTopic} = require('../helpers/iot/Iot');
 const iotData = new AWS.IotData({
-  endpoint: config.Iot.endpoint
+  endpoint: 'a3grg8s0qkek3y-ats.iot.us-west-2.amazonaws.com',
+  accessKeyId: AWS.config.credentials.accessKeyId,
+  secretAccessKey: AWS.config.credentials.secretAccessKey,
+  sessionToken: AWS.config.credentials.sessionToken,
+  region: 'us-west-2'
 });
 const routes = express.Router({
     mergeParams: true
@@ -2555,28 +2559,34 @@ routes.get('/Tensorflow/PredictConsumption/', async (req, res) => {
     logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'PredictConsumption',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceConfiguration.name  }});
   }
 });
-// routes.post('/Topics/publishTopic', async (req,res) =>{
-//     const data = req.body; 
-//     try {
-//       var params = {
-//         topic: data.topic,
-//         payload: data.payload,
-//         qos:0
-//       }
-//       iotData.publish(params, function(err,data){
-//         if(err){
-//           res.status(400).json({Error:err});
-//         }
-//         res.status(200).json({success:true, message:data})
-//       })
+routes.post('/Topics/publishTopic', async (req,res) =>{
+    const data = req.body; 
+    AWS.config.update({
+      accessKeyId : 'AKIASPGTV7NO4BDCYK5V',
+      secretAccessKey: '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'
+    });
+    try {
+      var params = {
+        topic: data.topic,
+        payload: data.payload,
+        qos:0
+      }
+      const response = iotData.publish(params, function(err,data){
+        if(err){
+          res.status(400).json({success:false, error:err});
+          logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'publishTopic',body: req.body, headers: req.headers, error:err, databaseOperation:'POST' }});
+        }
+        
+      });
      
-//       // const iot = publishTopic(data.topic,data.payload);
-//       // res.status(200).json({success:true, result:iot});
-//     } catch (error) {
-//       logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'publishTopic',body: req.body, headers: req.headers,databaseOperation:'POST' }});
-//       res.status(400).json({success:false, error:error});
-//     }
-// })
+      //  const iot = await publishTopic(data.topic,data.payload);
+      //  const response = await iot.send();
+   //   res.status(200).json({success:true, result:response, setRequest:data, c});
+    } catch (error) {
+      logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'publishTopic',body: req.body, headers: req.headers,databaseOperation:'POST' }});
+     
+    }
+})
 module.exports = {
     routes,
 };

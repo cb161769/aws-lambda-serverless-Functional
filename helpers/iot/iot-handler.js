@@ -1,19 +1,29 @@
-const AWS = require('aws-sdk');
-const {config} = require('../../connections/config/config');
-const iotData = new AWS.IotData({endpoint: config.Iot.endpoint});
-const logger = require('../../helpers/log/logsHelper');
-module.exports.handler = async (event, context, callback) => {
-  const iotParams = {
-    topic: '/turnOffDeviceOne',        
-	  payload: 'compay',        
-	  qos: 0
+var AWS = require('aws-sdk');
+var iotdata = new AWS.IotData({endpoint: 'a3grg8s0qkek3y-ats.iot.us-west-2.amazonaws.com'});
+module.exports.handler = async (event, context) => {
+  
+  var params = {
+       topic: '/turnOffDeviceOne',
+       payload: '',
+       qos: 0
   }
-
-  iotData.publish(iotParams, function(err,data){
-    if(err){
-      logger.log('error', ``, {tags: 'IOT', additionalInfo: {operation: 'publish', error:err,databaseOperation:'GET'  }});
-    }
-
-  });
-  callback(null,{success:true});
+  
+  return {
+    statusCode: 200,
+    body: JSON.stringify(await publishMessage(params))
+  }
+}
+const publishMessage = async (params) => {
+  return new Promise((resolve, reject) => {
+    iotdata.publish(params, function(err, data){
+      if(err){
+        console.log(err);
+        reject(err)
+      }
+      else{
+        console.log("success?");
+        resolve(params)
+      }
+    })
+  })
 }

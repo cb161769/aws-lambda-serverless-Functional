@@ -3,6 +3,10 @@ const logger = require('../log/logsHelper');
 const config = require('../../connections/config/config');
 const iotData = new AWS.IotData({
     endpoint: config.config.Iot.endpoint,
+    accessKeyId: AWS.config.credentials.accessKeyId,
+    secretAccessKey: AWS.config.credentials.secretAccessKey,
+    sessionToken: AWS.config.credentials.sessionToken,
+    region: 'us-west-2'
 });
 /**
  * @author Claudio Raul Brito Mercedes
