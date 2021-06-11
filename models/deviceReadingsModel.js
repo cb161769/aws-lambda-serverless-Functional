@@ -155,8 +155,9 @@ var queryType = new GraphQLObjectType({
                         
                     }
                     else{
-                        return  [{device:'Not connected in realtime',error:400}];
                         logger.log('info', `Requesting [GraphQLObjectType]`, {tags: 'graphQl', additionalInfo: {operation: 'Query',function:'Ct1_readings' }});
+                        return  [{device:'Not connected in realtime',error:400}];
+                       
 
                         // return data.Items[0].Relays[0];
                     }

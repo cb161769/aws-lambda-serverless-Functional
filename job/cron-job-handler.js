@@ -58,7 +58,5 @@ module.exports.handler = async(event, context, callback) => {
         // Calculate the kWh consumed & write it to DynamoDB
     } catch (error) {
         logger.log('error', `Requesting [cron-job]`, {tags: 'cron-job', additionalInfo: {operation: 'cron-job-handler',error:error, table: config.dynamoBB.deviceReadings.name }});
-
-        console.error('problem')
     }
 };

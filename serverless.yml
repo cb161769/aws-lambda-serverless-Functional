@@ -11,12 +11,15 @@ provider:
         - dynamodb:*
         - s3:GetObject
         - s3:PutObject
+        - sns:Publish
       Resource: "*"
+  
 custom:
   defaultStage: dev
   currentStage: ${opt:stage, self:custom.defaultStage}
   userPoolName: test-user-pool-${self:custom.currentStage}
   userPoolClientName: test-user-pool-client-${self:custom.currentStage}
+  topicName: sns-topic-to-client
 package:
   individually: true
 functions:
@@ -54,6 +57,8 @@ functions:
           #   type: COGNITO_USER_POOLS
           #   authorizerId:
           #     Ref: ApiGatewayAuthorizer
+  sns:
+      
 resources:
   Description: Monitoreo Continuo de los dispositivos
   Resources:
