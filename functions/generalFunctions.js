@@ -106,3 +106,15 @@ module.exports.writeToS3 = async function (fileName,content){
         Key: fileName + '.gz'
     }).promise();
 }
+/**
+ *   table name. Returns a
+ * promise that should be awaited.
+ */
+ module.exports.writeToDynamoDB = function(tableName, object){
+	const { dynamoDBConnection } = require('../connections/connections');
+
+	return dynamoDBConnection.put({
+        TableName: tableName,
+        Item: object
+    }).promise();
+}

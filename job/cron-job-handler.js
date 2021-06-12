@@ -35,7 +35,6 @@ async function fetchYesterdaysData(){
     }catch(e){
         logger.log('error', `Requesting [fetchYesterdaysData]`, {tags: 'Method', additionalInfo: {operation: 'fetchYesterdaysData',databaseOperation:'GET',error:e, table: config.dynamoBB.deviceReadings.name }});
 
-        // pendig logs de cloudwatch
         console.log('Error');
         console.log(e);
         return { Items: [] };
