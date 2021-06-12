@@ -107,8 +107,10 @@ module.exports.writeToS3 = async function (fileName,content){
     }).promise();
 }
 /**
- *   table name. Returns a
- * promise that should be awaited.
+ * @author Savjee
+ * @param {*} tableName table's Name
+ * @param {*} object  object that needs to be put in
+ * @returns Promise
  */
  module.exports.writeToDynamoDB = function(tableName, object){
 	const { dynamoDBConnection } = require('../connections/connections');
