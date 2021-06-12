@@ -21,6 +21,9 @@ module.exports.config = {
         userLogs:{
             name:"userLogs"
         },
+        deviceConnection:{
+            name:"deviceConnection"
+        }
     },    
     S3:{
         BucketName: "devicetable-datasheet-readings"

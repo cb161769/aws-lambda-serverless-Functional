@@ -77,7 +77,7 @@ var queryType = new GraphQLObjectType({
                         name:'timeStamp',
                         type: GraphQLFloat
                     }
-                },
+                }, 
                 resolve:  async  (root,params) => {
                     const deviceId = config.deviceName;
                     const data = await dynamoDBConnection.query({

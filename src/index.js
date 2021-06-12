@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const GraphQlSchema = require("../models/deviceReadingsModel");
 var { graphqlHTTP } = require('express-graphql');
+const GraphQlSchema2 = require("./../models/pushNotificationModel");
 const {
     routes: userRoutes,
 } = require('../routes/routes');
@@ -15,6 +16,11 @@ app.use('/graphQL',cors(), graphqlHTTP({
     schema: GraphQlSchema,
     rootValue:global,
     graphiql: true,
+}));
+app.use('/AutomationQL',cors(),graphqlHTTP({
+    schema: GraphQlSchema2,
+    rootValue:global,
+    graphiql: true,	
 }));
 
 
