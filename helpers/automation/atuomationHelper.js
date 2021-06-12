@@ -1,3 +1,6 @@
+const {writeToDynamoDB} = require('../../functions/generalFunctions');
+const {publishSNS} = require('../../sns/sns-helper');
+const logger = require('../../helpers/log/logsHelper');
 /**
  * @author Claudio Raul Brito Mercedes
  * @param {*} date date Object
@@ -172,7 +175,7 @@ module.exports.IsInCurrentWeek = function(date){
  * @param {*} configuration data config
  */
 // TODO implement logger
-module.exports.AutomateConsumption = function(data,configuration){
+module.exports.AutomateConsumption = async function(data,configuration){
     if (Array.isArray(data) && Array.isArray(configuration)) {
         for (let index = 0; index < configuration.length; index++) {
             const element = configuration[index];
