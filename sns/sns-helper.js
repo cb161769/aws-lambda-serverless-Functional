@@ -26,7 +26,7 @@ module.exports.eventProducer = (event, context, callback) => {
   })
 }
 
-module.exports.eventConsumer = (event, context, callback) => {
+module.exports.eventConsumer =  (event, context, callback) => {
   // print out the event information on the console (so that we can see it in the CloudWatch logs)
   console.log(`I'm triggered by "eventProducer" through the SNS topic "${TOPIC_NAME}"`)
   console.log(`event:\n${JSON.stringify(event, null, 2)}`)

@@ -12,13 +12,7 @@ const {
   const logger = require('../helpers/log/logsHelper');
   const {dynamoDBConnection} = require("../connections/connections");
   const {config} = require("../connections/config/config");
-  const device  = {
-      isConnection:true,
-      connectionName:'',
-      turnOff:true,
-      isDevice:true,
-      deviceName:''
-  };
+ 
   var snsNotificationModel = new GraphQLObjectType({
       name:'sns',
       fields: function () {

@@ -2,6 +2,10 @@ module.exports.config = {
     region:{
         name: 'us-west-2'
     },
+    sns:{
+        accountId:"170095147869",
+        topicName:'',
+    },
     dynamoBB: {
         deviceReadings: {
             name:"deviceReadings"

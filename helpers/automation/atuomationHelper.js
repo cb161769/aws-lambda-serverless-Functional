@@ -1,6 +1,8 @@
 const {writeToDynamoDB} = require('../../functions/generalFunctions');
 const {publishSNS} = require('../../sns/sns-helper');
 const logger = require('../../helpers/log/logsHelper');
+const {config} = require('../../connections/config/config');
+const TOPIC_NAME = process.env.TOPIC_NAME;
 /**
  * @author Claudio Raul Brito Mercedes
  * @param {*} date date Object
@@ -189,6 +191,27 @@ module.exports.AutomateConsumption = async function(data,configuration){
                 var calculatedKilowatt = module.exports.calculateDeviceInTheSameDay(data);
                 // TODO send notification to user's Device
                 if (calculatedKilowatt >= parseInt(maximumKilowatt)) {
+                    const device  = {
+                        deviceId: config.deviceName,
+                        isConnection:false,
+                        connectionName:'',
+                        turnOff:true,
+                        isDevice:true,
+                        deviceName: config.deviceName
+                    };
+                    const snsParams = {
+                        Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                        TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                      }
+                    try {
+                        const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                        logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                        const sns = await publishSNS(snsParams);
+
+                        logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                    } catch (error) {
+                        
+                    }
                     
                 }else{
                     // update Database Here
