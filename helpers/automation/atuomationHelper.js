@@ -176,7 +176,6 @@ module.exports.IsInCurrentWeek = function(date){
  * @param {*} data automate Consumption helpers
  * @param {*} configuration data config
  */
-// TODO implement logger
 module.exports.AutomateConsumption = async function(data,configuration){
     if (Array.isArray(data) && Array.isArray(configuration)) {
         for (let index = 0; index < configuration.length; index++) {
