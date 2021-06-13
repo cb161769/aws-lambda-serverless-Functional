@@ -60,7 +60,13 @@ functions:
           #   authorizerId:
           #     Ref: ApiGatewayAuthorizer
   sns:
-      
+    handler: job/automation-cron-handler.handler
+    description: Automatizacion de consumo
+    timeout: 30
+    events:
+       - schedule:
+          description: "Archive the data generated yesterday to S3"
+          rate: rate(1 hour)
 resources:
   Description: Monitoreo Continuo de los dispositivos
   Resources:
