@@ -340,8 +340,10 @@ async function fetchConfigurationData(){
 module.exports.handler = async (event, context,callback) =>{
     try {
         const data = await fetchTodaysData();
+        console.log(data);
         const configuration = await fetchConfigurationData();
-        await AutomateConsumption(data,configuration);
+       const automation = await AutomateConsumption(data,configuration);
+       console.log(automation);
         logger.log('info', `Requesting [automation-cron-job]`, {tags: 'automation-cron-job', additionalInfo: {operation: 'cron-job-handler', table: config.dynamoBB.deviceReadings.name }});
     } catch (error) {
         logger.log('error', `Requesting [automation-cron-job]`, {tags: 'automation-cron-job', additionalInfo: {operation: 'cron-job-handler',error:error, table: config.dynamoBB.deviceReadings.name }});   

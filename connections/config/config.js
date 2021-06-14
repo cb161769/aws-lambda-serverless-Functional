@@ -26,7 +26,7 @@ module.exports.config = {
             name:"userLogs"
         },
         deviceConnection:{
-            name:"deviceConnection"
+            name:"DeviceConnection"
         }
     },    
     S3:{

@@ -177,677 +177,681 @@ module.exports.IsInCurrentWeek = function(date){
  * @param {*} configuration data config
  */
 module.exports.AutomateConsumption = async function(data,configuration){
-    if (Array.isArray(data) && Array.isArray(configuration)) {
-        for (let index = 0; index < configuration.length; index++) {
-            const element = configuration[index];
-            if (element === undefined) {
-                break;
-            }
-            // validate is it daily 
-            if (element.isItDaily === true) {
-                // calculate maximumKilowatt in the device
-                const maximumKilowatt = element.configurationMaximumKilowattsPerDay;
-                var calculatedKilowatt = module.exports.calculateDeviceInTheSameDay(data);
-                // TODO send notification to user's Device
-                if (calculatedKilowatt >= parseInt(maximumKilowatt)) {
-                    const device  = {
-                        deviceId: config.deviceName,
-                        isConnection:false,
-                        connectionName:'',
-                        turnOff:true,
-                        isDevice:true,
-                        deviceName: config.deviceName
-                    };
-                    const snsParams = {
-                        Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
-                        TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                      }
-                    try {
-                        const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                        logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                        const sns = await publishSNS(snsParams);
-
-                        logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                    } catch (error) {
-                        logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                    }
-                    
-                }else{
-                    // update Database Here
-                    const device  = {
-                        deviceId: config.deviceName,
-                        isConnection:false,
-                        connectionName:'',
-                        turnOff:true,
-                        isDevice:true,
-                        deviceName: config.deviceName
-                    };
-                    
-                    try {
-                        const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                        logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-
-                        logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                    } catch (error) {
-                        logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                    }
-
+    try{
+        if (Array.isArray(data) && Array.isArray(configuration)) {
+            for (let index = 0; index < configuration.length; index++) {
+                const element = configuration[index];
+                if (element === undefined) {
+                    break;
                 }
-                if (element.connectionsConfigurations.length > 0) {
-                    for (let index = 0; index < element.connectionsConfigurations.length; index++) {
-                        const element2 = element.connectionsConfigurations[index];
-                       if (element2.isItDaily === true) {
-                         const connectionMaxPerDay = parseInt(element2.configurationMaximumKilowattsPerDay);
-                         const calculatedConnectionKilowatt  = module.exports.calculateConnectionsInSameDay(data,element2.connectionName);
-                         if (connectionMaxPerDay >= calculatedConnectionKilowatt) {
-                             // update database here
-                             // send notification helper
-                             const device  = {
-                                deviceId: config.deviceName,
-                                isConnection:true,
-                                connectionName: element2.connectionName,
-                                turnOff:true,
-                                isDevice:false,
-                                deviceName: ''
-                            };
-                            const snsParams = {
-                                Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
-                                TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                              }
-                            try {
-                                const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                                logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                const sns = await publishSNS(snsParams);
-        
-                                logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            } catch (error) {
-                                logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            }
-                         } 
-                         else{
-                            const device  = {
-                                deviceId: config.deviceName,
-                                isConnection:true,
-                                connectionName: element2.connectionName,
-                                turnOff:false,
-                                isDevice:false,
-                                deviceName: ''
-                            };
-                            const snsParams = {
-                                Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
-                                TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                              }
-                            try {
-                                const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                                logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                const sns = await publishSNS(snsParams);
-        
-                                logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            } catch (error) {
-                                logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            }
-                              // update database here
-                             // send notification helper
-                            // TODO check device Notification/Alerts configuration
-
-                         } 
-                       }
-                       if (element2.isItWeekly === true){
-                        const connectionMaxPerWeek = parseInt(element2.configurationMaximumKilowattsPerWeek);
-                        const calculatedKilowatt = module.exports.CalculateConnectionsInWeeklyConfig(data,element2.ConnectionName);
-                        if (calculatedKilowatt >= connectionMaxPerWeek) {
-                            // update database here
-                            // set notification helper
-                            const device  = {
-                                deviceId: config.deviceName,
-                                isConnection:true,
-                                connectionName: element2.connectionName,
-                                turnOff:true,
-                                isDevice:false,
-                                deviceName: ''
-                            };
-                            const snsParams = {
-                                Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
-                                TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                              }
-                            try {
-                                const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                                logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                const sns = await publishSNS(snsParams);
-        
-                                logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            } catch (error) {
-                                logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            }
-                        } else {
-                            const device  = {
-                                deviceId: config.deviceName,
-                                isConnection:true,
-                                connectionName: element2.connectionName,
-                                turnOff:false,
-                                isDevice:false,
-                                deviceName: ''
-                            };
-                            const snsParams = {
-                                Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
-                                TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                              }
-                            try {
-                                const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                                logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                const sns = await publishSNS(snsParams);
-        
-                                logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            } catch (error) {
-                                logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            }
+                // validate is it daily 
+                if (element.isItDaily === true) {
+                    // calculate maximumKilowatt in the device
+                    const maximumKilowatt = element.configurationMaximumKilowattsPerDay;
+                    var calculatedKilowatt = module.exports.calculateDeviceInTheSameDay(data);
+                    // TODO send notification to user's Device
+                    if (calculatedKilowatt >= parseInt(maximumKilowatt)) {
+                        const device  = {
+                            deviceId: config.deviceName,
+                            isConnection:false,
+                            connectionName:'',
+                            turnOff:true,
+                            isDevice:true,
+                            deviceName: config.deviceName
+                        };
+                        const snsParams = {
+                            Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                            TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                          }
+                        try {
+                            const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                            logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                            // const sns = await publishSNS(snsParams);
+    
+                            logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                        } catch (error) {
+                            logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
                         }
-                       }
-                       if (element2.isItMonthly === true) {
-                        const connectionMaxPerWeek = parseInt(element2.configurationMaximumKilowattsPerMonth);
-                        const calculatedKwh = module.exports.calculateConnectionsInMonthConfig(data,element2.ConnectionName);
-                        if (connectionMaxPerWeek >= calculatedKwh ) {
-                            // update database here
-                            // set notification helper
-                            const device  = {
-                                deviceId: config.deviceName,
-                                isConnection:true,
-                                connectionName: element2.connectionName,
-                                turnOff:true,
-                                isDevice:false,
-                                deviceName: ''
-                            };
-                            const snsParams = {
-                                Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
-                                TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                              }
-                            try {
-                                const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                                logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                const sns = await publishSNS(snsParams);
-        
-                                logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            } catch (error) {
-                                logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            }
+                        
+                    }else{
+                        // update Database Here
+                        const device  = {
+                            deviceId: config.deviceName,
+                            isConnection:false,
+                            connectionName:'',
+                            turnOff:true,
+                            isDevice:true,
+                            deviceName: config.deviceName
+                        };
+                        
+                        try {
+                            const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                            logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+    
+                            logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                        } catch (error) {
+                            logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
                         }
-                        else{
-                             // update database here
-                            // set notification helper
-                            const device  = {
-                                deviceId: config.deviceName,
-                                isConnection:true,
-                                connectionName: element2.connectionName,
-                                turnOff:false,
-                                isDevice:false,
-                                deviceName: ''
-                            };
-                            const snsParams = {
-                                Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
-                                TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                              }
-                            try {
-                                const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                                logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                const sns = await publishSNS(snsParams);
-        
-                                logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            } catch (error) {
-                                logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            }
-                        }
-                        if (element.connectionsConfigurations.length > 0) {
-                            for (let index = 0; index < element.connectionsConfigurations.length; index++) {
-                                const element2 = element.connectionsConfigurations[index];
-                               if (element2.isItDaily === true) {
-                                 const connectionMaxPerDay = parseInt(element2.configurationMaximumKilowattsPerDay);
-                                 const calculatedConnectionKilowatt  = module.exports.calculateConnectionsInSameDay(data,element2.connectionName);
-                                 if (connectionMaxPerDay >= calculatedConnectionKilowatt) {
-                                     // update database here
-                                     // send notification helper
-                                     const device  = {
-                                        deviceId: config.deviceName,
-                                        isConnection:true,
-                                        connectionName: element2.connectionName,
-                                        turnOff:true,
-                                        isDevice:false,
-                                        deviceName: ''
-                                    };
-                                    const snsParams = {
-                                        Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
-                                        TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                                      }
-                                    try {
-                                        const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                                        logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                        const sns = await publishSNS(snsParams);
-                
-                                        logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                    } catch (error) {
-                                        logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                    }
-                                 } 
-                                 else{
-                                      // update database here
-                                     // send notification helper
-                                    // TODO check device Notification/Alerts configuration
-                                    const device  = {
-                                        deviceId: config.deviceName,
-                                        isConnection:true,
-                                        connectionName: element2.connectionName,
-                                        turnOff:false,
-                                        isDevice:false,
-                                        deviceName: ''
-                                    };
-                                    const snsParams = {
-                                        Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
-                                        TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                                      }
-                                    try {
-                                        const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                                        logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                        const sns = await publishSNS(snsParams);
-                
-                                        logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                    } catch (error) {
-                                        logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                    }
-        
-                                 } 
-                               }
-                               if (element2.isItWeekly === true){
-                                const connectionMaxPerWeek = parseInt(element2.configurationMaximumKilowattsPerWeek);
-                                const calculatedKilowatt = module.exports.CalculateConnectionsInWeeklyConfig(data,element2.ConnectionName);
-                                if (calculatedKilowatt >= connectionMaxPerWeek) {
-                                    // update database here
-                                    // set notification helper
-                                    const device  = {
-                                        deviceId: config.deviceName,
-                                        isConnection:true,
-                                        connectionName: element2.connectionName,
-                                        turnOff:true,
-                                        isDevice:false,
-                                        deviceName: ''
-                                    };
-                                    const snsParams = {
-                                        Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
-                                        TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                                      }
-                                    try {
-                                        const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                                        logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                        const sns = await publishSNS(snsParams);
-                
-                                        logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                    } catch (error) {
-                                        logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                    }
-                                } else {
-                                    const device  = {
-                                        deviceId: config.deviceName,
-                                        isConnection:true,
-                                        connectionName: element2.connectionName,
-                                        turnOff:false,
-                                        isDevice:false,
-                                        deviceName: ''
-                                    };
-                                    const snsParams = {
-                                        Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
-                                        TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                                      }
-                                    try {
-                                        const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                                        logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                        const sns = await publishSNS(snsParams);
-                
-                                        logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                    } catch (error) {
-                                        logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                    }
+    
+                    }
+                    if (element.connectionsConfigurations.length > 0) {
+                        for (let index = 0; index < element.connectionsConfigurations.length; index++) {
+                            const element2 = element.connectionsConfigurations[index];
+                           if (element2.isItDaily === true) {
+                             const connectionMaxPerDay = parseInt(element2.configurationMaximumKilowattsPerDay);
+                             const calculatedConnectionKilowatt  = module.exports.calculateConnectionsInSameDay(data,element2.connectionName);
+                             if (connectionMaxPerDay >= calculatedConnectionKilowatt) {
+                                 // update database here
+                                 // send notification helper
+                                 const device  = {
+                                    deviceId: config.deviceName,
+                                    isConnection:true,
+                                    connectionName: element2.connectionName,
+                                    turnOff:true,
+                                    isDevice:false,
+                                    deviceName: ''
+                                };
+                                const snsParams = {
+                                    Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                                    TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                                  }
+                                try {
+                                    const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                                    logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                    // const sns = await publishSNS(snsParams);
+            
+                                    logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                } catch (error) {
+                                    logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
                                 }
-                               }
-                               if (element2.isItMonthly === true) {
-                                const connectionMaxPerWeek = parseInt(element2.configurationMaximumKilowattsPerMonth);
-                                const calculatedKwh = module.exports.calculateConnectionsInMonthConfig(data,element2.ConnectionName);
-                                if (connectionMaxPerWeek >= calculatedKwh ) {
-                                    // update database here
-                                    // set notification helper
-                                    const device  = {
-                                        deviceId: config.deviceName,
-                                        isConnection:true,
-                                        connectionName: element2.connectionName,
-                                        turnOff:true,
-                                        isDevice:false,
-                                        deviceName: ''
-                                    };
-                                    const snsParams = {
-                                        Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
-                                        TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                                      }
-                                    try {
-                                        const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                                        logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                        const sns = await publishSNS(snsParams);
-                
-                                        logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                    } catch (error) {
-                                        logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                    }
+                             } 
+                             else{
+                                const device  = {
+                                    deviceId: config.deviceName,
+                                    isConnection:true,
+                                    connectionName: element2.connectionName,
+                                    turnOff:false,
+                                    isDevice:false,
+                                    deviceName: ''
+                                };
+                                const snsParams = {
+                                    Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                                    TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                                  }
+                                try {
+                                    const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                                    logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                    // const sns = await publishSNS(snsParams);
+            
+                                    logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                } catch (error) {
+                                    logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
                                 }
-                                else{
-                                     // update database here
-                                    // set notification helper
-                                    const device  = {
-                                        deviceId: config.deviceName,
-                                        isConnection:true,
-                                        connectionName: element2.connectionName,
-                                        turnOff:false,
-                                        isDevice:false,
-                                        deviceName: ''
-                                    };
-                                    const snsParams = {
-                                        Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
-                                        TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                                      }
-                                    try {
-                                        const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                                        logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                        const sns = await publishSNS(snsParams);
-                
-                                        logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                    } catch (error) {
-                                        logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                    }
+                                  // update database here
+                                 // send notification helper
+                                // TODO check device Notification/Alerts configuration
+    
+                             } 
+                           }
+                           if (element2.isItWeekly === true){
+                            const connectionMaxPerWeek = parseInt(element2.configurationMaximumKilowattsPerWeek);
+                            const calculatedKilowatt = module.exports.CalculateConnectionsInWeeklyConfig(data,element2.ConnectionName);
+                            if (calculatedKilowatt >= connectionMaxPerWeek) {
+                                // update database here
+                                // set notification helper
+                                const device  = {
+                                    deviceId: config.deviceName,
+                                    isConnection:true,
+                                    connectionName: element2.connectionName,
+                                    turnOff:true,
+                                    isDevice:false,
+                                    deviceName: ''
+                                };
+                                const snsParams = {
+                                    Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                                    TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                                  }
+                                try {
+                                    const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                                    logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                    // const sns = await publishSNS(snsParams);
+            
+                                    logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                } catch (error) {
+                                    logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                }
+                            } else {
+                                const device  = {
+                                    deviceId: config.deviceName,
+                                    isConnection:true,
+                                    connectionName: element2.connectionName,
+                                    turnOff:false,
+                                    isDevice:false,
+                                    deviceName: ''
+                                };
+                                const snsParams = {
+                                    Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                                    TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                                  }
+                                try {
+                                    const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                                    logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                    // const sns = await publishSNS(snsParams);
+            
+                                    logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                } catch (error) {
+                                    logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
                                 }
                             }
-                            
-                              
+                           }
+                           if (element2.isItMonthly === true) {
+                            const connectionMaxPerWeek = parseInt(element2.configurationMaximumKilowattsPerMonth);
+                            const calculatedKwh = module.exports.calculateConnectionsInMonthConfig(data,element2.ConnectionName);
+                            if (connectionMaxPerWeek >= calculatedKwh ) {
+                                // update database here
+                                // set notification helper
+                                const device  = {
+                                    deviceId: config.deviceName,
+                                    isConnection:true,
+                                    connectionName: element2.connectionName,
+                                    turnOff:true,
+                                    isDevice:false,
+                                    deviceName: ''
+                                };
+                                const snsParams = {
+                                    Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                                    TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                                  }
+                                try {
+                                    const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                                    logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                    // const sns = await publishSNS(snsParams);
+            
+                                    logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                } catch (error) {
+                                    logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                }
                             }
-                            
+                            else{
+                                 // update database here
+                                // set notification helper
+                                const device  = {
+                                    deviceId: config.deviceName,
+                                    isConnection:true,
+                                    connectionName: element2.connectionName,
+                                    turnOff:false,
+                                    isDevice:false,
+                                    deviceName: ''
+                                };
+                                const snsParams = {
+                                    Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                                    TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                                  }
+                                try {
+                                    const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                                    logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                    // const sns = await publishSNS(snsParams);
+            
+                                    logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                } catch (error) {
+                                    logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                }
+                            }
+                            if (element.connectionsConfigurations.length > 0) {
+                                for (let index = 0; index < element.connectionsConfigurations.length; index++) {
+                                    const element2 = element.connectionsConfigurations[index];
+                                   if (element2.isItDaily === true) {
+                                     const connectionMaxPerDay = parseInt(element2.configurationMaximumKilowattsPerDay);
+                                     const calculatedConnectionKilowatt  = module.exports.calculateConnectionsInSameDay(data,element2.connectionName);
+                                     if (connectionMaxPerDay >= calculatedConnectionKilowatt) {
+                                         // update database here
+                                         // send notification helper
+                                         const device  = {
+                                            deviceId: config.deviceName,
+                                            isConnection:true,
+                                            connectionName: element2.connectionName,
+                                            turnOff:true,
+                                            isDevice:false,
+                                            deviceName: ''
+                                        };
+                                        const snsParams = {
+                                            Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                                            TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                                          }
+                                        try {
+                                            const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                                            logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                            // const sns = await publishSNS(snsParams);
+                    
+                                            logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                        } catch (error) {
+                                            logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                        }
+                                     } 
+                                     else{
+                                          // update database here
+                                         // send notification helper
+                                        // TODO check device Notification/Alerts configuration
+                                        const device  = {
+                                            deviceId: config.deviceName,
+                                            isConnection:true,
+                                            connectionName: element2.connectionName,
+                                            turnOff:false,
+                                            isDevice:false,
+                                            deviceName: ''
+                                        };
+                                        const snsParams = {
+                                            Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                                            TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                                          }
+                                        try {
+                                            const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                                            logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                            // const sns = await publishSNS(snsParams);
+                    
+                                            logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                        } catch (error) {
+                                            logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                        }
+            
+                                     } 
+                                   }
+                                   if (element2.isItWeekly === true){
+                                    const connectionMaxPerWeek = parseInt(element2.configurationMaximumKilowattsPerWeek);
+                                    const calculatedKilowatt = module.exports.CalculateConnectionsInWeeklyConfig(data,element2.ConnectionName);
+                                    if (calculatedKilowatt >= connectionMaxPerWeek) {
+                                        // update database here
+                                        // set notification helper
+                                        const device  = {
+                                            deviceId: config.deviceName,
+                                            isConnection:true,
+                                            connectionName: element2.connectionName,
+                                            turnOff:true,
+                                            isDevice:false,
+                                            deviceName: ''
+                                        };
+                                        const snsParams = {
+                                            Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                                            TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                                          }
+                                        try {
+                                            const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                                            logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                            // const sns = await publishSNS(snsParams);
+                    
+                                            logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                        } catch (error) {
+                                            logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                        }
+                                    } else {
+                                        const device  = {
+                                            deviceId: config.deviceName,
+                                            isConnection:true,
+                                            connectionName: element2.connectionName,
+                                            turnOff:false,
+                                            isDevice:false,
+                                            deviceName: ''
+                                        };
+                                        const snsParams = {
+                                            Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                                            TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                                          }
+                                        try {
+                                            const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                                            logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                            // const sns = await publishSNS(snsParams);
+                    
+                                            logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                        } catch (error) {
+                                            logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                        }
+                                    }
+                                   }
+                                   if (element2.isItMonthly === true) {
+                                    const connectionMaxPerWeek = parseInt(element2.configurationMaximumKilowattsPerMonth);
+                                    const calculatedKwh = module.exports.calculateConnectionsInMonthConfig(data,element2.ConnectionName);
+                                    if (connectionMaxPerWeek >= calculatedKwh ) {
+                                        // update database here
+                                        // set notification helper
+                                        const device  = {
+                                            deviceId: config.deviceName,
+                                            isConnection:true,
+                                            connectionName: element2.connectionName,
+                                            turnOff:true,
+                                            isDevice:false,
+                                            deviceName: ''
+                                        };
+                                        const snsParams = {
+                                            Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                                            TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                                          }
+                                        try {
+                                            const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                                            logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                            // const sns = await publishSNS(snsParams);
+                    
+                                            logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                        } catch (error) {
+                                            logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                        }
+                                    }
+                                    else{
+                                         // update database here
+                                        // set notification helper
+                                        const device  = {
+                                            deviceId: config.deviceName,
+                                            isConnection:true,
+                                            connectionName: element2.connectionName,
+                                            turnOff:false,
+                                            isDevice:false,
+                                            deviceName: ''
+                                        };
+                                        const snsParams = {
+                                            Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                                            TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                                          }
+                                        try {
+                                            const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                                            logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                            // const sns = await publishSNS(snsParams);
+                    
+                                            logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                        } catch (error) {
+                                            logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                        }
+                                    }
+                                }
+                                
+                                  
+                                }
+                                
+                            }
+    
                         }
-
+                        
+                          
+                        }
+                        
                     }
                     
-                      
-                    }
-                    
+                    // calculate connections
                 }
-                
-                // calculate connections
+                // validate is it weekly
+                if (element.isItWeekly === true) {
+                    const maximumKilowatt = element.configurationMaximumKilowattsPerDay;
+                    const calculatedKilowatt = module.exports.calculateDeviceInSameWeek(data);
+                    if (calculatedKilowatt >= maximumKilowatt) {
+                        const device  = {
+                            deviceId: config.deviceName,
+                            isConnection:false,
+                            connectionName:'',
+                            turnOff:true,
+                            isDevice:true,
+                            deviceName: config.deviceName
+                        };
+                        const snsParams = {
+                            Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                            TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                          }
+                        try {
+                            const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                            logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                            // const sns = await publishSNS(snsParams);
+    
+                            logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                        } catch (error) {
+                            logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                        }
+                        // update db here
+                    } else {
+                        const device  = {
+                            deviceId: config.deviceName,
+                            isConnection:false,
+                            connectionName:'',
+                            turnOff:true,
+                            isDevice:true,
+                            deviceName: config.deviceName
+                        };
+                        
+                        try {
+                            const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                            logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+    
+                            logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                        } catch (error) {
+                            logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                        }
+                          // update db here
+                    }
+                    if (element.connectionsConfigurations.length > 0) {
+                        for (let index = 0; index < element.connectionsConfigurations.length; index++) {
+                            const element2 = element.connectionsConfigurations[index];
+                           if (element2.isItDaily === true) {
+                             const connectionMaxPerDay = parseInt(element2.configurationMaximumKilowattsPerDay);
+                             const calculatedConnectionKilowatt  = module.exports.calculateConnectionsInSameDay(data,element2.connectionName);
+                             if (connectionMaxPerDay >= calculatedConnectionKilowatt) {
+                                 // update database here
+                                 // send notification helper
+                                 const device  = {
+                                    deviceId: config.deviceName,
+                                    isConnection:true,
+                                    connectionName: element2.connectionName,
+                                    turnOff:true,
+                                    isDevice:false,
+                                    deviceName: ''
+                                };
+                                const snsParams = {
+                                    Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                                    TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                                  }
+                                try {
+                                    const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                                    logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                    // const sns = await publishSNS(snsParams);
+            
+                                    logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                } catch (error) {
+                                    logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                }
+                             } 
+                             else{
+                                const device  = {
+                                    deviceId: config.deviceName,
+                                    isConnection:true,
+                                    connectionName: element2.connectionName,
+                                    turnOff:false,
+                                    isDevice:false,
+                                    deviceName: ''
+                                };
+                                const snsParams = {
+                                    Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                                    TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                                  }
+                                try {
+                                    const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                                    logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                    // const sns = await publishSNS(snsParams);
+            
+                                    logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                } catch (error) {
+                                    logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                }
+                                  // update database here
+                                 // send notification helper
+                                // TODO check device Notification/Alerts configuration
+    
+                             } 
+                           }
+                           if (element2.isItWeekly === true){
+                            const connectionMaxPerWeek = parseInt(element2.configurationMaximumKilowattsPerWeek);
+                            const calculatedKilowatt = module.exports.CalculateConnectionsInWeeklyConfig(data,element2.ConnectionName);
+                            if (calculatedKilowatt >= connectionMaxPerWeek) {
+                                // update database here
+                                // set notification helper
+                                const device  = {
+                                    deviceId: config.deviceName,
+                                    isConnection:true,
+                                    connectionName: element2.connectionName,
+                                    turnOff:true,
+                                    isDevice:false,
+                                    deviceName: ''
+                                };
+                                const snsParams = {
+                                    Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                                    TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                                  }
+                                try {
+                                    const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                                    logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                    // const sns = await publishSNS(snsParams);
+            
+                                    logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                } catch (error) {
+                                    logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                }
+                            } else {
+                                const device  = {
+                                    deviceId: config.deviceName,
+                                    isConnection:true,
+                                    connectionName: element2.connectionName,
+                                    turnOff:false,
+                                    isDevice:false,
+                                    deviceName: ''
+                                };
+                                const snsParams = {
+                                    Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                                    TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                                  }
+                                try {
+                                    const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                                    logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                    // const sns = await publishSNS(snsParams);
+            
+                                    logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                } catch (error) {
+                                    logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                }
+                            }
+                           }
+                           if (element2.isItMonthly === true) {
+                            const connectionMaxPerWeek = parseInt(element2.configurationMaximumKilowattsPerMonth);
+                            const calculatedKwh = module.exports.calculateConnectionsInMonthConfig(data,element2.ConnectionName);
+                            if (connectionMaxPerWeek >= calculatedKwh ) {
+                                // update database here
+                                // set notification helper
+                                const device  = {
+                                    deviceId: config.deviceName,
+                                    isConnection:true,
+                                    connectionName: element2.connectionName,
+                                    turnOff:true,
+                                    isDevice:false,
+                                    deviceName: ''
+                                };
+                                const snsParams = {
+                                    Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                                    TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                                  }
+                                try {
+                                    const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                                    logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                    // const sns = await publishSNS(snsParams);
+            
+                                    logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                } catch (error) {
+                                    logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                }
+                            }
+                            else{
+                                 // update database here
+                                // set notification helper
+                                const device  = {
+                                    deviceId: config.deviceName,
+                                    isConnection:true,
+                                    connectionName: element2.connectionName,
+                                    turnOff:false,
+                                    isDevice:false,
+                                    deviceName: ''
+                                };
+                                const snsParams = {
+                                    Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                                    TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                                  }
+                                try {
+                                    const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                                    logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                    // const sns = await publishSNS(snsParams);
+            
+                                    logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                } catch (error) {
+                                    logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                                }
+                            }
+                        }
+                        
+                          
+                        }
+                        
+                    }
+                }
+                if (element.isItMonthly === true) {
+                    const maximumKilowatt = element.MaximumKilowattsPerMonth;
+                    var calculatedKilowatt = module.exports.calculateDeviceInSameMonth(data);
+                    if (calculatedKilowatt >= maximumKilowatt ) {
+                        // update database here
+                        // set notification helper
+                        const device  = {
+                            deviceId: config.deviceName,
+                            isConnection:false,
+                            connectionName:'',
+                            turnOff:true,
+                            isDevice:true,
+                            deviceName: config.deviceName
+                        };
+                        const snsParams = {
+                            Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
+                            TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
+                          }
+                        try {
+                            const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                            logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                            // const sns = await publishSNS(snsParams);
+    
+                            logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                        } catch (error) {
+                            logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name, error:error }});
+                        }
+                    } else {
+                           // update database here
+                           // set notification helper
+                           const device  = {
+                            deviceId: config.deviceName,
+                            isConnection:false,
+                            connectionName:'',
+                            turnOff:true,
+                            isDevice:true,
+                            deviceName: config.deviceName
+                        };
+                        
+                        try {
+                            const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
+                            logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+    
+                            logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
+                        } catch (error) {
+                            logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name, error:error }});
+                        }
+    
+                    }
+                } 
+                // validate is it monthly
+    
             }
-            // validate is it weekly
-            if (element.isItWeekly === true) {
-                const maximumKilowatt = element.configurationMaximumKilowattsPerDay;
-                const calculatedKilowatt = module.exports.calculateDeviceInSameWeek(data);
-                if (calculatedKilowatt >= maximumKilowatt) {
-                    const device  = {
-                        deviceId: config.deviceName,
-                        isConnection:false,
-                        connectionName:'',
-                        turnOff:true,
-                        isDevice:true,
-                        deviceName: config.deviceName
-                    };
-                    const snsParams = {
-                        Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
-                        TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                      }
-                    try {
-                        const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                        logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                        const sns = await publishSNS(snsParams);
-
-                        logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                    } catch (error) {
-                        logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                    }
-                    // update db here
-                } else {
-                    const device  = {
-                        deviceId: config.deviceName,
-                        isConnection:false,
-                        connectionName:'',
-                        turnOff:true,
-                        isDevice:true,
-                        deviceName: config.deviceName
-                    };
-                    
-                    try {
-                        const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                        logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-
-                        logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                    } catch (error) {
-                        logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                    }
-                      // update db here
-                }
-                if (element.connectionsConfigurations.length > 0) {
-                    for (let index = 0; index < element.connectionsConfigurations.length; index++) {
-                        const element2 = element.connectionsConfigurations[index];
-                       if (element2.isItDaily === true) {
-                         const connectionMaxPerDay = parseInt(element2.configurationMaximumKilowattsPerDay);
-                         const calculatedConnectionKilowatt  = module.exports.calculateConnectionsInSameDay(data,element2.connectionName);
-                         if (connectionMaxPerDay >= calculatedConnectionKilowatt) {
-                             // update database here
-                             // send notification helper
-                             const device  = {
-                                deviceId: config.deviceName,
-                                isConnection:true,
-                                connectionName: element2.connectionName,
-                                turnOff:true,
-                                isDevice:false,
-                                deviceName: ''
-                            };
-                            const snsParams = {
-                                Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
-                                TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                              }
-                            try {
-                                const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                                logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                const sns = await publishSNS(snsParams);
-        
-                                logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            } catch (error) {
-                                logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            }
-                         } 
-                         else{
-                            const device  = {
-                                deviceId: config.deviceName,
-                                isConnection:true,
-                                connectionName: element2.connectionName,
-                                turnOff:false,
-                                isDevice:false,
-                                deviceName: ''
-                            };
-                            const snsParams = {
-                                Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
-                                TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                              }
-                            try {
-                                const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                                logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                const sns = await publishSNS(snsParams);
-        
-                                logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            } catch (error) {
-                                logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            }
-                              // update database here
-                             // send notification helper
-                            // TODO check device Notification/Alerts configuration
-
-                         } 
-                       }
-                       if (element2.isItWeekly === true){
-                        const connectionMaxPerWeek = parseInt(element2.configurationMaximumKilowattsPerWeek);
-                        const calculatedKilowatt = module.exports.CalculateConnectionsInWeeklyConfig(data,element2.ConnectionName);
-                        if (calculatedKilowatt >= connectionMaxPerWeek) {
-                            // update database here
-                            // set notification helper
-                            const device  = {
-                                deviceId: config.deviceName,
-                                isConnection:true,
-                                connectionName: element2.connectionName,
-                                turnOff:true,
-                                isDevice:false,
-                                deviceName: ''
-                            };
-                            const snsParams = {
-                                Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
-                                TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                              }
-                            try {
-                                const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                                logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                const sns = await publishSNS(snsParams);
-        
-                                logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            } catch (error) {
-                                logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            }
-                        } else {
-                            const device  = {
-                                deviceId: config.deviceName,
-                                isConnection:true,
-                                connectionName: element2.connectionName,
-                                turnOff:false,
-                                isDevice:false,
-                                deviceName: ''
-                            };
-                            const snsParams = {
-                                Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
-                                TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                              }
-                            try {
-                                const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                                logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                const sns = await publishSNS(snsParams);
-        
-                                logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            } catch (error) {
-                                logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            }
-                        }
-                       }
-                       if (element2.isItMonthly === true) {
-                        const connectionMaxPerWeek = parseInt(element2.configurationMaximumKilowattsPerMonth);
-                        const calculatedKwh = module.exports.calculateConnectionsInMonthConfig(data,element2.ConnectionName);
-                        if (connectionMaxPerWeek >= calculatedKwh ) {
-                            // update database here
-                            // set notification helper
-                            const device  = {
-                                deviceId: config.deviceName,
-                                isConnection:true,
-                                connectionName: element2.connectionName,
-                                turnOff:true,
-                                isDevice:false,
-                                deviceName: ''
-                            };
-                            const snsParams = {
-                                Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
-                                TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                              }
-                            try {
-                                const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                                logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                const sns = await publishSNS(snsParams);
-        
-                                logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            } catch (error) {
-                                logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            }
-                        }
-                        else{
-                             // update database here
-                            // set notification helper
-                            const device  = {
-                                deviceId: config.deviceName,
-                                isConnection:true,
-                                connectionName: element2.connectionName,
-                                turnOff:false,
-                                isDevice:false,
-                                deviceName: ''
-                            };
-                            const snsParams = {
-                                Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
-                                TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                              }
-                            try {
-                                const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                                logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                                const sns = await publishSNS(snsParams);
-        
-                                logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            } catch (error) {
-                                logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                            }
-                        }
-                    }
-                    
-                      
-                    }
-                    
-                }
-            }
-            if (element.isItMonthly === true) {
-                const maximumKilowatt = element.MaximumKilowattsPerMonth;
-                var calculatedKilowatt = module.exports.calculateDeviceInSameMonth(data);
-                if (calculatedKilowatt >= maximumKilowatt ) {
-                    // update database here
-                    // set notification helper
-                    const device  = {
-                        deviceId: config.deviceName,
-                        isConnection:false,
-                        connectionName:'',
-                        turnOff:true,
-                        isDevice:true,
-                        deviceName: config.deviceName
-                    };
-                    const snsParams = {
-                        Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
-                        TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                      }
-                    try {
-                        const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                        logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                        const sns = await publishSNS(snsParams);
-
-                        logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                    } catch (error) {
-                        logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                    }
-                } else {
-                       // update database here
-                       // set notification helper
-                       const device  = {
-                        deviceId: config.deviceName,
-                        isConnection:false,
-                        connectionName:'',
-                        turnOff:true,
-                        isDevice:true,
-                        deviceName: config.deviceName
-                    };
-                    
-                    try {
-                        const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
-                        logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-
-                        logger.log('info', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                    } catch (error) {
-                        logger.log('error', `Requesting [Write To SNS]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',body: req.body, headers: req.headers,databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
-                    }
-
-                }
-            } 
-            // validate is it monthly
-
         }
-    }
-    else{
-        throw new Error('error detected')
+        else{
+            throw new Error('error detected')
+        }
+    }catch(error){
+        console.error(error);
     }
 };
 /**
@@ -992,7 +996,7 @@ module.exports.calculateDeviceInSameMonth = function(data){
  * @param {*} data data
  * @returns array <any>
  */
-module.exports.calculateConnectionsInSameDay = function(data){
+module.exports.calculateConnectionsInSameDay = function(data,ConnectionName){
     const moment = require('moment');
     const totalKwh = 0;
     const filteredArray = data.filter(x => x.Relays[0].Name == ConnectionName);
