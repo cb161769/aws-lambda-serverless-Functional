@@ -12,16 +12,10 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use('/IotDevice',userRoutes);
-app.use('/graphQL',cors(), graphqlHTTP({
+app.use('/graphQL', graphqlHTTP({
     schema: GraphQlSchema,
     rootValue:global,
     graphiql: true,
 }));
-app.use('/AutomationQL',cors(),graphqlHTTP({
-    schema: GraphQlSchema2,
-    rootValue:global,
-    graphiql: true,	
-}));
-
 
 module.exports = app;

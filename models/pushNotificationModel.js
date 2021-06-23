@@ -36,7 +36,7 @@ const {
       }
   });
   var query = new GraphQLObjectType({
-      name:'query',
+      name:'deviceId',
       fields: function () {
           return {
               deviceId:{
