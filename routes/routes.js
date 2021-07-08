@@ -2579,13 +2579,15 @@ routes.post('/Topics/publishTopic', async (req,res) =>{
         
       });
      
-      //  const iot = await publishTopic(data.topic,data.payload);
-      //  const response = await iot.send();
-   //   res.status(200).json({success:true, result:response, setRequest:data, c});
+    
     } catch (error) {
       logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'publishTopic',body: req.body, headers: req.headers,databaseOperation:'POST' }});
      
     }
+});
+routes.post('/sendEmail', async (req, res) => {
+  const {connectionName,DeviceName,Message} = req.body;
+  
 })
 module.exports = {
     routes,
