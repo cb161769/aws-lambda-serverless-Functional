@@ -1808,7 +1808,7 @@ routes.get("/Connections/getAllDeviceReadingsByGivenParametersMonthly/:startDate
       ,sabado:{registros: 0 , amperios:  0 ,watts: 0, Timestamp:[] }
       ,domingo:{registros:0, amperios:  0,watts:0, Timestamp:[]  },
       totalWatts: 0, totalAmps:0 , diaConsulta: new Date().toISOString(),
-      promedioWattsSemanal: 0, promedioAmpsSemanal:0, promedioKwhSemanal:  0,uso:data.Items
+      promedioWattsSemanal: 0, promedioAmpsSemanal:0, promedioKwhSemanal:  0,usage:data.Items
   }];
   logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'Connections/getAllDeviceReadingsByGivenParametersMonthly',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
 
@@ -1861,7 +1861,7 @@ var ConnectionName = req.params.ConnectionName;
         ,sabado:{registros: 0 , amperios:  0 ,watts: 0, Timestamp:[] }
         ,domingo:{registros:0, amperios:  0,watts:0, Timestamp:[]  },
         totalWatts: 0, totalAmps:0 , diaConsulta: new Date().toISOString(),
-        promedioWattsSemanal: 0, promedioAmpsSemanal:0, promedioKwhSemanal:  0,uso:data.Items
+        promedioWattsSemanal: 0, promedioAmpsSemanal:0, promedioKwhSemanal:  0,usage:data.Items
     }];
     res.status(200).json({ usage:ob});
     logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'Connections/getConnectionReadingsCurrentWeek',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
@@ -1869,7 +1869,7 @@ var ConnectionName = req.params.ConnectionName;
     }else{
       try {
         const week  =await dailyHelperFromConnections(ConnectionName,data.Items);
-        res.status(200).json({uso:week});
+        res.status(200).json({usage:week});
       } catch (error) {
         logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'Connections/getConnectionReadingsCurrentWeek',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name  }});
 
@@ -1917,7 +1917,7 @@ var ConnectionName = req.params.ConnectionName;
         ,sabado:{registros: 0 , amperios:  0 ,watts: 0, Timestamp:[] }
         ,domingo:{registros:0, amperios:  0,watts:0, Timestamp:[]  },
         totalWatts: 0, totalAmps:0 , diaConsulta: new Date().toISOString(),
-        promedioWattsSemanal: 0, promedioAmpsSemanal:0, promedioKwhSemanal:  0,uso:data.Items
+        promedioWattsSemanal: 0, promedioAmpsSemanal:0, promedioKwhSemanal:  0,usage:data.Items
        }];
        res.status(200).json({ usage:ob});
     
