@@ -41,5 +41,8 @@ module.exports.config = {
     },
     Iot:{
         endpoint:"a3grg8s0qkek3y-ats.iot.us-west-2.amazonaws.com"
+    },
+    encryption:{
+        password:'1234'
     }
 }

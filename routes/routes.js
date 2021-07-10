@@ -354,11 +354,12 @@ routes.post("/configureDevice", async (req,res) => {
 /** 
  * @route /getDeviceWeekly/:start/:end
  */
-routes.get("/getDeviceWeekly/:start/:end/:priorStart/:priorEnd", async (req,res) => {
+routes.get("/getDeviceWeekly/:start/:end/", async (req,res) => {
 
   if (parseInt(req.params.start) > parseInt(req.params.end) && parseInt(req.params.priorStart) > parseInt(req.params.priorEnd)) {
     var startChanged = parseInt(req.params.end);
     var endChanged = parseInt(req.params.start);
+    //TODO change to date :3
     var priorStartChanged = parseInt(req.params.priorEnd);
     var priorEndChanged = parseInt(req.params.priorStart);
     const params = {
@@ -478,6 +479,7 @@ routes.get("/getDeviceWeekly/:start/:end/:priorStart/:priorEnd", async (req,res)
         },
         ExpressionAttributeValues: {
           ':key':  config.deviceName,
+          //TODO change the dates
           ':start':parseInt(req.params.priorStart),
           ':end': parseInt(req.params.priorEnd)
         },
@@ -555,6 +557,13 @@ routes.get("/getMonthly/:day", async (req,res)=>{
   secondDayOfMonth.setHours(24);
   let firstEpoch = firstDayOfMonth / 1000;
   let secondEpoch = secondDayOfMonth/ 1000;
+  const priorCompletedDay = new Date(day * 1000);
+  priorCompletedDay.setMonth(priorCompletedDay.getMonth() -1);
+  const priorFirstDayOfMonth = findFirstDay(priorCompletedDay.getFullYear(),priorCompletedDay.getMonth());
+  const priorLastDayOfMonth = findLastDay(priorCompletedDay.getFullYear(),priorCompletedDay.getMonth());
+  let priorFirstEpoch = priorFirstDayOfMonth/1000;
+  let priorLastDayEpoch = priorLastDayOfMonth/1000;
+
   const params = {
     TableName: config.dynamoBB.deviceReadings.name,
     KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
@@ -571,9 +580,27 @@ routes.get("/getMonthly/:day", async (req,res)=>{
       ':end': secondEpoch
     },
   };
+  const secondParams = {
+    TableName: config.dynamoBB.deviceReadings.name,
+    KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
+    ScanIndexForward:false,
+    ConsistentRead:false,
+    ExpressionAttributeNames:{
+      '#key':'primarykey',
+      '#sortkey':'sortkey'
+
+    },
+    ExpressionAttributeValues: {
+      ':key':  config.deviceName,
+      ':start':priorFirstEpoch,
+      ':end': priorLastDayEpoch
+    },
+  };
+
   try {
     const data = await db.query(params).promise();
-    if ( data.ScannedCount == 0  || data == null || data == undefined || !data || data.Count ==0){
+    const secondData = await db.query(secondParams).promise();
+    if ( d(ata.ScannedCount == 0  || data == null || data == undefined || !data || data.Count ==0) && (secondData.ScannedCount == 0 || secondData == undefined)){
       var MonthInformation = {
         MonthName:'',
         allMonthAmps:0,
