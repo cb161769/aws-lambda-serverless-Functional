@@ -1,7 +1,6 @@
 const express = require('express');
 const AWS = require('aws-sdk');
 const db = new AWS.DynamoDB.DocumentClient();
-
 const {v4: uuidv4} = require('uuid');
 const {config} = require('../connections/config/config');
 const  {getWeeklyHelper} = require('../helpers/weeklyHelper');
@@ -15,7 +14,7 @@ const {connectionsDailyHelper} = require('../helpers/connectionHelpers/Connectio
 const {DeviceGraphHelper,elapsedTime,ConnectionGrahphHelper } = require('../helpers/connectionHelpers/connectionGraph/conectionGraphHelper');
 const logger = require('../helpers/log/logsHelper');
 const {mapDataToTensorFlow,changeDates} = require('../tensorflow/tensorflow-helper');
-const {publishTopic} = require('../helpers/iot/Iot');
+const{healthWeeklyHelper,healthMonthlyHelper,healthYearlyHelper,ConnectionsHealthWeeklyHelper,ConnectionsHealthYearlyHelper,ConnectionsHealthMonthlyHelper} = require('../helpers/healthConsumptionHelper');
 const iotData = new AWS.IotData({
   endpoint: 'a3grg8s0qkek3y-ats.iot.us-west-2.amazonaws.com',
   accessKeyId: AWS.config.credentials.accessKeyId,
@@ -6282,6 +6281,8 @@ routes.get("/getYearly/",async(req, res) =>{
       var  NovemberAmps = 0;
       var DecemberAmps = 0;
       var totalAmpsProm = 0;
+      var TimesTamp = [];
+      var KiloWattsTimeStamp = [];
       const ob = [
         {registros:counter,
             year:LocalDate.year(),
@@ -6363,7 +6364,7 @@ routes.get("/getYearly/",async(req, res) =>{
 
    }
    else{
-    const response = getMonthlyHelper(data.Items);
+    const response = await getMonthlyHelper(data.Items);
     logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'Connections/GetConnectionYearly',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
     res.status(200).json({ usage:response});
    }

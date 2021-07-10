@@ -5343,12 +5343,24 @@ module.exports.isNightTarif = function(dateObj){
     var  NovemberAmps = 0;
     var DecemberAmps = 0;
     var totalAmpsProm = 0;
-
+    var TimesTamp = [];
+    var KiloWattsTimeStamp = [];
+    var AmpsTimeStamp = [];
     for (let index = 0; index < params.length; index++) {
         var dataElement = params[index];
+        if (dataElement == undefined) {
+            break;
+        }
+        
         var secondDataElement = params[index + 1];
+        if (secondDataElement == undefined) {
+            break; 
+         }
         var sortkeyDate = dataElement.sortkey;
         var seconkeyDate = secondDataElement.sortkey;
+        if (seconkeyDate == undefined && sortKeyDate == undefined) {
+            break;
+        }
         var sortKeyEpoch = module.exports.convertEpochDateToHumanDate(sortkeyDate);
         var secondSortKeyEpoch = module.exports.convertEpochDateToHumanDate(seconkeyDate);
         var LocalDate = moment(sortKeyEpoch);
@@ -5371,10 +5383,15 @@ module.exports.isNightTarif = function(dateObj){
         var isNight = module.exports.isNightTarif(sortKeyEpoch);
         for (let j = 0; j <= Object.keys(readings2).length; j++) {
             //january
+            TimesTamp.push({t:secondSortKeyEpoch.toISOString(),y:readings2.device_watts});
+            const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
+            const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/590;
+            KiloWattsTimeStamp.push({t:sortKeyEpoch.toISOString(),y:kwh});
             if (month ==0) { 
 
                 januaryAmps += readings2.device_amps;
                 januaryWatts += readings2.device_watts;
+
                 if (weekMonth ==1) {
                     januaryWeekDays.firstWeek.totalKwhPerWeek += readings2.device_watts;
                     if (day ==1) {
@@ -12665,6 +12682,9 @@ module.exports.isNightTarif = function(dateObj){
             year:LocalDate.year(),
             totalAmpsProm:totalAmpsProm,
             totalWattsProm:totalWAttsProm,
+            KiloWattsTimeStamp:KiloWattsTimeStamp,
+            timeStamp:TimesTamp,
+            totalAmps:totalAmps.toPrecision(3),
         january:{
             amps:januaryAmps,
             watts:januaryWatts,
