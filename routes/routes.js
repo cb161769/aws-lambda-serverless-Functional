@@ -354,11 +354,13 @@ routes.post("/configureDevice", async (req,res) => {
 /** 
  * @route /getDeviceWeekly/:start/:end
  */
-routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
+routes.get("/getDeviceWeekly/:start/:end/:priorStart/:priorEnd", async (req,res) => {
 
-  if (parseInt(req.params.start) > parseInt(req.params.end)) {
+  if (parseInt(req.params.start) > parseInt(req.params.end) && parseInt(req.params.priorStart) > parseInt(req.params.priorEnd)) {
     var startChanged = parseInt(req.params.end);
     var endChanged = parseInt(req.params.start);
+    var priorStartChanged = parseInt(req.params.priorEnd);
+    var priorEndChanged = parseInt(req.params.priorStart);
     const params = {
       TableName: config.dynamoBB.deviceReadings.name,
       KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
@@ -375,7 +377,24 @@ routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
         ':end': endChanged
       },
     };
+    const secondParams = {
+        TableName: config.dynamoBB.deviceReadings.name,
+        KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
+        ScanIndexForward:false,
+        ConsistentRead:false,
+        ExpressionAttributeNames:{
+          '#key':'primarykey',
+          '#sortkey':'sortkey'
+    
+        },
+        ExpressionAttributeValues: {
+          ':key':  config.deviceName,
+          ':start':priorStartChanged,
+          ':end': priorEndChanged
+        },
+    };
     const data = await db.query(params).promise();
+    const secondData= await db.query(secondParams).promise()
     if ( data.ScannedCount == 0 || data == null || data == undefined || !data || data.Count == 0) {
   
           const ob =  [ 
@@ -389,14 +408,23 @@ routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
             totalWatts:0  , totalAmps: 0 , diaConsulta: new Date().toISOString(),
             promedioWattsSemanal: 0, promedioAmpsSemanal:  0
         }];
+        const returnObject = {
+            health:0,
+            message:'',
+            isError:true
+        };
         logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceWeekly',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
-         res.status(200).json({ usage:ob});
+        if (secondData.ScannedCount == 0) {
+            logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceWeekly',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }}); 
+        }
+         res.status(200).json({ usage:ob,health:returnObject});
     }
+    
     else{
       try {
         const week = await getWeeklyHelper(data.Items)
-           
-            res.status(200).json({ usage:week});
+        const health = await healthWeeklyHelper(data.Items,secondData.Items);
+            res.status(200).json({ usage:week,health:health});
         
       } catch (error) {
         const ob =  [ 
@@ -410,13 +438,15 @@ routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
           totalWatts:0  , totalAmps: 0 , diaConsulta: new Date().toISOString(),
           promedioWattsSemanal: 0, promedioAmpsSemanal:  0
       }];
+      const returnObject = {
+        health:0,
+        message:'',
+        isError:true
+    };
         logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceWeekly',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name  }});
-       res.status(200).json({ usage:ob});
+       res.status(200).json({ usage:ob,health:returnObject});
       }
     }
-
-    
-
     
   }else{
     const params = {
@@ -436,8 +466,25 @@ routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
         ':end': parseInt(req.params.end)
     },
     };
+    const secondParams = {
+        TableName: config.dynamoBB.deviceReadings.name,
+        KeyConditionExpression:'#key = :key and #sortkey BETWEEN :start AND :end',
+        ScanIndexForward:false,
+        ConsistentRead:false,
+        ExpressionAttributeNames:{
+          '#key':'primarykey',
+          '#sortkey':'sortkey'
+    
+        },
+        ExpressionAttributeValues: {
+          ':key':  config.deviceName,
+          ':start':parseInt(req.params.priorStart),
+          ':end': parseInt(req.params.priorEnd)
+        },
+    };
     const data = await db.query(params).promise();
-    if ( data.ScannedCount == 0 || data == null || data == undefined || !data || data.Count == 0) {
+    const secondData = await db.query(secondParams).promise();
+    if ( (data.ScannedCount == 0 || data == null || data == undefined || !data || data.Count == 0) && (secondData.ScannedCount == 0 || secondData == null || secondData == undefined || !data || secondData.Count == 0)) {
   
           const ob =  [ 
             {registros:0,lunes:{registros: 0, amperios:  0,watts: 0}
@@ -450,14 +497,19 @@ routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
             totalWatts:0  , totalAmps: 0 , diaConsulta: new Date().toISOString(),
             promedioWattsSemanal: 0, promedioAmpsSemanal:  0
         }];
-        
-         res.status(200).json({ usage:ob});
+        const returnObject = {
+            health:0,
+            message:'',
+            isError:true
+        };
+         res.status(200).json({ usage:ob,health:returnObject});
     }
     else{
       try {
-        const week = await getWeeklyHelper(data.Items)
+        const week = await getWeeklyHelper(data.Items);
+        const health = await healthWeeklyHelper(data.Items,secondData.Items);
         logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceWeekly',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
-            res.status(200).json({ usage:week});
+            res.status(200).json({ usage:week,health:health});
         
       } catch (error) {
         const ob =  [ 
@@ -472,8 +524,12 @@ routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
           promedioWattsSemanal: 0, promedioAmpsSemanal:  0
       }];
       logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceWeekly',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name  }});
-
-       res.status(200).json({ usage:ob});
+        const returnObject = {
+            health:0,
+            message:'',
+            isError:true
+        };
+       res.status(200).json({ usage:ob,health:returnObject});
         //res.status(400).json({status:400, error:error});
       }
     }
@@ -488,6 +544,7 @@ routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
 /** 
  * 
  */
+//TODO implement the other helpers
 routes.get("/getMonthly/:day", async (req,res)=>{
   
   let day = parseInt(req.params.day);
