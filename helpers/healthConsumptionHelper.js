@@ -4,7 +4,6 @@ const {getByMonthConnections} = require('../helpers/connectionHelpers/getByMonth
 const {getMonthlyHelper} = require('../helpers/monthlyHelper');
 //device
 const {getWeeklyHelper} = require('../helpers/weeklyHelper');
-const {getMonthlyHelper} = require('../helpers/monthlyHelper');
 const {DeviceGraphHelper} =require('../helpers/connectionHelpers/connectionGraph/conectionGraphHelper');
 const {dailyHelperFromConnections} = require('../helpers/connectionHelpers/dailyHelper')
 module.exports.healthWeeklyHelper = async function(currentWeek,otherWeek) {
@@ -26,7 +25,7 @@ module.exports.healthWeeklyHelper = async function(currentWeek,otherWeek) {
             const returnObject = {
                 health:healthPromPercentage,
                 message:message,
-                isEqual:false
+                isEqual:true
             };
             return returnObject;
       }
@@ -36,7 +35,7 @@ module.exports.healthWeeklyHelper = async function(currentWeek,otherWeek) {
             const returnObject = {
                 health:healthPromPercentage,
                 message:message,
-                isLower:false
+                isLower:true
             };
             return returnObject;
       }
