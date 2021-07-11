@@ -15,12 +15,16 @@ const {DeviceGraphHelper,elapsedTime,ConnectionGrahphHelper } = require('../help
 const logger = require('../helpers/log/logsHelper');
 const {mapDataToTensorFlow,changeDates} = require('../tensorflow/tensorflow-helper');
 const{healthWeeklyHelper,healthMonthlyHelper,healthYearlyHelper,ConnectionsHealthWeeklyHelper,ConnectionsHealthYearlyHelper,ConnectionsHealthMonthlyHelper} = require('../helpers/healthConsumptionHelper');
+const {sendEmail}= require('../helpers/email/emailHelper');
 const iotData = new AWS.IotData({
   endpoint: 'a3grg8s0qkek3y-ats.iot.us-west-2.amazonaws.com',
   accessKeyId: AWS.config.credentials.accessKeyId,
   secretAccessKey: AWS.config.credentials.secretAccessKey,
   sessionToken: AWS.config.credentials.sessionToken,
   region: 'us-west-2'
+});
+const email = new AWS.SES({
+    region: 'us-east-2'
 });
 const routes = express.Router({
     mergeParams: true
@@ -14543,10 +14547,62 @@ routes.post('/Topics/publishTopic', async (req,res) =>{
      
     }
 });
-routes.post('/sendEmail', async (req, res) => {
-  const {connectionName,DeviceName,Message} = req.body;
+routes.post('/createTemplate', async (req, res) => {
+    const { templateName, subject, body } = req.body;
+
+    var params = {
+      Template: { 
+        TemplateName: templateName, 
+        HtmlPart: body,
+        SubjectPart: subject,      
+      }
+    };
   
-})
+    email.createTemplate(params, function(err, data) {
+      if (err) {
+        res.status(400).send({error:err,sentParams:params});
+      }else{
+        res.status(200).send({data:data})
+      }    
+    });
+ 
+  
+  
+});
+routes.post('/sendEmail', async (req, res) => {
+    const { templateName, subject, body,sendTo,source } = req.body;
+
+    // var params = {
+    //   Template: { 
+    //     TemplateName: templateName, 
+    //     HtmlPart: body,
+    //     SubjectPart: subject,      
+    //   }
+    // };
+    const params2 = {
+        Template: templateName,
+        Destination: { 
+          ToAddresses: [
+            sendTo
+          ]
+        },
+        Source: source, // use the SES domain or email verified in your account
+        TemplateData: JSON.stringify({})
+      };
+  
+    email.sendTemplatedEmail(params2, function(err, data) {
+      if (err) {
+        res.status(400).send({error:err,sentParams:params2});
+      }else{
+        res.status(200).send({data:data})
+      }    
+    });
+ 
+  
+  
+});
+
+
 module.exports = {
     routes,
 };

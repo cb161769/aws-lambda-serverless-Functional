@@ -9,7 +9,7 @@ const logger = require('../log/logsHelper');
  * @param templateData
  */
 module.exports.sendEmail = async function(templateData){
-    const template  = module.exports.createTemplate();
+    const template  = await module.exports.createTemplate();
     const params = {
         Template: templateName,
         Destination: { 
@@ -20,7 +20,7 @@ module.exports.sendEmail = async function(templateData){
         Source: emailConfig.emailConfig.SESDomain,
         TemplateData: JSON.stringify(templateData || {})
       };
-      ses.sendTemplatedEmail(params,(err,data)=>{
+     return ses.sendTemplatedEmail(params,(err,data)=>{
         if (err) {
             logger.log('error', `Requesting [sendEmail]`, {tags: 'emailHelper', additionalInfo: {operation: 'sendEmail',error:err }});
           }else{
