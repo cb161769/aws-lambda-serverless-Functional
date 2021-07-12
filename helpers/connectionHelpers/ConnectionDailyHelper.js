@@ -48,6 +48,10 @@ module.exports.connectionsDailyHelper = async function(connectionName,params){
             }
         }
     };
+    var  dayWattsProms= 0;
+    var nightWattsProms = 0;
+    var dayKhwProms = 0;
+    var nightKhwProms = 0;
     const fixedParams = params.filter(x => x.Relays[0].Name == connectionName);
     for (let index = 0; index <= fixedParams.length; index++) {
         var dataElement = fixedParams[index];
@@ -84,6 +88,8 @@ module.exports.connectionsDailyHelper = async function(connectionName,params){
                 dayInformation.DayDetails.Night.kilowatts += kwh;
                 dayInformation.DayDetails.Night.watts += filteredReadings[0].CT1_Watts;
                 dayInformation.DayDetails.Night.TimeStamp.push({time:sortKeyEpoch/1000,valueAmps:filteredReadings[0].CT1_Amps,valueKwh:kwh,valueWatts:filteredReadings[0].CT1_Watts});
+                nightWattsProms += readings2.device_watts;
+                nightKhwProms += Math.abs(kwh);
                 break;
                 
             }else{
@@ -93,6 +99,8 @@ module.exports.connectionsDailyHelper = async function(connectionName,params){
                 dayInformation.DayDetails.Day.kilowatts += kwh;
                 dayInformation.DayDetails.Day.watts += filteredReadings[0].CT1_Watts;
                 dayInformation.DayDetails.Day.TimeStamp.push({time:sortKeyEpoch/1000,valueAmps:filteredReadings[0].CT1_Amps,valueKwh:kwh,valueWatts:filteredReadings[0].CT1_Watts});
+                dayWattsProms += readings2.device_watts;
+                dayKhwProms += Math.abs(kwh);
                 break;
             }
             
@@ -104,7 +112,8 @@ module.exports.connectionsDailyHelper = async function(connectionName,params){
     totalAmpsProm = dayInformation.AlldayAmps/ fixedParams.length;
     totalWAttsProm = dayInformation.AlldayWatts/ fixedParams.length;
     const ob = [
-       { detail: dayInformation}
+       { detail: dayInformation,dayWattsProm:dayWattsProms, NightWattsProm:nightWattsProms, NightsKhwProm:nightKhwProms,
+        dayKhwProms:dayKhwProms}
     ];
     return ob;
-}
+};
