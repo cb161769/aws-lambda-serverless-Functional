@@ -5346,6 +5346,10 @@ module.exports.isNightTarif = function(dateObj){
     var TimesTamp = [];
     var KiloWattsTimeStamp = [];
     var AmpsTimeStamp = [];
+    var  dayWattsProms= 0;
+    var nightWattsProms = 0;
+    var dayKhwProms = 0;
+    var nightKhwProms = 0;
     for (let index = 0; index < params.length; index++) {
         var dataElement = params[index];
         if (dataElement == undefined) {
@@ -5383,6 +5387,20 @@ module.exports.isNightTarif = function(dateObj){
         var isNight = module.exports.isNightTarif(sortKeyEpoch);
         for (let j = 0; j <= Object.keys(readings2).length; j++) {
             //january
+            if (isNight == true) {
+                const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
+                const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/590;
+                nightWattsProms += readings2.device_watts;
+                nightKhwProms += Math.abs(kwh);
+
+            }
+            else{
+                const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
+                const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/590;
+                dayWattsProms += readings2.device_watts;
+                dayKhwProms += Math.abs(kwh);
+
+            }
             TimesTamp.push({t:secondSortKeyEpoch.toISOString(),y:readings2.device_watts});
             const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
             const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/590;
@@ -12685,6 +12703,8 @@ module.exports.isNightTarif = function(dateObj){
             KiloWattsTimeStamp:KiloWattsTimeStamp,
             timeStamp:TimesTamp,
             totalAmps:totalAmps.toPrecision(3),
+            dayWattsProm:dayWattsProms, NightWattsProm:nightWattsProms, NightsKhwProm:nightKhwProms,
+            dayKhwProms:dayKhwProms,
         january:{
             amps:januaryAmps,
             watts:januaryWatts,

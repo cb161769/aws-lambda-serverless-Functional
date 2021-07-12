@@ -24,7 +24,8 @@ const iotData = new AWS.IotData({
   region: 'us-west-2'
 });
 const email = new AWS.SES({
-    region: 'us-east-2'
+    region: 'us-east-2',
+    apiVersion:'2010-12-01', 
 });
 const routes = express.Router({
     mergeParams: true
@@ -14601,6 +14602,15 @@ routes.post('/sendEmail', async (req, res) => {
   
   
 });
+routes.post('/verifyEmail', async (req, res)=>{
+    const { templateName, subject, body,sendTo,source } = req.body;
+    const verifyEmail = email.verifyEmailAddress({EmailAddress:source}).promise();
+    verifyEmail.then((email) =>{
+        res.status(200).send({email:email});
+    }).catch((error) =>{
+        res.status(400).send({error:error});
+    })
+})
 
 
 module.exports = {
