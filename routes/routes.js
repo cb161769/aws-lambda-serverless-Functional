@@ -414,22 +414,23 @@ routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
     const data = await db.query(params).promise();
     const secondData= await db.query(secondParams).promise()
     if ( data.ScannedCount == 0 || data == null || data == undefined || !data || data.Count == 0) {
-  
-          const ob =  [ 
-            {registros:0,lunes:{registros: 0, amperios:  0,watts: 0}
-            ,martes:{registros:  0, amperios:  0,watts: 0}
-            ,miercoles:{registros:0, amperios:  0,watts: 0}
+        const ob =  [ 
+            {registros:0,lunes:{registros: 0, amperios:  0,watts:0}
+            ,martes:{registros: 0, amperios: 0,watts: 0}
+            ,miercoles:{registros: 0, amperios:  0,watts: 0}
             ,jueves:{registros: 0, amperios:  0,watts: 0}
-            ,viernes:{registros:0 , amperios:  0,watts: 0}
+            ,viernes:{registros: 0 , amperios: 0,watts: 0}
             ,sabado:{registros: 0 , amperios:  0 ,watts: 0 }
-            ,domingo:{registros: 0, amperios:  0,watts:0  },
-            totalWatts:0  , totalAmps: 0 , diaConsulta: new Date().toISOString(),
-            promedioWattsSemanal: 0, promedioAmpsSemanal:  0
+            ,domingo:{registros: 0, amperios: 0,watts:0  },
+            totalWatts:0, totalAmps: 0 , diaConsulta: new Date().toISOString(),
+            promedioWattsSemanal: 0, promedioAmpsSemanal:  0,
+            dayWattsProm:0, NightWattsProm:0, NightsKhwProm:0,
+            dayKhwProms:0,Timestamp:[]
         }];
         const returnObject = {
             health:0,
             message:'',
-            isError:true
+            isError:false
         };
         logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceWeekly',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
         if (secondData.ScannedCount == 0) {
@@ -446,20 +447,22 @@ routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
         
       } catch (error) {
         const ob =  [ 
-          {registros:0,lunes:{registros: 0, amperios:  0,watts: 0}
-          ,martes:{registros:  0, amperios:  0,watts: 0}
-          ,miercoles:{registros:0, amperios:  0,watts: 0}
-          ,jueves:{registros: 0, amperios:  0,watts: 0}
-          ,viernes:{registros:0 , amperios:  0,watts: 0}
-          ,sabado:{registros: 0 , amperios:  0 ,watts: 0 }
-          ,domingo:{registros: 0, amperios:  0,watts:0  },
-          totalWatts:0  , totalAmps: 0 , diaConsulta: new Date().toISOString(),
-          promedioWattsSemanal: 0, promedioAmpsSemanal:  0
-      }];
+            {registros:0,lunes:{registros: 0, amperios:  0,watts:0}
+            ,martes:{registros: 0, amperios: 0,watts: 0}
+            ,miercoles:{registros: 0, amperios:  0,watts: 0}
+            ,jueves:{registros: 0, amperios:  0,watts: 0}
+            ,viernes:{registros: 0 , amperios: 0,watts: 0}
+            ,sabado:{registros: 0 , amperios:  0 ,watts: 0 }
+            ,domingo:{registros: 0, amperios:  0,watts:0  },
+            totalWatts:0, totalAmps: 0 , diaConsulta: new Date().toISOString(),
+            promedioWattsSemanal: 0, promedioAmpsSemanal:  0,
+            dayWattsProm:0, NightWattsProm:0, NightsKhwProm:0,
+            dayKhwProms:0,Timestamp:[]
+        }];
       const returnObject = {
         health:0,
         message:'',
-        isError:true
+        isError:false
     };
         logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceWeekly',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name  }});
        res.status(200).json({ usage:ob,health:returnObject});
@@ -519,16 +522,18 @@ routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
     const secondData = await db.query(secondParams).promise();
     if ( (data.ScannedCount == 0 || data == null || data == undefined || !data || data.Count == 0) && (secondData.ScannedCount == 0 || secondData == null || secondData == undefined || !data || secondData.Count == 0)) {
   
-          const ob =  [ 
-            {registros:0,lunes:{registros: 0, amperios:  0,watts: 0}
-            ,martes:{registros:  0, amperios:  0,watts: 0}
-            ,miercoles:{registros:0, amperios:  0,watts: 0}
+        const ob =  [ 
+            {registros:0,lunes:{registros: 0, amperios:  0,watts:0}
+            ,martes:{registros: 0, amperios: 0,watts: 0}
+            ,miercoles:{registros: 0, amperios:  0,watts: 0}
             ,jueves:{registros: 0, amperios:  0,watts: 0}
-            ,viernes:{registros:0 , amperios:  0,watts: 0}
+            ,viernes:{registros: 0 , amperios: 0,watts: 0}
             ,sabado:{registros: 0 , amperios:  0 ,watts: 0 }
-            ,domingo:{registros: 0, amperios:  0,watts:0  },
-            totalWatts:0  , totalAmps: 0 , diaConsulta: new Date().toISOString(),
-            promedioWattsSemanal: 0, promedioAmpsSemanal:  0
+            ,domingo:{registros: 0, amperios:0,watts:0  },
+            totalWatts:0, totalAmps: 0 , diaConsulta: new Date().toISOString(),
+            promedioWattsSemanal: 0, promedioAmpsSemanal:  0,
+            dayWattsProm:0, NightWattsProm:0, NightsKhwProm:0,
+            dayKhwProms:0,Timestamp:[]
         }];
         const returnObject = {
             health:0,
@@ -546,16 +551,18 @@ routes.get("/getDeviceWeekly/:start/:end", async (req,res) => {
         
       } catch (error) {
         const ob =  [ 
-          {registros:0,lunes:{registros: 0, amperios:  0,watts: 0}
-          ,martes:{registros:  0, amperios:  0,watts: 0}
-          ,miercoles:{registros:0, amperios:  0,watts: 0}
-          ,jueves:{registros: 0, amperios:  0,watts: 0}
-          ,viernes:{registros:0 , amperios:  0,watts: 0}
-          ,sabado:{registros: 0 , amperios:  0 ,watts: 0 }
-          ,domingo:{registros: 0, amperios:  0,watts:0  },
-          totalWatts:0  , totalAmps: 0 , diaConsulta: new Date().toISOString(),
-          promedioWattsSemanal: 0, promedioAmpsSemanal:  0
-      }];
+            {registros:0,lunes:{registros: 0, amperios:  0,watts:0}
+            ,martes:{registros: 0, amperios: 0,watts: 0}
+            ,miercoles:{registros: 0, amperios:  0,watts: 0}
+            ,jueves:{registros: 0, amperios:  0,watts: 0}
+            ,viernes:{registros: 0 , amperios: 0,watts: 0}
+            ,sabado:{registros: 0 , amperios:  0 ,watts: 0 }
+            ,domingo:{registros: 0, amperios: sundayAmps || 0,watts:sundayWatts ||0  },
+            totalWatts:0, totalAmps: 0 , diaConsulta: new Date().toISOString(),
+            promedioWattsSemanal: 0, promedioAmpsSemanal:  0,
+            dayWattsProm:0, NightWattsProm:0, NightsKhwProm:0,
+            dayKhwProms:0,Timestamp:[]
+        }];
       logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceWeekly',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name  }});
         const returnObject = {
             health:0,
@@ -631,7 +638,7 @@ routes.get("/getMonthly/:day", async (req,res)=>{
   try {
     const data = await db.query(params).promise();
     const secondData = await db.query(secondParams).promise();
-    if ( d(ata.ScannedCount == 0  || data == null || data == undefined || !data || data.Count ==0) && (secondData.ScannedCount == 0 || secondData == undefined)){
+    if ( (data.ScannedCount == 0  || data == null || data == undefined || !data || data.Count ==0) && (secondData.ScannedCount == 0 || secondData == undefined)){
       var MonthInformation = {
         MonthName:'',
         allMonthAmps:0,
@@ -1080,12 +1087,19 @@ routes.get("/getMonthly/:day", async (req,res)=>{
             }
         }
       };
+      const ob = [
+        { detail: MonthInformation, count:0,
+         dayWattsProm:0, NightWattsProm:0, NightsKhwProm:0,
+         dayKhwProms:0,
+         Timestamp:[]
+        }
+     ];
       const returnObject = {
         health:0,
         message:'',
         isError:true
     };
-      const ob =  [{Detail:MonthInformation}];
+ 
       logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'Connections/getAllDeviceReadingsByGivenMonth',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
       res.status(200).json({ usage: ob,health:returnObject ,  message:'Not Found'});
     }else{
@@ -1543,13 +1557,20 @@ routes.get("/getMonthly/:day", async (req,res)=>{
             }
         }
       };
+      const ob = [
+        { detail: MonthInformation, count:0,
+         dayWattsProm:0, NightWattsProm:0, NightsKhwProm:0,
+         dayKhwProms:0,
+         Timestamp:[]
+        }
+     ];
       const returnObject = {
         health:0,
         message:'',
         isError:true
     };
     logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'Connections/getAllDeviceReadingsByGivenMonth',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name,error:error }});
-    res.status(200).json({ usage: MonthInformation,health:returnObject ,message:'',error:true});
+    res.status(200).json({ usage: ob,health:returnObject ,message:'',error:true});
   }
 });
 routes.get("/getYearly/",async(req, res) =>{
@@ -6862,6 +6883,7 @@ routes.get("/getYearly/",async(req, res) =>{
             year:LocalDate.year(),
             totalAmpsProm:totalAmpsProm,
             totalWattsProm:totalWAttsProm,
+            timeStamp:TimesTamp,
         january:{
             amps:januaryAmps,
             watts:januaryWatts,
@@ -12252,6 +12274,7 @@ routes.get("/getYearly/",async(req, res) =>{
           year:LocalDate.year(),
           totalAmpsProm:totalAmpsProm,
           totalWattsProm:totalWAttsProm,
+          timeStamp:TimesTamp,
       january:{
           amps:januaryAmps,
           watts:januaryWatts,
@@ -12341,7 +12364,7 @@ routes.get("/getDeviceYearly/allConfig", async (req,res) => {
     const data = await getMonthlyHelper(result.Items);
     const health = await healthYearlyHelper(result.Items,result.Items);
     logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceYearly',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
-    res.status(200).json({result:data,database:result.Items,health:health});
+    res.status(200).json({usage:data,health:health});
     
   } catch (error) {
     logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceYearly',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name  }});
@@ -13854,7 +13877,7 @@ var ConnectionName = req.params.ConnectionName;
         const health = await ConnectionsHealthWeeklyHelper(ConnectionName,data.Items,secondData.Items);
         logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'Connections/getConnectionReadingsCurrentWeek',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
 
-        res.status(200).json({usage:week});
+        res.status(200).json({usage:week,health:health});
       } catch (error) {
         const ob =  [ 
           {registros:0,Connextion:ConnectionName,Timestamp:[],lunes:{registros:0, amperios: 0,watts: 0, Timestamp:[]}

@@ -46,6 +46,7 @@
  * @returns <array<any>>
  */
 module.exports.getMonthlyHelperConnection = async function (ConnectionName,Params){
+    
     const moment = require('moment');
     let counter = 0;
     var totalWatts = 0;

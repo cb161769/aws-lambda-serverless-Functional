@@ -36,6 +36,7 @@ functions:
           rate: cron(0 2 * * ? *)
   hello:
     handler: handler.handler
+    timeout: 30
     events:
       - http:
           path: /getAllDeviceReadings
@@ -51,6 +52,7 @@ functions:
           cors: true
   iot:
     handler: helpers/iot/iot-handler.handler
+    timeout: 30
     events:
       - http:
           path: /iot

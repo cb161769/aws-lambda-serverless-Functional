@@ -506,6 +506,7 @@ module.exports.getByMonth = async function (params){
     var dayKhwProms = 0;
     var nightKhwProms = 0;
     var counter = 0 ;
+    var weekTimeStamp = [];
     const fixedParams = params.filter(x => x.sortkey != undefined);
     for (let index = 0; index < fixedParams.length; index++) {
         var dataElement = fixedParams[index];
@@ -553,6 +554,7 @@ module.exports.getByMonth = async function (params){
                 dayKhwProms += Math.abs(kwh);
 
             }
+            weekTimeStamp.push({t:sortKeyEpoch.toISOString(),y:readings2.device_watts});
             MonthInformation.allMonthAmps += readings2.device_amps;
             MonthInformation.allMonthWatts += readings2.device_watts;
             const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
@@ -1190,7 +1192,8 @@ module.exports.getByMonth = async function (params){
     const ob = [
        { detail: MonthInformation, count:counter,
         dayWattsProm:dayWattsProms, NightWattsProm:nightWattsProms, NightsKhwProm:nightKhwProms,
-        dayKhwProms:dayKhwProms
+        dayKhwProms:dayKhwProms,
+        Timestamp:weekTimeStamp
        }
     ];
     return ob;

@@ -31,6 +31,7 @@ module.exports.getWeeklyHelper = async function  (dynamoDBArray) {
     var nightWattsProms = 0;
     var dayKhwProms = 0;
     var nightKhwProms = 0;
+    var weekTimeStamp = [];
     for (let index = 0; index < dynamoDBArray.length; index++) {
         var dataElement = dynamoDBArray[index];
         if (dataElement == undefined) {
@@ -69,6 +70,7 @@ module.exports.getWeeklyHelper = async function  (dynamoDBArray) {
                 dayKhwProms += Math.abs(kwh);
 
             }
+            weekTimeStamp.push({t:sortKeyEpoch.toISOString(),y:readings2.device_watts});
             if (weekDay == 1) {
                 monday +=1;
                 mondayAmps += readings2.device_amps;
@@ -146,7 +148,7 @@ module.exports.getWeeklyHelper = async function  (dynamoDBArray) {
         totalWatts:totalWatts || 0, totalAmps:totalAmps || 0 , diaConsulta: new Date().toISOString(),
         promedioWattsSemanal: totalWAttsProm ||0, promedioAmpsSemanal: totalAmpsProm || 0,
         dayWattsProm:dayWattsProms, NightWattsProm:nightWattsProms, NightsKhwProm:nightKhwProms,
-        dayKhwProms:dayKhwProms
+        dayKhwProms:dayKhwProms,Timestamp:weekTimeStamp
     }];
     return ob;
 }
