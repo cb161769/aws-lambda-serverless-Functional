@@ -16,7 +16,11 @@ module.exports.ConnectionsDailyWattsDayNight = async function(ConnectionName,dyn
         backgroundColor:['blue','red'],
         data:[days,night]
     }];
-    return dataset;
+    const returnObject ={
+        labels: 'Analisis de consumo',
+        datasets:dataset
+    }
+    return returnObject;
 };
 /**
  * @function ConnectionsWeekKiloWattsDayNight     
@@ -32,7 +36,11 @@ module.exports.ConnectionsWeekKiloWattsDayNight = async function(ConnectionName,
         backgroundColor:['blue','red'],
         data:[days,night]
     }];
-    return dataset;
+    const returnObject ={
+        labels: 'Analisis de consumo',
+        datasets:dataset
+    }
+    return returnObject;
 };
 module.exports.ConnectionsWeeklyWattsDayNight = async function(ConnectionName,dynamoDBArray){
     const helper = await dailyHelperFromConnections(ConnectionName,dynamoDBArray);
@@ -43,7 +51,11 @@ module.exports.ConnectionsWeeklyWattsDayNight = async function(ConnectionName,dy
         backgroundColor:['blue','red'],
         data:[days,night]
     }];
-    return dataset;
+    const returnObject ={
+        labels: 'Analisis de consumo',
+        datasets:dataset
+    }
+    return returnObject;
 };
 /**
  *      
@@ -59,7 +71,11 @@ module.exports.ConnectionsWeeklyKiloWattsDayNight = async function(ConnectionNam
         backgroundColor:['blue','red'],
         data:[days,night]
     }];
-    return dataset;
+    const returnObject ={
+        labels: 'Analisis de consumo',
+        datasets:dataset
+    }
+    return returnObject;
 };
 //monthly
 module.exports.ConnectionsMonthlyWattsDayNight = async function(ConnectionName,dynamoDBArray){
@@ -71,7 +87,11 @@ module.exports.ConnectionsMonthlyWattsDayNight = async function(ConnectionName,d
         backgroundColor:['blue','red'],
         data:[days,night]
     }];
-    return dataset;
+    const returnObject ={
+        labels: 'Analisis de consumo',
+        datasets:dataset
+    }
+    return returnObject;
 };
 /**
  *      
@@ -87,5 +107,9 @@ module.exports.ConnectionsMonthlyKiloWattsDayNight = async function(ConnectionNa
         backgroundColor:['blue','red'],
         data:[days,night]
     }];
-    return dataset;
+    const returnObject ={
+        labels: 'Analisis de consumo',
+        datasets:dataset
+    }
+    return returnObject;
 };
