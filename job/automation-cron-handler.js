@@ -340,7 +340,6 @@ async function fetchConfigurationData(){
 module.exports.handler = async (event, context,callback) =>{
     try {
         const data = await fetchTodaysData();
-        console.log(data);
         const configuration = await fetchConfigurationData();
        const automation = await AutomateConsumption(data,configuration);
        console.log(automation);

@@ -3,6 +3,13 @@ const {publishSNS} = require('../../sns/sns-helper');
 const logger = require('../../helpers/log/logsHelper');
 const {config} = require('../../connections/config/config');
 const TOPIC_NAME = process.env.TOPIC_NAME;
+const admin = require("firebase-admin");
+var serviceAccount = require('../../connections/config/firebase.config.json');
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+const firebaseRegistrationToken = config.Firebase.registrationToken;
+
 /**
  * @author Claudio Raul Brito Mercedes
  * @param {*} date date Object
@@ -202,8 +209,23 @@ module.exports.AutomateConsumption = async function(data,configuration){
                         const snsParams = {
                             Message: `triggering other Lambda(s). Send via ${TOPIC_NAME}`,
                             TopicArn: `arn:aws:sns:${config.region.name}:${config.sns.accountId}:${TOPIC_NAME}`
-                          }
+                          };
+                          const message = {
+                              data:{
+                                  test:'',
+                                  time:'',
+                              },
+                              token:firebaseRegistrationToken
+                          };
+                          
                         try {
+                            // evaluate if the device is already turned off
+                            admin.messaging().send(message).then((response) =>{
+                                //TODO send response successfully
+                            }).catch((error) =>{
+                                logger.log('error', `Requesting [PUSH NOTIFICATION]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUSH NOTIFICATION', table: config.dynamoBB.deviceConnection.name,error:error }});
+                                //TODO log errors
+                            })
                             const data = await writeToDynamoDB(config.dynamoBB.deviceConnection.name,device);
                             logger.log('info', `Requesting [Write To DynamoDB]`, {tags: 'automationHelper', additionalInfo: {operation: 'AutomateConsumption',databaseOperation:'PUT', table: config.dynamoBB.deviceConnection.name }});
                             // const sns = await publishSNS(snsParams);
@@ -219,7 +241,7 @@ module.exports.AutomateConsumption = async function(data,configuration){
                             deviceId: config.deviceName,
                             isConnection:false,
                             connectionName:'',
-                            turnOff:true,
+                            turnOff:false,
                             isDevice:true,
                             deviceName: config.deviceName
                         };

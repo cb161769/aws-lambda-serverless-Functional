@@ -20,7 +20,11 @@ module.exports.DeviceWeeklyWattsDayNightHelper = async function (dynamoDBArray){
         backgroundColor:['blue','red'],
         data:[days,night]
     }]
-    return dataset;
+    const returnObject ={
+        labels: 'Analisis de consumo',
+        datasets:dataset
+    }
+    return returnObject;
 
 
 };
@@ -38,7 +42,11 @@ module.exports.DeviceWeeklyKiloWattsDayNightHelper = async function (dynamoDBArr
         backgroundColor:['blue','red'],
         data:[days,night]
     }]
-    return dataset;
+    const returnObject ={
+        labels: 'Analisis de consumo',
+        datasets:dataset
+    }
+    return returnObject;
 
 };
 /**
@@ -55,7 +63,11 @@ module.exports.DeviceMonthlyWattsDayNightHelper = async function (dynamoDBArray)
         backgroundColor:['blue','red'],
         data:[days,night]
     }];
-    return dataset;
+    const returnObject ={
+        labels: 'Analisis de consumo',
+        datasets:dataset
+    }
+    return returnObject;
 };
 /**
  * 
@@ -66,11 +78,15 @@ module.exports.DeviceMonthlyKiloWattsDayNightHelper = async function(dynamoDBArr
     const days= helper[0].dayKhwProms;
     const night = helper[0].NightsKhwProm;
     const dataset = [{
-        label: 'Consumo Mensual en Watts',
+        label: 'Consumo Mensual en KiloWatts',
         backgroundColor:['blue','red'],
         data:[days,night]
     }]
-    return dataset;
+    const returnObject ={
+        labels: 'Analisis de consumo',
+        datasets:dataset
+    }
+    return returnObject;
 };
 /**
  * @function DeviceMonthlyYearlyWattsDayNight
@@ -85,7 +101,11 @@ module.exports.DeviceMonthlyYearlyWattsDayNight = async function(dynamoDBArray){
         backgroundColor:['blue','red'],
         data:[days,night]
     }];
-    return dataset;
+    const returnObject ={
+        labels: 'Analisis de consumo',
+        datasets:dataset
+    }
+    return returnObject;
 };
 /**
  *      
@@ -101,7 +121,11 @@ module.exports.DeviceMonthlyYearlyKiloWattsDayNight = async function(dynamoDBArr
         backgroundColor:['blue','red'],
         data:[days,night]
     }];
-    return dataset;
+    const returnObject ={
+        labels: 'Analisis de consumo',
+        datasets:dataset
+    }
+    return returnObject;
 };
 /**
  * @function DeviceDailyWattsDayNight
@@ -116,7 +140,11 @@ module.exports.DeviceMonthlyYearlyKiloWattsDayNight = async function(dynamoDBArr
         backgroundColor:['blue','red'],
         data:[days,night]
     }];
-    return dataset;
+    const returnObject ={
+        labels: 'Analisis de consumo',
+        datasets:dataset
+    }
+    return returnObject;
 };
 /**
  *      
@@ -132,12 +160,35 @@ module.exports.DeviceDailyKiloWattsDayNight = async function(dynamoDBArray){
         backgroundColor:['blue','red'],
         data:[days,night]
     }];
-    return dataset;
+    const returnObject ={
+        labels: 'Analisis de consumo',
+        datasets:dataset
+    }
+    return returnObject;
 };
 
 
 
-
-
+/**
+ * EXPECTED DATASET":
+ * const data = {
+  labels: labels,
+  datasets: [
+    {
+      label: 'Dataset 1',
+      data: Utils.bubbles(NUMBER_CFG),
+      borderColor: Utils.CHART_COLORS.red,
+      backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
+    },
+    {
+      label: 'Dataset 2',
+      data: Utils.bubbles(NUMBER_CFG),
+      borderColor: Utils.CHART_COLORS.orange,
+      backgroundColor: Utils.transparentize(Utils.CHART_COLORS.orange, 0.5),
+    }
+  ]
+};
+ * 
+ */
 
 

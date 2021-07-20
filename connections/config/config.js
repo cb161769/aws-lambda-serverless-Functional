@@ -44,5 +44,11 @@ module.exports.config = {
     },
     encryption:{
         password:'1234'
+    },
+    Firebase:{
+        registrationToken:''
+    },
+    userNameEmail:{
+        email: 'claudioraulmercedes@gmail.com',
     }
 }

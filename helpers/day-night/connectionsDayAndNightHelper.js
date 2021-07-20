@@ -1,5 +1,6 @@
 const {connectionsDailyHelper} = require('../../helpers/connectionHelpers/ConnectionDailyHelper');
 const {dailyHelperFromConnections} = require('../../helpers/connectionHelpers/dailyHelper');
+
 /**
  * 
  * @param {*} ConnectionName connectionName
@@ -11,7 +12,7 @@ module.exports.ConnectionsDailyWattsDayNight = async function(ConnectionName,dyn
     const days= helper[0].dayWattsProm;
     const night = helper[0].NightWattsProm;
     const dataset = [{
-        label: 'Consumo Diario en Watts',
+        labels: 'Consumo Diario en Watts',
         backgroundColor:['blue','red'],
         data:[days,night]
     }];
@@ -27,7 +28,7 @@ module.exports.ConnectionsWeekKiloWattsDayNight = async function(ConnectionName,
     const days= helper[0].dayKhwProms;
     const night = helper[0].NightsKhwProm;
     const dataset = [{
-        label: 'Consumo Diario en KiloWatts',
+        labels: 'Consumo Diario en KiloWatts',
         backgroundColor:['blue','red'],
         data:[days,night]
     }];
@@ -38,7 +39,7 @@ module.exports.ConnectionsWeeklyWattsDayNight = async function(ConnectionName,dy
     const days= helper[0].dayWattsProm;
     const night = helper[0].NightWattsProm;
     const dataset = [{
-        label: 'Consumo Diario en Watts',
+        labels: 'Consumo Diario en Watts',
         backgroundColor:['blue','red'],
         data:[days,night]
     }];
@@ -54,7 +55,7 @@ module.exports.ConnectionsWeeklyKiloWattsDayNight = async function(ConnectionNam
     const days= helper[0].dayKhwProms;
     const night = helper[0].NightsKhwProm;
     const dataset = [{
-        label: 'Consumo Diario en KiloWatts',
+        labels: 'Consumo Diario en KiloWatts',
         backgroundColor:['blue','red'],
         data:[days,night]
     }];
@@ -66,7 +67,7 @@ module.exports.ConnectionsMonthlyWattsDayNight = async function(ConnectionName,d
     const days= helper[0].dayWattsProm;
     const night = helper[0].NightWattsProm;
     const dataset = [{
-        label: 'Consumo Diario en Watts',
+        labels: 'Consumo Diario en Watts',
         backgroundColor:['blue','red'],
         data:[days,night]
     }];
@@ -82,7 +83,7 @@ module.exports.ConnectionsMonthlyKiloWattsDayNight = async function(ConnectionNa
     const days= helper[0].dayKhwProms;
     const night = helper[0].NightsKhwProm;
     const dataset = [{
-        label: 'Consumo Diario en KiloWatts',
+        labels: 'Consumo Diario en KiloWatts',
         backgroundColor:['blue','red'],
         data:[days,night]
     }];
