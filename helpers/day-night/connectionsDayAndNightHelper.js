@@ -12,12 +12,13 @@ module.exports.ConnectionsDailyWattsDayNight = async function(ConnectionName,dyn
     const days= helper[0].dayWattsProm;
     const night = helper[0].NightWattsProm;
     const dataset = [{
-        labels: 'Consumo Diario en Watts',
-        backgroundColor:['blue','red'],
-        data:[days,night]
+        label: 'Consumo Diario en Watts',
+        backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
+        data:[days,night],
+        hoverOffset: 4
     }];
     const returnObject ={
-        labels: 'Analisis de consumo',
+        labels: ['Analisis de consumo'],
         datasets:dataset
     }
     return returnObject;
@@ -32,12 +33,13 @@ module.exports.ConnectionsWeekKiloWattsDayNight = async function(ConnectionName,
     const days= helper[0].dayKhwProms;
     const night = helper[0].NightsKhwProm;
     const dataset = [{
-        labels: 'Consumo Diario en KiloWatts',
-        backgroundColor:['blue','red'],
-        data:[days,night]
+        label: 'Consumo Diario en KiloWatts',
+        backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
+        data:[days,night],
+        hoverOffset: 4
     }];
     const returnObject ={
-        labels: 'Analisis de consumo',
+        labels: ['Analisis de consumo'],
         datasets:dataset
     }
     return returnObject;
@@ -47,12 +49,13 @@ module.exports.ConnectionsWeeklyWattsDayNight = async function(ConnectionName,dy
     const days= helper[0].dayWattsProm;
     const night = helper[0].NightWattsProm;
     const dataset = [{
-        labels: 'Consumo Diario en Watts',
-        backgroundColor:['blue','red'],
-        data:[days,night]
+        label: 'Consumo Diario en Watts',
+        backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
+        data:[days,night],
+        hoverOffset: 4
     }];
     const returnObject ={
-        labels: 'Analisis de consumo',
+        labels: ['Analisis de consumo'],
         datasets:dataset
     }
     return returnObject;
@@ -67,12 +70,13 @@ module.exports.ConnectionsWeeklyKiloWattsDayNight = async function(ConnectionNam
     const days= helper[0].dayKhwProms;
     const night = helper[0].NightsKhwProm;
     const dataset = [{
-        labels: 'Consumo Diario en KiloWatts',
-        backgroundColor:['blue','red'],
-        data:[days,night]
+        label: 'Consumo Diario en KiloWatts',
+        backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
+        data:[days,night],
+        hoverOffset: 4
     }];
     const returnObject ={
-        labels: 'Analisis de consumo',
+        labels: ['Analisis de consumo'],
         datasets:dataset
     }
     return returnObject;
@@ -83,12 +87,13 @@ module.exports.ConnectionsMonthlyWattsDayNight = async function(ConnectionName,d
     const days= helper[0].dayWattsProm;
     const night = helper[0].NightWattsProm;
     const dataset = [{
-        labels: 'Consumo Diario en Watts',
-        backgroundColor:['blue','red'],
-        data:[days,night]
+        label: 'Consumo Diario en Watts',
+        backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
+        data:[days,night],
+        hoverOffset: 4
     }];
     const returnObject ={
-        labels: 'Analisis de consumo',
+        labels: ['Analisis de consumo'],
         datasets:dataset
     }
     return returnObject;
@@ -103,12 +108,13 @@ module.exports.ConnectionsMonthlyKiloWattsDayNight = async function(ConnectionNa
     const days= helper[0].dayKhwProms;
     const night = helper[0].NightsKhwProm;
     const dataset = [{
-        labels: 'Consumo Diario en KiloWatts',
-        backgroundColor:['blue','red'],
-        data:[days,night]
+        label: 'Consumo Diario en KiloWatts',
+        backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
+        data:[days,night],
+        hoverOffset: 4
     }];
     const returnObject ={
-        labels: 'Analisis de consumo',
+        labels: ['Analisis de consumo'],
         datasets:dataset
     }
     return returnObject;

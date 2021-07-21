@@ -680,24 +680,26 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
       };
       const dataset = [
         {
-          labels: "Consumo semanal en Watts",
-          backgroundColor: ["blue", "red"],
+          label: "Consumo semanal en Watts",
+          backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
           data: [0, 0],
+          hoverOffset: 4
         },
       ];
       const returnWatts ={
-        labels: 'Analisis de consumo',
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     };
       const Kwhdataset = [
         {
-          labels: "Consumo semanal en KiloWatts",
-          backgroundColor: ["blue", "red"],
+          label: "Consumo semanal en KiloWatts",
+          backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
           data: [0, 0],
+          hoverOffset: 4
         },
       ];
       const returnKHWatts ={
-        labels: 'Analisis de consumo',
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:Kwhdataset
         };
       logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
@@ -776,22 +778,28 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
         };
         const dataset = [
           {
-            labels: "Consumo semanal en Watts",
-            backgroundColor: ["blue", "red"],
+            label: "Consumo semanal en Watts",
+            backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
             data: [0, 0],
+            hoverOffset: 4
           },
         ];
         const Kwhdataset = [
           {
-            labels: "Consumo semanal en KiloWatts",
-            backgroundColor: ["blue", "red"],
+            label: "Consumo semanal en KiloWatts",
+            backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
             data: [0, 0],
+            hoverOffset: 4
           },
         ];
         const returnKHWatts ={
-            labels: 'Analisis de consumo',
+            labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
             datasets:Kwhdataset
             };
+            const returnWatts ={
+              labels:[ 'Analisis de consumo'],
+              datasets:dataset
+          };
         logger.log("error", `Requesting ${req.method} ${req.originalUrl}`, {
           tags: "http",
           additionalInfo: {
@@ -905,24 +913,26 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
       };
       const dataset = [
         {
-          labels: "Consumo semanal en Watts",
-          backgroundColor: ["blue", "red"],
+          label: "Consumo semanal en Watts",
+          backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
           data: [0, 0],
+          hoverOffset: 4
         },
       ];
       const returnWatts ={
-        labels: 'Analisis de consumo',
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     };
       const Kwhdataset = [
         {
-          labels: "Consumo semanal en KiloWatts",
-          backgroundColor: ["blue", "red"],
+          label: "Consumo semanal en KiloWatts",
+          backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
           data: [0, 0],
+          hoverOffset: 4
         },
       ];
       const returnKHWatts ={
-        labels: 'Analisis de consumo',
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:Kwhdataset
         };
       res
@@ -1004,23 +1014,23 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
         const dataset = [
           {
             labels: "Consumo semanal en Watts",
-            backgroundColor: ["blue", "red"],
+            backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
             data: [0, 0],
           },
         ];
         const returnWatts ={
-            labels: 'Analisis de consumo',
+            label: 'Analisis de consumo',
             datasets:dataset
         };
         const Kwhdataset = [
           {
             labels: "Consumo semanal en KiloWatts",
-            backgroundColor: ["blue", "red"],
+            backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
             data: [0, 0],
           },
         ];
         const returnKHWatts ={
-            labels: 'Analisis de consumo',
+            label: 'Analisis de consumo',
             datasets:Kwhdataset
             };
         res
@@ -1576,7 +1586,7 @@ routes.get("/getMonthly/:day", async (req, res) => {
         data:[0,0]
     }];
     const returnWatts ={
-        labels: 'Analisis de consumo',
+        label: 'Analisis de consumo',
         datasets:dataset
     };
     const Kwhdataset = [{
@@ -1585,7 +1595,7 @@ routes.get("/getMonthly/:day", async (req, res) => {
         data:[0,0]
     }];
     const returnKHWatts ={
-        labels: 'Analisis de consumo',
+        label: 'Analisis de consumo',
         datasets:Kwhdataset
         };
 
@@ -2086,23 +2096,23 @@ routes.get("/getMonthly/:day", async (req, res) => {
     const dataset = [
         {
           labels: "Consumo semanal en Watts",
-          backgroundColor: ["blue", "red"],
+          backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
           data: [0, 0],
         },
       ];
       const returnWatts ={
-        labels: 'Analisis de consumo',
+        label: 'Analisis de consumo',
         datasets:dataset
     };
       const Kwhdataset = [
         {
           labels: "Consumo semanal en KiloWatts",
-          backgroundColor: ["blue", "red"],
+          backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
           data: [0, 0],
         },
       ];
       const returnKHWatts ={
-        labels: 'Analisis de consumo',
+        label: 'Analisis de consumo',
         datasets:Kwhdataset
         };
     logger.log("error", `Requesting ${req.method} ${req.originalUrl}`, {
@@ -7463,23 +7473,23 @@ routes.get("/getYearly/", async (req, res) => {
       const dataset = [
         {
           labels: "Consumo semanal en Watts",
-          backgroundColor: ["blue", "red"],
+          backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
           data: [0, 0],
         },
       ];
       const returnWatts ={
-        labels: 'Analisis de consumo',
+        label: 'Analisis de consumo',
         datasets:dataset
     };
       const Kwhdataset = [
         {
           labels: "Consumo semanal en KiloWatts",
-          backgroundColor: ["blue", "red"],
+          backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
           data: [0, 0],
         },
       ];
       const returnKHWatts ={
-        labels: 'Analisis de consumo',
+        label: 'Analisis de consumo',
         datasets:Kwhdataset
         };
       res.status(200).json({ usage: ob, health: returnObject, dayNight: returnWatts,
@@ -12833,23 +12843,23 @@ routes.get("/getYearly/", async (req, res) => {
     const dataset = [
         {
           labels: "Consumo anual en Watts",
-          backgroundColor: ["blue", "red"],
+          backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
           data: [0, 0],
         },
       ];
       const returnWatts ={
-        labels: 'Analisis de consumo',
+        label: 'Analisis de consumo',
         datasets:dataset
     };
       const Kwhdataset = [
         {
           labels: "Consumo anual en KiloWatts",
-          backgroundColor: ["blue", "red"],
+          backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
           data: [0, 0],
         },
       ];
       const returnKHWatts ={
-        labels: 'Analisis de consumo',
+        label: 'Analisis de consumo',
         datasets:Kwhdataset
         };
     res

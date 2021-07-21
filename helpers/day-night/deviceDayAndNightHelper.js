@@ -17,11 +17,12 @@ module.exports.DeviceWeeklyWattsDayNightHelper = async function (dynamoDBArray){
     const night = helper[0].NightWattsProm;
     const dataset = [{
         label: 'Consumo semanal en Watts',
-        backgroundColor:['blue','red'],
-        data:[days,night]
+        backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
+        data:[days,night],
+        hoverOffset: 4
     }]
     const returnObject ={
-        labels: 'Analisis de consumo',
+        labels: ['Analisis de consumo'],
         datasets:dataset
     }
     return returnObject;
@@ -39,11 +40,12 @@ module.exports.DeviceWeeklyKiloWattsDayNightHelper = async function (dynamoDBArr
     const night = helper[0].NightsKhwProm;
     const dataset = [{
         label: 'Consumo semanal en KiloWatts',
-        backgroundColor:['blue','red'],
-        data:[days,night]
+        backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
+        data:[days,night],
+        hoverOffset: 4
     }]
     const returnObject ={
-        labels: 'Analisis de consumo',
+        labels: ['Analisis de consumo'],
         datasets:dataset
     }
     return returnObject;
@@ -60,11 +62,12 @@ module.exports.DeviceMonthlyWattsDayNightHelper = async function (dynamoDBArray)
     const night = helper[0].NightWattsProm;
     const dataset = [{
         label: 'Consumo semanal en Watts',
-        backgroundColor:['blue','red'],
-        data:[days,night]
+        backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
+        data:[days,night],
+        hoverOffset: 4
     }];
     const returnObject ={
-        labels: 'Analisis de consumo',
+        labels: ['Analisis de consumo'],
         datasets:dataset
     }
     return returnObject;
@@ -79,11 +82,12 @@ module.exports.DeviceMonthlyKiloWattsDayNightHelper = async function(dynamoDBArr
     const night = helper[0].NightsKhwProm;
     const dataset = [{
         label: 'Consumo Mensual en KiloWatts',
-        backgroundColor:['blue','red'],
-        data:[days,night]
+        backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
+        data:[days,night],
+        hoverOffset: 4
     }]
     const returnObject ={
-        labels: 'Analisis de consumo',
+        labels: ['Analisis de consumo'],
         datasets:dataset
     }
     return returnObject;
@@ -98,11 +102,12 @@ module.exports.DeviceMonthlyYearlyWattsDayNight = async function(dynamoDBArray){
     const night = helper[0].NightWattsProm;
     const dataset = [{
         label: 'Consumo Anual en Watts',
-        backgroundColor:['blue','red'],
-        data:[days,night]
+        backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
+        data:[days,night],
+        hoverOffset: 4
     }];
     const returnObject ={
-        labels: 'Analisis de consumo',
+        labels: ['Analisis de consumo'],
         datasets:dataset
     }
     return returnObject;
@@ -118,11 +123,12 @@ module.exports.DeviceMonthlyYearlyKiloWattsDayNight = async function(dynamoDBArr
     const night = helper[0].NightsKhwProm;
     const dataset = [{
         label: 'Consumo Anual en KiloWatts',
-        backgroundColor:['blue','red'],
-        data:[days,night]
+        backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
+        data:[days,night],
+        hoverOffset: 4
     }];
     const returnObject ={
-        labels: 'Analisis de consumo',
+        labels: ['Analisis de consumo'],
         datasets:dataset
     }
     return returnObject;
@@ -137,11 +143,12 @@ module.exports.DeviceMonthlyYearlyKiloWattsDayNight = async function(dynamoDBArr
     const night = helper[0].NightWattsProm;
     const dataset = [{
         label: 'Consumo Diario en Watts',
-        backgroundColor:['blue','red'],
-        data:[days,night]
+        backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
+        data:[days,night],
+        hoverOffset: 4
     }];
     const returnObject ={
-        labels: 'Analisis de consumo',
+        labels: ['Analisis de consumo'],
         datasets:dataset
     }
     return returnObject;
@@ -157,11 +164,12 @@ module.exports.DeviceDailyKiloWattsDayNight = async function(dynamoDBArray){
     const night = helper[0].NightsKhwProm;
     const dataset = [{
         label: 'Consumo Diario en KiloWatts',
-        backgroundColor:['blue','red'],
-        data:[days,night]
+        backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
+        data:[days,night],
+        hoverOffset: 4
     }];
     const returnObject ={
-        labels: 'Analisis de consumo',
+        labels: ['Analisis de consumo'],
         datasets:dataset
     }
     return returnObject;
@@ -177,8 +185,8 @@ module.exports.DeviceDailyKiloWattsDayNight = async function(dynamoDBArray){
     {
       label: 'Dataset 1',
       data: Utils.bubbles(NUMBER_CFG),
-      borderColor: Utils.CHART_COLORS.red,
-      backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
+      borderColor: Utils.CHART_COLORS.rgb(54, 162, 235),
+      backgroundColor: Utils.transparentize(Utils.CHART_COLORS.rgb(54, 162, 235), 0.5),
     },
     {
       label: 'Dataset 2',
