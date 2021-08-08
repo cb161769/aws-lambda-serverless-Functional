@@ -97,7 +97,7 @@ module.exports.getWeeklyHelper = async function  (dynamoDBArray) {
                 thursdayWatts += readings2.device_watts;
                 thursdayAmps = readings2.device_amps;
                 break;
-                // totalWatts += Object.keys(readings2).length;
+             
                     
             }
             if (weekDay == 5) {
@@ -137,7 +137,7 @@ module.exports.getWeeklyHelper = async function  (dynamoDBArray) {
     }
     totalAmpsProm = totalAmps/ dynamoDBArray.length
     totalWAttsProm = totalWatts/ dynamoDBArray.length;
-    const ob =  [ 
+    return  [ 
         {registros:counter,lunes:{registros:monday || 0, amperios: mondayAmps || 0,watts:mondayWatts || 0}
         ,martes:{registros:tuesday || 0, amperios: tuesdayAmps || 0,watts:tuesdayWatts || 0}
         ,miercoles:{registros:wednesday || 0, amperios: wednesdayAmps || 0,watts:wednesdayWatts || 0}
@@ -150,7 +150,7 @@ module.exports.getWeeklyHelper = async function  (dynamoDBArray) {
         dayWattsProm:dayWattsProms, NightWattsProm:nightWattsProms, NightsKhwProm:nightKhwProms,
         dayKhwProms:dayKhwProms,Timestamp:weekTimeStamp
     }];
-    return ob;
+ 
 }
 /**
  * this Function determines if the user consumed 

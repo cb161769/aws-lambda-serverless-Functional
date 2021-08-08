@@ -564,12 +564,10 @@ routes.post("/configureDevice", async (req, res) => {
         table: config.dynamoBB.deviceTable.name,
       },
     });
-    res
-      .status(200)
-      .json({
-        status: 200,
-        message: "El Dispsitivo fue configurado Stisfactoriamente",
-      });
+    res.status(200).json({
+      status: 200,
+      message: "El Dispsitivo fue configurado Stisfactoriamente",
+    });
   } catch (error) {
     logger.log("error", `Requesting ${req.method} ${req.originalUrl}`, {
       tags: "http",
@@ -681,27 +679,27 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
       const dataset = [
         {
           label: "Consumo semanal en Watts",
-          backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
+          backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
           data: [0, 0],
-          hoverOffset: 4
+          hoverOffset: 4,
         },
       ];
-      const returnWatts ={
-        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
-        datasets:dataset
-    };
+      const returnWatts = {
+        labels: ["Analisis de consumo de dia", "Analisis de consumo de noche"],
+        datasets: dataset,
+      };
       const Kwhdataset = [
         {
           label: "Consumo semanal en KiloWatts",
-          backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
+          backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
           data: [0, 0],
-          hoverOffset: 4
+          hoverOffset: 4,
         },
       ];
-      const returnKHWatts ={
-        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
-        datasets:Kwhdataset
-        };
+      const returnKHWatts = {
+        labels: ["Analisis de consumo de dia", "Analisis de consumo de noche"],
+        datasets: Kwhdataset,
+      };
       logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
         tags: "http",
         additionalInfo: {
@@ -724,14 +722,12 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
           },
         });
       }
-      res
-        .status(200)
-        .json({
-          usage: ob,
-          health: returnObject,
-          dayNight: returnWatts,
-          dayNightKilowatts: returnKHWatts,
-        });
+      res.status(200).json({
+        usage: ob,
+        health: returnObject,
+        dayNight: returnWatts,
+        dayNightKilowatts: returnKHWatts,
+      });
     } else {
       try {
         const week = await getWeeklyHelper(data.Items);
@@ -740,14 +736,12 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
         const dayNightKilowatts = await DeviceWeeklyKiloWattsDayNightHelper(
           data.Items
         );
-        res
-          .status(200)
-          .json({
-            usage: week,
-            health: health,
-            dayNight: dayNight,
-            dayNightKilowatts: dayNightKilowatts,
-          });
+        res.status(200).json({
+          usage: week,
+          health: health,
+          dayNight: dayNight,
+          dayNightKilowatts: dayNightKilowatts,
+        });
       } catch (error) {
         const ob = [
           {
@@ -779,27 +773,30 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
         const dataset = [
           {
             label: "Consumo semanal en Watts",
-            backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
+            backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
             data: [0, 0],
-            hoverOffset: 4
+            hoverOffset: 4,
           },
         ];
         const Kwhdataset = [
           {
             label: "Consumo semanal en KiloWatts",
-            backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
+            backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
             data: [0, 0],
-            hoverOffset: 4
+            hoverOffset: 4,
           },
         ];
-        const returnKHWatts ={
-            labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
-            datasets:Kwhdataset
-            };
-            const returnWatts ={
-              labels:[ 'Analisis de consumo'],
-              datasets:dataset
-          };
+        const returnKHWatts = {
+          labels: [
+            "Analisis de consumo de dia",
+            "Analisis de consumo de noche",
+          ],
+          datasets: Kwhdataset,
+        };
+        const returnWatts = {
+          labels: ["Analisis de consumo"],
+          datasets: dataset,
+        };
         logger.log("error", `Requesting ${req.method} ${req.originalUrl}`, {
           tags: "http",
           additionalInfo: {
@@ -811,14 +808,12 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
             table: config.dynamoBB.deviceReadings.name,
           },
         });
-        res
-          .status(200)
-          .json({
-            usage: ob,
-            health: returnObject,
-            dayNight: returnWatts,
-            dayNightKilowatts: returnKHWatts
-          });
+        res.status(200).json({
+          usage: ob,
+          health: returnObject,
+          dayNight: returnWatts,
+          dayNightKilowatts: returnKHWatts,
+        });
       }
     }
   } else {
@@ -914,49 +909,45 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
       const dataset = [
         {
           label: "Consumo semanal en Watts",
-          backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
+          backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
           data: [0, 0],
-          hoverOffset: 4
+          hoverOffset: 4,
         },
       ];
-      const returnWatts ={
-        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
-        datasets:dataset
-    };
+      const returnWatts = {
+        labels: ["Analisis de consumo de dia", "Analisis de consumo de noche"],
+        datasets: dataset,
+      };
       const Kwhdataset = [
         {
           label: "Consumo semanal en KiloWatts",
-          backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
+          backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
           data: [0, 0],
-          hoverOffset: 4
+          hoverOffset: 4,
         },
       ];
-      const returnKHWatts ={
-        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
-        datasets:Kwhdataset
-        };
-      res
-        .status(200)
-        .json({
-          usage: ob,
-          health: returnObject,
-          dayNight: returnWatts,
-          dayNightKilowatts: returnKHWatts,
-        });
+      const returnKHWatts = {
+        labels: ["Analisis de consumo de dia", "Analisis de consumo de noche"],
+        datasets: Kwhdataset,
+      };
+      res.status(200).json({
+        usage: ob,
+        health: returnObject,
+        dayNight: returnWatts,
+        dayNightKilowatts: returnKHWatts,
+      });
     } else {
       try {
         const dayNight = await DeviceWeeklyWattsDayNightHelper(data.Items);
         const dayNightKilowatts = await DeviceWeeklyKiloWattsDayNightHelper(
           data.Items
         );
-        res
-          .status(200)
-          .json({
-            usage: week,
-            health: health,
-            dayNight: dayNight,
-            dayNightKilowatts: dayNightKilowatts,
-          });
+        res.status(200).json({
+          usage: week,
+          health: health,
+          dayNight: dayNight,
+          dayNightKilowatts: dayNightKilowatts,
+        });
         logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
           tags: "http",
           additionalInfo: {
@@ -1014,34 +1005,31 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
         const dataset = [
           {
             labels: "Consumo semanal en Watts",
-            backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
+            backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
             data: [0, 0],
           },
         ];
-        const returnWatts ={
-            label: 'Analisis de consumo',
-            datasets:dataset
+        const returnWatts = {
+          label: "Analisis de consumo",
+          datasets: dataset,
         };
         const Kwhdataset = [
           {
             labels: "Consumo semanal en KiloWatts",
-            backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
+            backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
             data: [0, 0],
           },
         ];
-        const returnKHWatts ={
-            label: 'Analisis de consumo',
-            datasets:Kwhdataset
-            };
-        res
-          .status(200)
-          .json({
-            usage: ob,
-            health: returnObject,
-            dayNight: returnWatts,
-            dayNightKilowatts: returnKHWatts,
-          });
-      
+        const returnKHWatts = {
+          label: "Analisis de consumo",
+          datasets: Kwhdataset,
+        };
+        res.status(200).json({
+          usage: ob,
+          health: returnObject,
+          dayNight: returnWatts,
+          dayNightKilowatts: returnKHWatts,
+        });
       }
     }
   }
@@ -1580,24 +1568,28 @@ routes.get("/getMonthly/:day", async (req, res) => {
         message: "",
         isError: true,
       };
-      const dataset = [{
-        labels: 'Consumo Mensual en Watts',
-        backgroundColor:['blue','red'],
-        data:[0,0]
-    }];
-    const returnWatts ={
-        label: 'Analisis de consumo',
-        datasets:dataset
-    };
-    const Kwhdataset = [{
-        labels: 'Consumo semanal en Watts',
-        backgroundColor:['blue','red'],
-        data:[0,0]
-    }];
-    const returnKHWatts ={
-        label: 'Analisis de consumo',
-        datasets:Kwhdataset
-        };
+      const dataset = [
+        {
+          labels: "Consumo Mensual en Watts",
+          backgroundColor: ["blue", "red"],
+          data: [0, 0],
+        },
+      ];
+      const returnWatts = {
+        label: "Analisis de consumo",
+        datasets: dataset,
+      };
+      const Kwhdataset = [
+        {
+          labels: "Consumo semanal en Watts",
+          backgroundColor: ["blue", "red"],
+          data: [0, 0],
+        },
+      ];
+      const returnKHWatts = {
+        label: "Analisis de consumo",
+        datasets: Kwhdataset,
+      };
 
       logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
         tags: "http",
@@ -1609,10 +1601,13 @@ routes.get("/getMonthly/:day", async (req, res) => {
           table: config.dynamoBB.deviceReadings.name,
         },
       });
-      res
-        .status(200)
-        .json({ usage: ob, health: returnObject, message: "Not Found", dayNight: returnWatts,
-        dayNightKilowatts: returnKHWatts });
+      res.status(200).json({
+        usage: ob,
+        health: returnObject,
+        message: "Not Found",
+        dayNight: returnWatts,
+        dayNightKilowatts: returnKHWatts,
+      });
     } else {
       const month = await getByMonth(data.Items);
       const health = healthMonthlyHelper(data.Items, secondData.Items);
@@ -1630,7 +1625,12 @@ routes.get("/getMonthly/:day", async (req, res) => {
           table: config.dynamoBB.deviceReadings.name,
         },
       });
-      res.status(200).json({ usage: month, health: health,dayNight:dayNight,dayNightKilowatts:dayNightKilowatts });
+      res.status(200).json({
+        usage: month,
+        health: health,
+        dayNight: dayNight,
+        dayNightKilowatts: dayNightKilowatts,
+      });
     }
   } catch (error) {
     var MonthInformation = {
@@ -2094,27 +2094,27 @@ routes.get("/getMonthly/:day", async (req, res) => {
       isError: true,
     };
     const dataset = [
-        {
-          labels: "Consumo semanal en Watts",
-          backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
-          data: [0, 0],
-        },
-      ];
-      const returnWatts ={
-        label: 'Analisis de consumo',
-        datasets:dataset
+      {
+        labels: "Consumo semanal en Watts",
+        backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
+        data: [0, 0],
+      },
+    ];
+    const returnWatts = {
+      label: "Analisis de consumo",
+      datasets: dataset,
     };
-      const Kwhdataset = [
-        {
-          labels: "Consumo semanal en KiloWatts",
-          backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
-          data: [0, 0],
-        },
-      ];
-      const returnKHWatts ={
-        label: 'Analisis de consumo',
-        datasets:Kwhdataset
-        };
+    const Kwhdataset = [
+      {
+        labels: "Consumo semanal en KiloWatts",
+        backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
+        data: [0, 0],
+      },
+    ];
+    const returnKHWatts = {
+      label: "Analisis de consumo",
+      datasets: Kwhdataset,
+    };
     logger.log("error", `Requesting ${req.method} ${req.originalUrl}`, {
       tags: "http",
       additionalInfo: {
@@ -2126,10 +2126,14 @@ routes.get("/getMonthly/:day", async (req, res) => {
         error: error,
       },
     });
-    res
-      .status(200)
-      .json({ usage: ob, health: returnObject, message: "", error: true, dayNight: returnWatts,
-      dayNightKilowatts: returnKHWatts });
+    res.status(200).json({
+      usage: ob,
+      health: returnObject,
+      message: "",
+      error: true,
+      dayNight: returnWatts,
+      dayNightKilowatts: returnKHWatts,
+    });
   }
 });
 routes.get("/getYearly/", async (req, res) => {
@@ -7473,34 +7477,38 @@ routes.get("/getYearly/", async (req, res) => {
       const dataset = [
         {
           labels: "Consumo semanal en Watts",
-          backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
+          backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
           data: [0, 0],
         },
       ];
-      const returnWatts ={
-        label: 'Analisis de consumo',
-        datasets:dataset
-    };
+      const returnWatts = {
+        label: "Analisis de consumo",
+        datasets: dataset,
+      };
       const Kwhdataset = [
         {
           labels: "Consumo semanal en KiloWatts",
-          backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
+          backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
           data: [0, 0],
         },
       ];
-      const returnKHWatts ={
-        label: 'Analisis de consumo',
-        datasets:Kwhdataset
-        };
-      res.status(200).json({ usage: ob, health: returnObject, dayNight: returnWatts,
-        dayNightKilowatts: returnKHWatts });
+      const returnKHWatts = {
+        label: "Analisis de consumo",
+        datasets: Kwhdataset,
+      };
+      res.status(200).json({
+        usage: ob,
+        health: returnObject,
+        dayNight: returnWatts,
+        dayNightKilowatts: returnKHWatts,
+      });
     } else {
       const response = await getMonthlyHelper(data.Items);
       const health = await healthYearlyHelper(data.Items, data.Items);
       const dayNight = await DeviceMonthlyYearlyWattsDayNight(data.Items);
-        const dayNightKilowatts = await DeviceMonthlyYearlyKiloWattsDayNight(
-          data.Items
-        );
+      const dayNightKilowatts = await DeviceMonthlyYearlyKiloWattsDayNight(
+        data.Items
+      );
       logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
         tags: "http",
         additionalInfo: {
@@ -7511,8 +7519,12 @@ routes.get("/getYearly/", async (req, res) => {
           table: config.dynamoBB.deviceReadings.name,
         },
       });
-      res.status(200).json({ usage: response, health: health, dayNight: dayNight,
-        dayNightKilowatts: dayNightKilowatts });
+      res.status(200).json({
+        usage: response,
+        health: health,
+        dayNight: dayNight,
+        dayNightKilowatts: dayNightKilowatts,
+      });
     }
   } catch (error) {
     let counter = 0;
@@ -12841,31 +12853,35 @@ routes.get("/getYearly/", async (req, res) => {
       isError: true,
     };
     const dataset = [
-        {
-          labels: "Consumo anual en Watts",
-          backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
-          data: [0, 0],
-        },
-      ];
-      const returnWatts ={
-        label: 'Analisis de consumo',
-        datasets:dataset
+      {
+        labels: "Consumo anual en Watts",
+        backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
+        data: [0, 0],
+      },
+    ];
+    const returnWatts = {
+      label: "Analisis de consumo",
+      datasets: dataset,
     };
-      const Kwhdataset = [
-        {
-          labels: "Consumo anual en KiloWatts",
-          backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
-          data: [0, 0],
-        },
-      ];
-      const returnKHWatts ={
-        label: 'Analisis de consumo',
-        datasets:Kwhdataset
-        };
-    res
-      .status(200)
-      .json({ usage: ob, health: returnObject, message: "", error: true,   dayNight: returnWatts,
-      dayNightKilowatts: returnKHWatts });
+    const Kwhdataset = [
+      {
+        labels: "Consumo anual en KiloWatts",
+        backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
+        data: [0, 0],
+      },
+    ];
+    const returnKHWatts = {
+      label: "Analisis de consumo",
+      datasets: Kwhdataset,
+    };
+    res.status(200).json({
+      usage: ob,
+      health: returnObject,
+      message: "",
+      error: true,
+      dayNight: returnWatts,
+      dayNightKilowatts: returnKHWatts,
+    });
   }
 });
 routes.get("/getDeviceYearly/allConfig", async (req, res) => {
@@ -12890,8 +12906,12 @@ routes.get("/getDeviceYearly/allConfig", async (req, res) => {
         table: config.dynamoBB.deviceReadings.name,
       },
     });
-    res.status(200).json({ usage: data, health: health,            dayNight: dayNight,
-        dayNightKilowatts: dayNightKilowatts });
+    res.status(200).json({
+      usage: data,
+      health: health,
+      dayNight: dayNight,
+      dayNightKilowatts: dayNightKilowatts,
+    });
   } catch (error) {
     logger.log("error", `Requesting ${req.method} ${req.originalUrl}`, {
       tags: "http",
@@ -12992,13 +13012,10 @@ routes.get("/getDeviceRelays/:userName", async (req, res) => {
       })
       .promise();
     if (data.ScannedCount == 0) {
-      res
-        .status(200)
-        .json({
-          error: true,
-          message:
-            "debe de conectar el dispositivo para obtener las conexiones",
-        });
+      res.status(200).json({
+        error: true,
+        message: "debe de conectar el dispositivo para obtener las conexiones",
+      });
     } else {
       logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
         tags: "http",
@@ -13013,12 +13030,10 @@ routes.get("/getDeviceRelays/:userName", async (req, res) => {
       res.status(200).json({ data: data.Items[0].Relays });
     }
   } else {
-    res
-      .status(200)
-      .json({
-        error: true,
-        message: "debe de conectar el dispositivo para obtener las conexiones",
-      });
+    res.status(200).json({
+      error: true,
+      message: "debe de conectar el dispositivo para obtener las conexiones",
+    });
   }
 });
 routes.get("/getDeviceRelaysTwo/:userName", async (req, res) => {
@@ -13089,7 +13104,6 @@ routes.post("/addDeviceConfiguration", async (req, res) => {
   let updateDate = new Date();
   createdDate.getDate();
   updateDate.getDate();
-  var result;
 
   const params = {
     TableName: config.dynamoBB.deviceConfiguration.name,
@@ -13291,13 +13305,11 @@ routes.get("/getAllDeviceReadingsByGivenDay/:day", async (req, res) => {
         },
       });
 
-      res
-        .status(200)
-        .json({
-          usage: ob,
-          message: "Not Found",
-          countedRows: data.ScannedCount,
-        });
+      res.status(200).json({
+        usage: ob,
+        message: "Not Found",
+        countedRows: data.ScannedCount,
+      });
     } else {
       const day = await dailyHelper(data.Items);
       res.status(200).json({ usage: day, Items: data.Items });
@@ -15499,13 +15511,11 @@ routes.get(
           },
         });
 
-        res
-          .status(200)
-          .json({
-            usage: ob,
-            message: "Not Found",
-            countedRows: data.ScannedCount,
-          });
+        res.status(200).json({
+          usage: ob,
+          message: "Not Found",
+          countedRows: data.ScannedCount,
+        });
       }
     } else {
       const day = await connectionsDailyHelper(connectionName, data.Items);
@@ -15684,6 +15694,45 @@ routes.post("/verifyEmail", async (req, res) => {
     .catch((error) => {
       res.status(400).send({ error: error });
     });
+});
+routes.post("/insertToken", async (req, res) => {
+  const data = req.body;
+  let createdDate = new Date();
+  const params = {
+    TableName: config.dynamoBB.userDevice.name,
+    Item: {
+      userName: data.userName,
+      token: data.token,
+      registeredAt: createdDate.toString(),
+    },
+  };
+  try {
+    await db.put(params).promise();
+    logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
+      tags: "http",
+      additionalInfo: {
+        operation: "insertToken",
+        body: req.body,
+        headers: req.headers,
+        databaseOperation: "POST",
+        table: config.dynamoBB.userDevice.name,
+      },
+    });
+    res.status(201).json({status:true,message: "token insertado correctamente"});
+  } catch (error) {
+    logger.log("error", `Requesting ${req.method} ${req.originalUrl}`, {
+      tags: "http",
+      additionalInfo: {
+        operation: "createDevice",
+        body: req.body,
+        headers: req.headers,
+        error: error,
+        databaseOperation: "POST",
+        table: config.dynamoBB.deviceTable.name,
+      },
+    });
+    res.status(201).json({status:false,error: error});
+  }
 });
 
 module.exports = {

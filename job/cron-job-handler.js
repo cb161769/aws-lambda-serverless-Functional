@@ -47,7 +47,7 @@ async function fetchYesterdaysData(){
  */
 module.exports.handler = async(event, context, callback) => {
     try {
-        const data = await fetchYesterdaysData();
+        const data =  fetchYesterdaysData();
         const filteredData = firFormatToCvs(data);
         const csv = convertToCvs(filteredData,[]);
         const time = getYesterdayDate();

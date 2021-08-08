@@ -22,7 +22,7 @@ module.exports.DeviceWeeklyWattsDayNightHelper = async function (dynamoDBArray){
         hoverOffset: 4
     }]
     const returnObject ={
-        labels: ['Analisis de consumo'],
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
     return returnObject;
@@ -45,7 +45,7 @@ module.exports.DeviceWeeklyKiloWattsDayNightHelper = async function (dynamoDBArr
         hoverOffset: 4
     }]
     const returnObject ={
-        labels: ['Analisis de consumo'],
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
     return returnObject;
@@ -67,7 +67,7 @@ module.exports.DeviceMonthlyWattsDayNightHelper = async function (dynamoDBArray)
         hoverOffset: 4
     }];
     const returnObject ={
-        labels: ['Analisis de consumo'],
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
     return returnObject;
@@ -87,7 +87,7 @@ module.exports.DeviceMonthlyKiloWattsDayNightHelper = async function(dynamoDBArr
         hoverOffset: 4
     }]
     const returnObject ={
-        labels: ['Analisis de consumo'],
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
     return returnObject;
@@ -107,7 +107,7 @@ module.exports.DeviceMonthlyYearlyWattsDayNight = async function(dynamoDBArray){
         hoverOffset: 4
     }];
     const returnObject ={
-        labels: ['Analisis de consumo'],
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
     return returnObject;
@@ -128,7 +128,7 @@ module.exports.DeviceMonthlyYearlyKiloWattsDayNight = async function(dynamoDBArr
         hoverOffset: 4
     }];
     const returnObject ={
-        labels: ['Analisis de consumo'],
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
     return returnObject;
@@ -148,7 +148,7 @@ module.exports.DeviceMonthlyYearlyKiloWattsDayNight = async function(dynamoDBArr
         hoverOffset: 4
     }];
     const returnObject ={
-        labels: ['Analisis de consumo'],
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
     return returnObject;
@@ -169,7 +169,7 @@ module.exports.DeviceDailyKiloWattsDayNight = async function(dynamoDBArray){
         hoverOffset: 4
     }];
     const returnObject ={
-        labels: ['Analisis de consumo'],
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
     return returnObject;

@@ -18,7 +18,7 @@ module.exports.ConnectionsDailyWattsDayNight = async function(ConnectionName,dyn
         hoverOffset: 4
     }];
     const returnObject ={
-        labels: ['Analisis de consumo'],
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
     return returnObject;
@@ -39,7 +39,7 @@ module.exports.ConnectionsWeekKiloWattsDayNight = async function(ConnectionName,
         hoverOffset: 4
     }];
     const returnObject ={
-        labels: ['Analisis de consumo'],
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
     return returnObject;
@@ -55,7 +55,7 @@ module.exports.ConnectionsWeeklyWattsDayNight = async function(ConnectionName,dy
         hoverOffset: 4
     }];
     const returnObject ={
-        labels: ['Analisis de consumo'],
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
     return returnObject;
@@ -76,7 +76,7 @@ module.exports.ConnectionsWeeklyKiloWattsDayNight = async function(ConnectionNam
         hoverOffset: 4
     }];
     const returnObject ={
-        labels: ['Analisis de consumo'],
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
     return returnObject;
@@ -93,7 +93,7 @@ module.exports.ConnectionsMonthlyWattsDayNight = async function(ConnectionName,d
         hoverOffset: 4
     }];
     const returnObject ={
-        labels: ['Analisis de consumo'],
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
     return returnObject;
@@ -114,7 +114,7 @@ module.exports.ConnectionsMonthlyKiloWattsDayNight = async function(ConnectionNa
         hoverOffset: 4
     }];
     const returnObject ={
-        labels: ['Analisis de consumo'],
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
     return returnObject;

@@ -1,7 +1,6 @@
 const logger = require('../helpers/log/logsHelper');
 const {config} = require('../connections/config/config');
-const {getYesterdayDate,getTodaysDate,getTodaysDateWithMoreMinutes,changeDates} = require('../functions/generalFunctions');
-const deviceName = config.deviceName;
+const {changeDates} = require('../functions/generalFunctions');
 const {dynamoDBConnection} = require('../connections/connections');
 const {AutomateConsumption} =require('../helpers/automation/atuomationHelper');
 /**
@@ -337,10 +336,10 @@ async function fetchConfigurationData(){
     }];
     return fareConfigurations;
 };
-module.exports.handler = async (event, context,callback) =>{
+module.exports.handler = async () =>{
     try {
-        const data = await fetchTodaysData();
-        const configuration = await fetchConfigurationData();
+        const data =  fetchTodaysData();
+        const configuration =  fetchConfigurationData();
        const automation = await AutomateConsumption(data,configuration);
        console.log(automation);
         logger.log('info', `Requesting [automation-cron-job]`, {tags: 'automation-cron-job', additionalInfo: {operation: 'cron-job-handler', table: config.dynamoBB.deviceReadings.name }});
