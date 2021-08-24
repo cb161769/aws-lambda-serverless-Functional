@@ -15701,7 +15701,7 @@ routes.post("/insertToken", async (req, res) => {
   const params = {
     TableName: config.dynamoBB.userDevice.name,
     Item: {
-      userName: data.userName,
+      userName: 'claudioraulmercedes@gmail.com',
       token: data.token,
       registeredAt: createdDate.toString(),
     },
