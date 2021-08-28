@@ -207,76 +207,116 @@ module.exports.AutomateConsumption = async function (data, configuration) {
           var calculatedKilowatt =
             module.exports.calculateDeviceInTheSameDay(data);
           // TODO send notification to user's Device
+          const percentage = module.exports.calculatePercentage(
+            maximumKilowatt,
+            calculatedKilowatt
+          );
+          if (percentage > 50 && percentage < 75) {
+            const deviceDataOne = await module.exports.findDeviceToken();
+            const tokens = deviceDataOne.data;
+            const message = {
+              notification: {
+                title: `notificación de consumo diario`,
+                body: `la ${
+                  element.connectionName || ""
+                } ha consumido el ${percentage}% de lo estipulado`,
+              },
+              tokens: [tokens],
+            };
+            const firebase = await messaging.sendMulticast(message);
+            if (firebase.failureCount > 0) {
+              logger.log("error", `Requesting [Send Push Notification1]`, {
+                tags: "automationHelper",
+                additionalInfo: {
+                  operation: "Send Push Notificaction",
+                  databaseOperation: "Push",
+                  table: "firebasePushNotification",
+                  error: firebase.responses,
+                },
+              });
+            } else {
+              logger.log("info", `Requesting [Send Push Notification1]`, {
+                tags: "automationHelper",
+                additionalInfo: {
+                  operation: "Send Push Notificaction",
+                  databaseOperation: "Push",
+                  table: "firebasePushNotification",
+                  error: firebase.responses,
+                },
+              });
+            }
+          }
+          if (percentage > 75 && percentage <= 90) {
+            const deviceDataTwo = await module.exports.findDeviceToken();
+            const tokens = deviceDataTwo.data;
+            const message = {
+              notification: {
+                title: `notificación de consumo diario`,
+                body: `la ${
+                  element.connectionName || ""
+                } ha consumido el ${percentage}% de lo estipulado`,
+              },
+              tokens: [tokens],
+            };
+            const firebase = await messaging.sendMulticast(message);
+            if (firebase.failureCount > 0) {
+              logger.log("error", `Requesting [Send Push Notification1]`, {
+                tags: "automationHelper",
+                additionalInfo: {
+                  operation: "Send Push Notificaction",
+                  databaseOperation: "Push",
+                  table: "firebasePushNotification",
+                  error: firebase.responses,
+                },
+              });
+            } else {
+              logger.log("info", `Requesting [Send Push Notification1]`, {
+                tags: "automationHelper",
+                additionalInfo: {
+                  operation: "Send Push Notificaction",
+                  databaseOperation: "Push",
+                  table: "firebasePushNotification",
+                  error: firebase.responses,
+                },
+              });
+            }
+          }
           if (calculatedKilowatt >= parseInt(maximumKilowatt)) {
+            const deviceData = await module.exports.findDeviceToken();
 
-              const deviceData = await module.exports.findDeviceToken();
-              if (deviceData.success) {
-                  const token = deviceData.data;
-                  const message = {
-                    notification: {
-                      title:  `notificación de consumo diario`,
-                      body: `la ${element.connectionName || ''} se va a apagar ya que ha consumido el maximo estipulado`,
-                    },
-                    tokens: [token],
-                  };
-                  const firebase = await messaging.sendMulticast(message);
-                  if (firebase.failureCount >0) {
-                    logger.log('info')
-                    
-                  }
-
-              }
-
-
-            try {
-                
-              // evaluate if the device is already turned off
-              admin
-                .messaging()
-                .send(message)
-                .then(() => {
-
-                  //TODO send response successfully
-                })
-                .catch((error) => {
-                  logger.log("error", `Requesting [PUSH NOTIFICATION]`, {
-                    tags: "automationHelper",
-                    additionalInfo: {
-                      operation: "AutomateConsumption",
-                      databaseOperation: "PUSH NOTIFICATION",
-                      table: config.dynamoBB.deviceConnection.name,
-                      error: error,
-                    },
-                  });
-                  //TODO log errors
+            if (deviceData.success) {
+              const token = deviceData.data;
+              const message = {
+                notification: {
+                  title: `notificación de consumo diario`,
+                  body: `la ${
+                    element.connectionName || ""
+                  } se va a apagar ya que ha consumido el maximo estipulado`,
+                },
+                tokens: [token],
+              };
+              const firebase = await messaging.sendMulticast(message);
+              if (firebase.failureCount > 0) {
+                logger.log("error", `Requesting [Send Push Notification1]`, {
+                  tags: "automationHelper",
+                  additionalInfo: {
+                    operation: "Send Push Notificaction",
+                    databaseOperation: "Push",
+                    table: "firebasePushNotification",
+                    error: firebase.responses,
+                  },
                 });
-              logger.log("info", `Requesting [Write To DynamoDB]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "AutomateConsumption",
-                  databaseOperation: "PUT",
-                  table: config.dynamoBB.deviceConnection.name,
-                },
-              });
-              // const sns = await publishSNS(snsParams);
-
-              logger.log("info", `Requesting [Write To SNS]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "AutomateConsumption",
-                  databaseOperation: "PUT",
-                  table: config.dynamoBB.deviceConnection.name,
-                },
-              });
-            } catch (error) {
-              logger.log("error", `Requesting [Write To SNS]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "AutomateConsumption",
-                  databaseOperation: "PUT",
-                  table: config.dynamoBB.deviceConnection.name,
-                },
-              });
+              } else {
+                logger.log("info", `Requesting [Send Push Notification1]`, {
+                  tags: "automationHelper",
+                  additionalInfo: {
+                    operation: "Send Push Notificaction",
+                    databaseOperation: "Push",
+                    table: "firebasePushNotification",
+                    error: firebase.responses,
+                  },
+                });
+              }
             }
           } else {
             // update Database Here
@@ -326,6 +366,102 @@ module.exports.AutomateConsumption = async function (data, configuration) {
                     data,
                     element2.connectionName
                   );
+                const percentage = module.exports.calculatePercentage(
+                  connectionMaxPerDay,
+                  calculatedConnectionKilowatt
+                );
+                if (percentage > 50 && percentage < 75) {
+                  const deviceDataOne = await module.exports.findDeviceToken();
+                  if (deviceDataOne.success) {
+                    const tokens = deviceDataOne.data;
+                    const message = {
+                      notification: {
+                        title: `notificación de consumo diario`,
+                        body: `la ${
+                          element2.connectionName || ""
+                        } ha consumido el ${percentage}% de lo estipulado`,
+                      },
+                      tokens: [tokens],
+                    };
+                    const firebase = await messaging.sendMulticast(message);
+                    if (firebase.failureCount > 0) {
+                      logger.log(
+                        "error",
+                        `Requesting [Send Push Notification1]`,
+                        {
+                          tags: "automationHelper",
+                          additionalInfo: {
+                            operation: "Send Push Notificaction",
+                            databaseOperation: "Push",
+                            table: "firebasePushNotification",
+                            error: firebase.responses,
+                          },
+                        }
+                      );
+                    } else {
+                      logger.log(
+                        "info",
+                        `Requesting [Send Push Notification1]`,
+                        {
+                          tags: "automationHelper",
+                          additionalInfo: {
+                            operation: "Send Push Notificaction",
+                            databaseOperation: "Push",
+                            table: "firebasePushNotification",
+                            error: firebase.responses,
+                          },
+                        }
+                      );
+                    }
+                  }
+                }
+                if (percentage > 75 && percentage <= 90) {
+                  const deviceDataTwo = await module.exports.findDeviceToken();
+                  if (deviceDataTwo.success) {
+                    const tokens = deviceDataTwo.data;
+                    const message = {
+                      notification: {
+                        title: `notificación de consumo diario`,
+                        body: `la ${
+                          element2.connectionName || ""
+                        } ha consumido el ${percentage}% de lo estipulado`,
+                      },
+                      tokens: [tokens],
+                    };
+                    const firebase = await messaging.sendMulticast(message);
+
+                    if (firebase.failureCount > 0) {
+                      logger.log(
+                        "error",
+                        `Requesting [Send Push Notification1]`,
+                        {
+                          tags: "automationHelper",
+                          additionalInfo: {
+                            operation: "Send Push Notificaction",
+                            databaseOperation: "Push",
+                            table: "firebasePushNotification",
+                            error: firebase.responses,
+                          },
+                        }
+                      );
+                    } else {
+                      logger.log(
+                        "info",
+                        `Requesting [Send Push Notification1]`,
+                        {
+                          tags: "automationHelper",
+                          additionalInfo: {
+                            operation: "Send Push Notificaction",
+                            databaseOperation: "Push",
+                            table: "firebasePushNotification",
+                            error: firebase.responses,
+                          },
+                        }
+                      );
+                    }
+                  }
+                }
+
                 if (connectionMaxPerDay >= calculatedConnectionKilowatt) {
                   // update database here
                   // send notification helper
@@ -338,16 +474,49 @@ module.exports.AutomateConsumption = async function (data, configuration) {
                         table: config.dynamoBB.deviceConnection.name,
                       },
                     });
-                    // const sns = await publishSNS(snsParams);
-
-                    logger.log("info", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
+                    const deviceData = await module.exports.findDeviceToken();
+                    if (deviceData.success) {
+                      const token = deviceData.data;
+                      const message = {
+                        notification: {
+                          title: `notificación de consumo diario`,
+                          body: `la ${
+                            element2.connectionName || ""
+                          } se va a apagar ya que ha consumido el maximo estipulado`,
+                        },
+                        tokens: [token],
+                      };
+                      const firebase = await messaging.sendMulticast(message);
+                      if (firebase.failureCount > 0) {
+                        logger.log(
+                          "error",
+                          `Requesting [Send Push Notification1]`,
+                          {
+                            tags: "automationHelper",
+                            additionalInfo: {
+                              operation: "Send Push Notificaction",
+                              databaseOperation: "Push",
+                              table: "firebasePushNotification",
+                              error: firebase.responses,
+                            },
+                          }
+                        );
+                      } else {
+                        logger.log(
+                          "info",
+                          `Requesting [Send Push Notification1]`,
+                          {
+                            tags: "automationHelper",
+                            additionalInfo: {
+                              operation: "Send Push Notificaction",
+                              databaseOperation: "Push",
+                              table: "firebasePushNotification",
+                              error: firebase.responses,
+                            },
+                          }
+                        );
+                      }
+                    }
                   } catch (error) {
                     logger.log("error", `Requesting [Write To SNS]`, {
                       tags: "automationHelper",
@@ -402,6 +571,53 @@ module.exports.AutomateConsumption = async function (data, configuration) {
                     data,
                     element2.ConnectionName
                   );
+                  const percentageW = module.exports.calculatePercentage(
+                    connectionMaxPerWeek,
+                    calculatedKilowatt
+                  );
+                  if (percentageW > 50 && percentageW < 75) {
+                    const deviceDataOneW = await module.exports.findDeviceToken();
+                    if (deviceDataOneW.success) {
+                      const tokensW = deviceDataOne.data;
+                      const message = {
+                        notification: {
+                          title: `notificación de consumo semanal`,
+                          body: `la ${
+                            element2.connectionName || ""
+                          } ha consumido el ${percentageW}% de lo estipulado`,
+                        },
+                        tokens: [tokensW],
+                      };
+                      const firebaseW = await messaging.sendMulticast(message);
+                      if (firebaseW.failureCount > 0) {
+                        logger.log(
+                          "error",
+                          `Requesting [Send Push Notification1]`,
+                          {
+                            tags: "automationHelper",
+                            additionalInfo: {
+                              operation: "Send Push Notificaction",
+                              databaseOperation: "Push",
+                              table: "firebasePushNotification",
+                              error: firebaseW.responses,
+                            },
+                          }
+                        );
+                      } else {
+                        logger.log(
+                          "info",
+                          `Requesting [Send Push Notification1]`,
+                          {
+                            tags: "automationHelper",
+                            additionalInfo: {
+                              operation: "Send Push Notificaction",
+                              databaseOperation: "Push",
+                              table: "firebasePushNotification",
+                              error: firebase.responses,
+                            },
+                          }
+                        );
+                      }
                 if (calculatedKilowatt >= connectionMaxPerWeek) {
                   // update database here
                   // set notification helper
@@ -774,7 +990,7 @@ module.exports.AutomateConsumption = async function (data, configuration) {
                   }
                 }
               }
-            }
+                }
           }
 
           // calculate connections
@@ -816,7 +1032,6 @@ module.exports.AutomateConsumption = async function (data, configuration) {
             }
             // update db here
           } else {
-
             try {
               logger.log("info", `Requesting [Write To DynamoDB]`, {
                 tags: "automationHelper",
@@ -1169,8 +1384,8 @@ module.exports.AutomateConsumption = async function (data, configuration) {
  * @returns array
  */
 module.exports.calculateDeviceInTheSameDay = function (data) {
-  const totalKwh = 0;
-  const secondTotalKwh = 0;
+  let totalKwh = 0;
+  let secondTotalKwh = 0;
   const moment = require("moment");
   for (let index = 0; index < data.length; index++) {
     var dataElement = data[index];
@@ -1212,7 +1427,7 @@ module.exports.calculateDeviceInTheSameDay = function (data) {
     const kwh2 = module.exports.calculateKwh(readings2.device_watts, seconds2);
     secondTotalKwh += kwh2;
   }
-  // const objects = {iteratedKwh:totalKwh,second:secondTotalKwh};
+
   return secondTotalKwh;
 };
 
@@ -1226,7 +1441,7 @@ module.exports.calculateConnectionsInMonthConfig = function (
   data,
   connectionName
 ) {
-  const totalKwh = 0;
+  let totalKwh = 0;
   const filteredArray = data.filter((x) => x.Relays[0].Name === connectionName);
   if (filteredArray === undefined) return;
   for (let index = 0; index < filteredArray.length; index++) {
@@ -1374,7 +1589,7 @@ module.exports.calculateConnectionsInSameDay = function (data, ConnectionName) {
 };
 module.exports.findDeviceToken = async function () {
   try {
-      const deviceId  = config.userNameEmail.email;
+    const deviceId = config.userNameEmail.email;
     const data = await dynamoDBConnection
       .query({
         TableName: config.dynamoBB.userDevice.name,
@@ -1383,21 +1598,21 @@ module.exports.findDeviceToken = async function () {
         consistentRead: false,
         Limit: 1,
         ExpressionAttributeNames: {
-            "#user": "deviceId",
+          "#user": "deviceId",
         },
         ExpressionAttributeValues: {
-            ":userName": deviceId,
+          ":userName": deviceId,
         },
       })
       .promise();
-      logger.log("info", `Requesting [Find To findDeviceToken]`, {
-        tags: "automationHelper",
-        additionalInfo: {
-          operation: "findDeviceToken",
-          databaseOperation: "GET",
-          table: config.dynamoBB.userDevice.name,
-        },
-      });
+    logger.log("info", `Requesting [Find To findDeviceToken]`, {
+      tags: "automationHelper",
+      additionalInfo: {
+        operation: "findDeviceToken",
+        databaseOperation: "GET",
+        table: config.dynamoBB.userDevice.name,
+      },
+    });
     if (data == null || data == undefined || !data || data.Count == 0) {
       return {
         success: false,
@@ -1410,25 +1625,25 @@ module.exports.findDeviceToken = async function () {
       };
     }
   } catch (error) {
-      logger.log("error",`requesting [find deviceToken]`,{
-        additionalInfo: {
-            operation: "findDeviceToken",
-            databaseOperation: "GET",
-            table: config.dynamoBB.userDevice.name,
-            error: error,
-          },
-      });
-      return {
-        success: false,
-        data: [],
-      };
+    logger.log("error", `requesting [find deviceToken]`, {
+      additionalInfo: {
+        operation: "findDeviceToken",
+        databaseOperation: "GET",
+        table: config.dynamoBB.userDevice.name,
+        error: error,
+      },
+    });
+    return {
+      success: false,
+      data: [],
+    };
   }
 };
 /**
  * @function calculatePercentage
- * @param {*} numberOne 
- * @param {*} numberTwo 
+ * @param {*} numberOne
+ * @param {*} numberTwo
  */
-module.exports.calculatePercentage = function(numberOne,numberTwo){
-
-}
+module.exports.calculatePercentage = function (numberOne, numberTwo) {
+  return (100 * numberOne) / numberTwo;
+};
