@@ -1,4 +1,11 @@
 module.exports.config = {
+    region:{
+        name: 'us-west-2'
+    },
+    sns:{
+        accountId:"",
+        topicName:'',
+    },
     dynamoBB: {
         deviceReadings: {
             name:"deviceReadings"
@@ -15,7 +22,13 @@ module.exports.config = {
         deviceConfiguration:{
             name:"deviceConfiguration"
         },
-    },
+        userLogs:{
+            name:"userLogs"
+        },
+        deviceConnection:{
+            name:"DeviceConnection"
+        }
+    },    
     S3:{
         BucketName: "devicetable-datasheet-readings"
     },
@@ -24,6 +37,18 @@ module.exports.config = {
         Database:{
             LogGroupName:'/aws/lambda/aws-dynamodb-cognito-api-dev-hello',
             LogStreamName:'[Database]'
-        }
+        },
+    },
+    Iot:{
+        endpoint:"a3grg8s0qkek3y-ats.iot.us-west-2.amazonaws.com"
+    },
+    encryption:{
+        password:'1234'
+    },
+    Firebase:{
+        registrationToken:''
+    },
+    userNameEmail:{
+        email: 'claudioraulmercedes@gmail.com',
     }
-};
+}

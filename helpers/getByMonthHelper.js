@@ -501,7 +501,12 @@ module.exports.getByMonth = async function (params){
             }
         }
     };
+    var  dayWattsProms= 0;
+    var nightWattsProms = 0;
+    var dayKhwProms = 0;
+    var nightKhwProms = 0;
     var counter = 0 ;
+    var weekTimeStamp = [];
     const fixedParams = params.filter(x => x.sortkey != undefined);
     for (let index = 0; index < fixedParams.length; index++) {
         var dataElement = fixedParams[index];
@@ -535,7 +540,21 @@ module.exports.getByMonth = async function (params){
      
         var isNight = module.exports.isNightTarif(sortKeyEpoch);
         for (let j = 0; j <= Object.keys(readings2).length;j++) {
+            if (isNight == true) {
+                const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
+                const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/590;
+                nightWattsProms += readings2.device_watts;
+                nightKhwProms += Math.abs(kwh);
 
+            }
+            else{
+                const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
+                const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/590;
+                dayWattsProms += readings2.device_watts;
+                dayKhwProms += Math.abs(kwh);
+
+            }
+            weekTimeStamp.push({t:sortKeyEpoch.toISOString(),y:readings2.device_watts});
             MonthInformation.allMonthAmps += readings2.device_amps;
             MonthInformation.allMonthWatts += readings2.device_watts;
             const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
@@ -1171,7 +1190,11 @@ module.exports.getByMonth = async function (params){
     totalAmpsProm = MonthInformation.allMonthAmps/ params.length;
     totalWAttsProm = MonthInformation.allMonthWatts/ params.length;
     const ob = [
-       { detail: MonthInformation, count:counter}
+       { detail: MonthInformation, count:counter,
+        dayWattsProm:dayWattsProms, NightWattsProm:nightWattsProms, NightsKhwProm:nightKhwProms,
+        dayKhwProms:dayKhwProms,
+        Timestamp:weekTimeStamp
+       }
     ];
     return ob;
 }

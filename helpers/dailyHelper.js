@@ -49,7 +49,11 @@ module.exports.dailyHelper = async function (params){
 
             }
         }
-    }
+    };
+    var  dayWattsProms= 0;
+    var nightWattsProms = 0;
+    var dayKhwProms = 0;
+    var nightKhwProms = 0;
     const fixedParams = params.filter(x => x.sortkey != undefined);
     for (let index = 0; index <= fixedParams.length; index++) {
         var dataElement = fixedParams[index];
@@ -84,6 +88,8 @@ module.exports.dailyHelper = async function (params){
                 dayInformation.DayDetails.Night.amps += readings2.device_amps;
                 dayInformation.DayDetails.Night.kilowatts += kwh;
                 dayInformation.DayDetails.Night.watts += readings2.device_watts;
+                nightWattsProms += readings2.device_watts;
+                nightKhwProms += Math.abs(kwh);
                 dayInformation.DayDetails.Night.TimeStamp.push({time:sortKeyEpoch/1000,valueAmps:readings2.device_amps,valueKwh:kwh,valueWatts:readings2.device_watts});
                 break;
                 
@@ -93,6 +99,8 @@ module.exports.dailyHelper = async function (params){
                 dayInformation.DayDetails.Day.amps += readings2.device_amps;
                 dayInformation.DayDetails.Day.kilowatts += kwh;
                 dayInformation.DayDetails.Day.watts += readings2.device_watts;
+                dayWattsProms += readings2.device_watts;
+                dayKhwProms += Math.abs(kwh);
                 dayInformation.DayDetails.Day.TimeStamp.push({time:sortKeyEpoch/1000,valueAmps:readings2.device_amps,valueKwh:kwh,valueWatts:readings2.device_watts});
                 break;
             }
@@ -107,7 +115,8 @@ module.exports.dailyHelper = async function (params){
     totalAmpsProm = dayInformation.AlldayAmps/ params.length;
     totalWAttsProm = dayInformation.AlldayWatts/ params.length;
     const ob = [
-       { detail: dayInformation}
+       { detail: dayInformation, dayWattsProm:dayWattsProms, NightWattsProm:nightWattsProms, NightsKhwProm:nightKhwProms,
+        dayKhwProms:dayKhwProms}
     ];
     return ob;
 }

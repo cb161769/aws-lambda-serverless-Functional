@@ -27,10 +27,24 @@ module.exports.getWeeklyHelper = async function  (dynamoDBArray) {
     var sundayAmps = 0;
     let totalAmps = 0;
     let totalAmpsProm = 0;
+    var  dayWattsProms= 0;
+    var nightWattsProms = 0;
+    var dayKhwProms = 0;
+    var nightKhwProms = 0;
+    var weekTimeStamp = [];
     for (let index = 0; index < dynamoDBArray.length; index++) {
         var dataElement = dynamoDBArray[index];
+        if (dataElement == undefined) {
+            break;
+        }
+        var secondDataElement = fixedParams[index + 1];
+        if (secondDataElement == undefined) {
+            break; 
+         }
         var sortKeyDate = dataElement.sortkey;
         var sortKeyEpoch = module.exports.convertEpochDateToHumanDate(sortKeyDate);
+        var seconkeyDate = secondDataElement.sortkey;
+        var secondSortKeyEpoch = module.exports.convertEpochDateToHumanDate(seconkeyDate);
         var LocalDate = moment(sortKeyEpoch);
         moment.locale('es-do');
         LocalDate.locale(false);
@@ -39,8 +53,24 @@ module.exports.getWeeklyHelper = async function  (dynamoDBArray) {
         if (week === false) {
             break;
         }
+        var isNight = module.exports.isNightTarif(sortKeyEpoch);
         var weekDay = LocalDate.isoWeekday();
         for (let j = 0; j <= Object.keys(readings2).length; j++) {
+            if (isNight == true) {
+                const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
+                const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/590;
+                nightWattsProms += readings2.device_watts;
+                nightKhwProms += Math.abs(kwh);
+
+            }
+            else{
+                const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
+                const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/590;
+                dayWattsProms += readings2.device_watts;
+                dayKhwProms += Math.abs(kwh);
+
+            }
+            weekTimeStamp.push({t:sortKeyEpoch.toISOString(),y:readings2.device_watts});
             if (weekDay == 1) {
                 monday +=1;
                 mondayAmps += readings2.device_amps;
@@ -67,7 +97,7 @@ module.exports.getWeeklyHelper = async function  (dynamoDBArray) {
                 thursdayWatts += readings2.device_watts;
                 thursdayAmps = readings2.device_amps;
                 break;
-                // totalWatts += Object.keys(readings2).length;
+             
                     
             }
             if (weekDay == 5) {
@@ -107,7 +137,7 @@ module.exports.getWeeklyHelper = async function  (dynamoDBArray) {
     }
     totalAmpsProm = totalAmps/ dynamoDBArray.length
     totalWAttsProm = totalWatts/ dynamoDBArray.length;
-    const ob =  [ 
+    return  [ 
         {registros:counter,lunes:{registros:monday || 0, amperios: mondayAmps || 0,watts:mondayWatts || 0}
         ,martes:{registros:tuesday || 0, amperios: tuesdayAmps || 0,watts:tuesdayWatts || 0}
         ,miercoles:{registros:wednesday || 0, amperios: wednesdayAmps || 0,watts:wednesdayWatts || 0}
@@ -116,9 +146,11 @@ module.exports.getWeeklyHelper = async function  (dynamoDBArray) {
         ,sabado:{registros:saturday || 0 , amperios: saturdayAmps || 0 ,watts:saturdayWatts | 0 }
         ,domingo:{registros:sunday || 0, amperios: sundayAmps || 0,watts:sundayWatts ||0  },
         totalWatts:totalWatts || 0, totalAmps:totalAmps || 0 , diaConsulta: new Date().toISOString(),
-        promedioWattsSemanal: totalWAttsProm ||0, promedioAmpsSemanal: totalAmpsProm || 0
+        promedioWattsSemanal: totalWAttsProm ||0, promedioAmpsSemanal: totalAmpsProm || 0,
+        dayWattsProm:dayWattsProms, NightWattsProm:nightWattsProms, NightsKhwProm:nightKhwProms,
+        dayKhwProms:dayKhwProms,Timestamp:weekTimeStamp
     }];
-    return ob;
+ 
 }
 /**
  * this Function determines if the user consumed 
@@ -142,4 +174,23 @@ const moment = require('moment');
   var isThisWeek = (now.isoWeek() == input.isoWeek());
   return isThisWeek;
 }
+/**
+ * @function isNightTarif
+ * @param {*} dateObj date
+ * @returns boolean
+ */
+module.exports.isNightTarif = function(dateObj){
+    if (typeof dateObj ==='number') {
+        dateObj = new Date(date);
+        
+    }
+    if((dateObj.getHours() >= 21 && dateObj.getHours() <= 23) ||
+		(dateObj.getHours() >= 0 && dateObj.getHours() <= 5)){
+		return true;
+	}
+    if(dateObj.getDay() === 0 || dateObj.getDay() === 6){
+		return true;
+	}
 
+	return false;
+}

@@ -10,6 +10,26 @@ module.exports.convertEpochDateToHumanDate = function(epochDate){
     return epoch;
 };
 /**
+ * @function isNightTarif
+ * @param {*} dateObj date
+ * @returns boolean
+ */
+ module.exports.isNightTarif = function(dateObj){
+    if (typeof dateObj ==='number') {
+        dateObj = new Date(date);
+        
+    }
+    if((dateObj.getHours() >= 21 && dateObj.getHours() <= 23) ||
+		(dateObj.getHours() >= 0 && dateObj.getHours() <= 5)){
+		return true;
+	}
+    if(dateObj.getDay() === 0 || dateObj.getDay() === 6){
+		return true;
+	}
+
+	return false;
+};
+/**
  * @function isInCurrentWEEK()
  * @param {*} date date
  * @returns new Date()
@@ -69,6 +89,7 @@ module.exports.dailyHelperFromConnections = async function(connectionName,params
    let totalAmpsInWeek = 0;
    let totalWattsInWeek = 0;
    let kw2 = 0;
+   var isNight = module.exports.isNightTarif(sortKeyEpoch);
    const filteredArray = params.filter(x => x.Relays[0].Name == connectionName);
    for (let index = 0; index <= filteredArray.length; index++) {
     var dataElement = filteredArray[index];
@@ -97,7 +118,20 @@ module.exports.dailyHelperFromConnections = async function(connectionName,params
     for (let j = 0; j <= Object.keys(filteredReadings).length; j++) {
         const seconds = (secondKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
+        if (isNight == true) {
+            const seconds = (secondKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
+            const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/590;
+            nightWattsProms += readings2.device_watts;
+            nightKhwProms += Math.abs(kwh);
 
+        }
+        else{
+            const seconds = (secondKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
+            const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/590;
+            dayWattsProms += readings2.device_watts;
+            dayKhwProms += Math.abs(kwh);
+
+        }
         weekTimeStamp.push({t:sortKeyEpoch.toISOString(),y:kwh});
         kw2+= kwh;
         if (weekDay == 1) {

@@ -85,6 +85,27 @@ module.exports.getTodaysDate = function(){
     	month: string.substring(4,6),
     	day: string.substring(6,8)
     }
+};
+/**
+ * 
+ * @param {*} minutes the required added minutes 
+ * @returns 
+ */
+module.exports.getTodaysDateWithMoreMinutes = function(minutes){
+    const today = new Date();
+    const string = todayAddedMinutes
+    			.toISOString()
+    			.substring(0,10)
+    			.replace(/-/g, '');
+
+    return {
+    	dateObj: today,
+    	unixTimestamp: parseInt(today.getTime() / 1000),
+    	string: string,
+    	year: string.substring(0,4),
+    	month: string.substring(4,6),
+    	day: string.substring(6,8)
+    }
 }
 /**
  * 
@@ -104,5 +125,38 @@ module.exports.writeToS3 = async function (fileName,content){
         Body: compressedBody,
         Bucket: config.S3.BucketName,
         Key: fileName + '.gz'
+    }).promise();
+};
+/**
+ * 
+ * @param {*} day {Date}
+ * @returns {Date}
+ */
+ module.exports.changeDates = function(day) {
+    var dateOne = new Date();
+    var dateTwo = new Date();
+    dateOne.setMonth(dateOne.getMonth() - 4);
+    let first = dateOne.setDate(day);
+
+    let second = dateTwo.setDate(day);
+   
+    return {
+        initialDate:Math.floor(first/1000),
+        finalDate: Math.floor(second/1000)
+
+    };
+};
+/**
+ * @author Savjee
+ * @param {*} tableName table's Name
+ * @param {*} object  object that needs to be put in
+ * @returns Promise
+ */
+ module.exports.writeToDynamoDB = function(tableName, object){
+	const { dynamoDBConnection } = require('../connections/connections');
+
+	return dynamoDBConnection.put({
+        TableName: tableName,
+        Item: object
     }).promise();
 }

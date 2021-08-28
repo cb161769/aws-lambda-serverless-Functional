@@ -5,18 +5,24 @@ provider:
   name: aws
   runtime: nodejs12.x
   region: us-west-2
+  environment:
+    TOPIC_NAME: ${self:custom.topicName}
   iamRoleStatements:
     - Effect: Allow
       Action: 
         - dynamodb:*
         - s3:GetObject
         - s3:PutObject
+        - sns:*
+        - ses:*
       Resource: "*"
+  
 custom:
   defaultStage: dev
   currentStage: ${opt:stage, self:custom.defaultStage}
   userPoolName: test-user-pool-${self:custom.currentStage}
   userPoolClientName: test-user-pool-client-${self:custom.currentStage}
+  topicName: sns-topic-to-client
 package:
   individually: true
 functions:
@@ -30,6 +36,7 @@ functions:
           rate: cron(0 2 * * ? *)
   hello:
     handler: handler.handler
+    timeout: 30
     events:
       - http:
           path: /getAllDeviceReadings
@@ -43,6 +50,26 @@ functions:
           path: /{proxy+}
           method: any
           cors: true
+  iot:
+    handler: helpers/iot/iot-handler.handler
+    timeout: 30
+    events:
+      - http:
+          path: /iot
+          method: post
+          cors: true
+          # authorizer:
+          #   type: COGNITO_USER_POOLS
+          #   authorizerId:
+          #     Ref: ApiGatewayAuthorizer
+  sns:
+    handler: job/automation-cron-handler.handler
+    description: Automatizacion de consumo
+    timeout: 30
+    events:
+       - schedule:
+          description: "Archive the data generated yesterday to S3"
+          rate: rate(1 minute)
 resources:
   Description: Monitoreo Continuo de los dispositivos
   Resources:
@@ -101,6 +128,19 @@ resources:
             AttributeType: S
         KeySchema:
           - AttributeName: deviceId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5 
+    userLogs:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: "userLogs"
+        AttributeDefinitions:
+          - AttributeName: logId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: logId
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 5
@@ -184,6 +224,20 @@ resources:
                      - Ref: AWS::AccountId
                      - ":topic/$aws/rules/"
                      - Ref: iotRule
+    secondPolicy:
+      Type: AWS::IoT::Policy
+      Properties:
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            -
+              Effect: "Allow"
+              Action:
+                - "iot:"
+              Resource: "*"
+              Condition:
+                Bool:
+                  "iot:Connection.Thing.IsAttached": [true]
     ### 
     # Rol para el topico de la rol
     ####
