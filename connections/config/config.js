@@ -3,7 +3,7 @@ module.exports.config = {
         name: 'us-west-2'
     },
     sns:{
-        accountId:"170095147869",
+        accountId:"",
         topicName:'',
     },
     dynamoBB: {

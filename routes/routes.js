@@ -15599,10 +15599,7 @@ routes.get("/Tensorflow/PredictConsumption/", async (req, res) => {
 });
 routes.post("/Topics/publishTopic", async (req, res) => {
   const data = req.body;
-  AWS.config.update({
-    accessKeyId: "AKIASPGTV7NO4BDCYK5V",
-    secretAccessKey: "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",
-  });
+
   try {
     var params = {
       topic: data.topic,
