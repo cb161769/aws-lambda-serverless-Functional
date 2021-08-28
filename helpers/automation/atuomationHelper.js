@@ -5,6 +5,7 @@ const { config } = require("../../connections/config/config");
 const admin = require("firebase-admin");
 const { dynamoDBConnection } = require("../../connections/connections");
 var serviceAccount = require("../../connections/config/firebase.config.json");
+const {writeToDynamoDB} = require("../../functions/generalFunctions");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
@@ -192,1191 +193,1191 @@ module.exports.IsInCurrentWeek = function (date) {
  * @param {*} data automate Consumption helpers
  * @param {*} configuration data config
  */
-module.exports.AutomateConsumption = async function (data, configuration) {
-  try {
-    if (Array.isArray(data) && Array.isArray(configuration)) {
-      for (let index = 0; index < configuration.length; index++) {
-        const element = configuration[index];
-        if (element === undefined) {
-          break;
-        }
-        // validate is it daily
-        if (element.isItDaily === true) {
-          // calculate maximumKilowatt in the device
-          const maximumKilowatt = element.configurationMaximumKilowattsPerDay;
-          var calculatedKilowatt =
-            module.exports.calculateDeviceInTheSameDay(data);
-          // TODO send notification to user's Device
-          const percentage = module.exports.calculatePercentage(
-            maximumKilowatt,
-            calculatedKilowatt
-          );
-          if (percentage > 50 && percentage < 75) {
-            const deviceDataOne = await module.exports.findDeviceToken();
-            const tokens = deviceDataOne.data;
-            const message = {
-              notification: {
-                title: `notificación de consumo diario`,
-                body: `la ${
-                  element.connectionName || ""
-                } ha consumido el ${percentage}% de lo estipulado`,
-              },
-              tokens: [tokens],
-            };
-            const firebase = await messaging.sendMulticast(message);
-            if (firebase.failureCount > 0) {
-              logger.log("error", `Requesting [Send Push Notification1]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "Send Push Notificaction",
-                  databaseOperation: "Push",
-                  table: "firebasePushNotification",
-                  error: firebase.responses,
-                },
-              });
-            } else {
-              logger.log("info", `Requesting [Send Push Notification1]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "Send Push Notificaction",
-                  databaseOperation: "Push",
-                  table: "firebasePushNotification",
-                  error: firebase.responses,
-                },
-              });
-            }
-          }
-          if (percentage > 75 && percentage <= 90) {
-            const deviceDataTwo = await module.exports.findDeviceToken();
-            const tokens = deviceDataTwo.data;
-            const message = {
-              notification: {
-                title: `notificación de consumo diario`,
-                body: `la ${
-                  element.connectionName || ""
-                } ha consumido el ${percentage}% de lo estipulado`,
-              },
-              tokens: [tokens],
-            };
-            const firebase = await messaging.sendMulticast(message);
-            if (firebase.failureCount > 0) {
-              logger.log("error", `Requesting [Send Push Notification1]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "Send Push Notificaction",
-                  databaseOperation: "Push",
-                  table: "firebasePushNotification",
-                  error: firebase.responses,
-                },
-              });
-            } else {
-              logger.log("info", `Requesting [Send Push Notification1]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "Send Push Notificaction",
-                  databaseOperation: "Push",
-                  table: "firebasePushNotification",
-                  error: firebase.responses,
-                },
-              });
-            }
-          }
-          if (calculatedKilowatt >= parseInt(maximumKilowatt)) {
-            const deviceData = await module.exports.findDeviceToken();
+// module.exports.AutomateConsumption = async function (data, configuration) {
+//   try {
+//     if (Array.isArray(data) && Array.isArray(configuration)) {
+//       for (let index = 0; index < configuration.length; index++) {
+//         const element = configuration[index];
+//         if (element === undefined) {
+//           break;
+//         }
+//         // validate is it daily
+//         if (element.isItDaily === true) {
+//           // calculate maximumKilowatt in the device
+//           const maximumKilowatt = element.configurationMaximumKilowattsPerDay;
+//           var calculatedKilowatt =
+//             module.exports.calculateDeviceInTheSameDay(data);
+//           // TODO send notification to user's Device
+//           const percentage = module.exports.calculatePercentage(
+//             maximumKilowatt,
+//             calculatedKilowatt
+//           );
+//           if (percentage > 50 && percentage < 75) {
+//             const deviceDataOne = await module.exports.findDeviceToken();
+//             const tokens = deviceDataOne.data;
+//             const message = {
+//               notification: {
+//                 title: `notificación de consumo diario`,
+//                 body: `la ${
+//                   element.connectionName || ""
+//                 } ha consumido el ${percentage}% de lo estipulado`,
+//               },
+//               tokens: [tokens],
+//             };
+//             const firebase = await messaging.sendMulticast(message);
+//             if (firebase.failureCount > 0) {
+//               logger.log("error", `Requesting [Send Push Notification1]`, {
+//                 tags: "automationHelper",
+//                 additionalInfo: {
+//                   operation: "Send Push Notificaction",
+//                   databaseOperation: "Push",
+//                   table: "firebasePushNotification",
+//                   error: firebase.responses,
+//                 },
+//               });
+//             } else {
+//               logger.log("info", `Requesting [Send Push Notification1]`, {
+//                 tags: "automationHelper",
+//                 additionalInfo: {
+//                   operation: "Send Push Notificaction",
+//                   databaseOperation: "Push",
+//                   table: "firebasePushNotification",
+//                   error: firebase.responses,
+//                 },
+//               });
+//             }
+//           }
+//           if (percentage > 75 && percentage <= 90) {
+//             const deviceDataTwo = await module.exports.findDeviceToken();
+//             const tokens = deviceDataTwo.data;
+//             const message = {
+//               notification: {
+//                 title: `notificación de consumo diario`,
+//                 body: `la ${
+//                   element.connectionName || ""
+//                 } ha consumido el ${percentage}% de lo estipulado`,
+//               },
+//               tokens: [tokens],
+//             };
+//             const firebase = await messaging.sendMulticast(message);
+//             if (firebase.failureCount > 0) {
+//               logger.log("error", `Requesting [Send Push Notification1]`, {
+//                 tags: "automationHelper",
+//                 additionalInfo: {
+//                   operation: "Send Push Notificaction",
+//                   databaseOperation: "Push",
+//                   table: "firebasePushNotification",
+//                   error: firebase.responses,
+//                 },
+//               });
+//             } else {
+//               logger.log("info", `Requesting [Send Push Notification1]`, {
+//                 tags: "automationHelper",
+//                 additionalInfo: {
+//                   operation: "Send Push Notificaction",
+//                   databaseOperation: "Push",
+//                   table: "firebasePushNotification",
+//                   error: firebase.responses,
+//                 },
+//               });
+//             }
+//           }
+//           if (calculatedKilowatt >= parseInt(maximumKilowatt)) {
+//             const deviceData = await module.exports.findDeviceToken();
 
-            if (deviceData.success) {
-              const token = deviceData.data;
-              const message = {
-                notification: {
-                  title: `notificación de consumo diario`,
-                  body: `la ${
-                    element.connectionName || ""
-                  } se va a apagar ya que ha consumido el maximo estipulado`,
-                },
-                tokens: [token],
-              };
-              const firebase = await messaging.sendMulticast(message);
-              if (firebase.failureCount > 0) {
-                logger.log("error", `Requesting [Send Push Notification1]`, {
-                  tags: "automationHelper",
-                  additionalInfo: {
-                    operation: "Send Push Notificaction",
-                    databaseOperation: "Push",
-                    table: "firebasePushNotification",
-                    error: firebase.responses,
-                  },
-                });
-              } else {
-                logger.log("info", `Requesting [Send Push Notification1]`, {
-                  tags: "automationHelper",
-                  additionalInfo: {
-                    operation: "Send Push Notificaction",
-                    databaseOperation: "Push",
-                    table: "firebasePushNotification",
-                    error: firebase.responses,
-                  },
-                });
-              }
-            }
-          } else {
-            // update Database Here
+//             if (deviceData.success) {
+//               const token = deviceData.data;
+//               const message = {
+//                 notification: {
+//                   title: `notificación de consumo diario`,
+//                   body: `la ${
+//                     element.connectionName || ""
+//                   } se va a apagar ya que ha consumido el maximo estipulado`,
+//                 },
+//                 tokens: [token],
+//               };
+//               const firebase = await messaging.sendMulticast(message);
+//               if (firebase.failureCount > 0) {
+//                 logger.log("error", `Requesting [Send Push Notification1]`, {
+//                   tags: "automationHelper",
+//                   additionalInfo: {
+//                     operation: "Send Push Notificaction",
+//                     databaseOperation: "Push",
+//                     table: "firebasePushNotification",
+//                     error: firebase.responses,
+//                   },
+//                 });
+//               } else {
+//                 logger.log("info", `Requesting [Send Push Notification1]`, {
+//                   tags: "automationHelper",
+//                   additionalInfo: {
+//                     operation: "Send Push Notificaction",
+//                     databaseOperation: "Push",
+//                     table: "firebasePushNotification",
+//                     error: firebase.responses,
+//                   },
+//                 });
+//               }
+//             }
+//           } else {
+//             // update Database Here
 
-            try {
-              logger.log("info", `Requesting [Write To DynamoDB]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "AutomateConsumption",
-                  databaseOperation: "PUT",
-                  table: config.dynamoBB.deviceConnection.name,
-                },
-              });
+//             try {
+//               logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                 tags: "automationHelper",
+//                 additionalInfo: {
+//                   operation: "AutomateConsumption",
+//                   databaseOperation: "PUT",
+//                   table: config.dynamoBB.deviceConnection.name,
+//                 },
+//               });
 
-              logger.log("info", `Requesting [Write To SNS]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "AutomateConsumption",
-                  databaseOperation: "PUT",
-                  table: config.dynamoBB.deviceConnection.name,
-                },
-              });
-            } catch (error) {
-              logger.log("error", `Requesting [Write To SNS]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "AutomateConsumption",
-                  databaseOperation: "PUT",
-                  table: config.dynamoBB.deviceConnection.name,
-                },
-              });
-            }
-          }
-          if (element.connectionsConfigurations.length > 0) {
-            for (
-              let index = 0;
-              index < element.connectionsConfigurations.length;
-              index++
-            ) {
-              const element2 = element.connectionsConfigurations[index];
-              if (element2.isItDaily === true) {
-                const connectionMaxPerDay = parseInt(
-                  element2.configurationMaximumKilowattsPerDay
-                );
-                const calculatedConnectionKilowatt =
-                  module.exports.calculateConnectionsInSameDay(
-                    data,
-                    element2.connectionName
-                  );
-                const percentage = module.exports.calculatePercentage(
-                  connectionMaxPerDay,
-                  calculatedConnectionKilowatt
-                );
-                if (percentage > 50 && percentage < 75) {
-                  const deviceDataOne = await module.exports.findDeviceToken();
-                  if (deviceDataOne.success) {
-                    const tokens = deviceDataOne.data;
-                    const message = {
-                      notification: {
-                        title: `notificación de consumo diario`,
-                        body: `la ${
-                          element2.connectionName || ""
-                        } ha consumido el ${percentage}% de lo estipulado`,
-                      },
-                      tokens: [tokens],
-                    };
-                    const firebase = await messaging.sendMulticast(message);
-                    if (firebase.failureCount > 0) {
-                      logger.log(
-                        "error",
-                        `Requesting [Send Push Notification1]`,
-                        {
-                          tags: "automationHelper",
-                          additionalInfo: {
-                            operation: "Send Push Notificaction",
-                            databaseOperation: "Push",
-                            table: "firebasePushNotification",
-                            error: firebase.responses,
-                          },
-                        }
-                      );
-                    } else {
-                      logger.log(
-                        "info",
-                        `Requesting [Send Push Notification1]`,
-                        {
-                          tags: "automationHelper",
-                          additionalInfo: {
-                            operation: "Send Push Notificaction",
-                            databaseOperation: "Push",
-                            table: "firebasePushNotification",
-                            error: firebase.responses,
-                          },
-                        }
-                      );
-                    }
-                  }
-                }
-                if (percentage > 75 && percentage <= 90) {
-                  const deviceDataTwo = await module.exports.findDeviceToken();
-                  if (deviceDataTwo.success) {
-                    const tokens = deviceDataTwo.data;
-                    const message = {
-                      notification: {
-                        title: `notificación de consumo diario`,
-                        body: `la ${
-                          element2.connectionName || ""
-                        } ha consumido el ${percentage}% de lo estipulado`,
-                      },
-                      tokens: [tokens],
-                    };
-                    const firebase = await messaging.sendMulticast(message);
+//               logger.log("info", `Requesting [Write To SNS]`, {
+//                 tags: "automationHelper",
+//                 additionalInfo: {
+//                   operation: "AutomateConsumption",
+//                   databaseOperation: "PUT",
+//                   table: config.dynamoBB.deviceConnection.name,
+//                 },
+//               });
+//             } catch (error) {
+//               logger.log("error", `Requesting [Write To SNS]`, {
+//                 tags: "automationHelper",
+//                 additionalInfo: {
+//                   operation: "AutomateConsumption",
+//                   databaseOperation: "PUT",
+//                   table: config.dynamoBB.deviceConnection.name,
+//                 },
+//               });
+//             }
+//           }
+//           if (element.connectionsConfigurations.length > 0) {
+//             for (
+//               let index = 0;
+//               index < element.connectionsConfigurations.length;
+//               index++
+//             ) {
+//               const element2 = element.connectionsConfigurations[index];
+//               if (element2.isItDaily === true) {
+//                 const connectionMaxPerDay = parseInt(
+//                   element2.configurationMaximumKilowattsPerDay
+//                 );
+//                 const calculatedConnectionKilowatt =
+//                   module.exports.calculateConnectionsInSameDay(
+//                     data,
+//                     element2.connectionName
+//                   );
+//                 const percentage = module.exports.calculatePercentage(
+//                   connectionMaxPerDay,
+//                   calculatedConnectionKilowatt
+//                 );
+//                 if (percentage > 50 && percentage < 75) {
+//                   const deviceDataOne = await module.exports.findDeviceToken();
+//                   if (deviceDataOne.success) {
+//                     const tokens = deviceDataOne.data;
+//                     const message = {
+//                       notification: {
+//                         title: `notificación de consumo diario`,
+//                         body: `la ${
+//                           element2.connectionName || ""
+//                         } ha consumido el ${percentage}% de lo estipulado`,
+//                       },
+//                       tokens: [tokens],
+//                     };
+//                     const firebase = await messaging.sendMulticast(message);
+//                     if (firebase.failureCount > 0) {
+//                       logger.log(
+//                         "error",
+//                         `Requesting [Send Push Notification1]`,
+//                         {
+//                           tags: "automationHelper",
+//                           additionalInfo: {
+//                             operation: "Send Push Notificaction",
+//                             databaseOperation: "Push",
+//                             table: "firebasePushNotification",
+//                             error: firebase.responses,
+//                           },
+//                         }
+//                       );
+//                     } else {
+//                       logger.log(
+//                         "info",
+//                         `Requesting [Send Push Notification1]`,
+//                         {
+//                           tags: "automationHelper",
+//                           additionalInfo: {
+//                             operation: "Send Push Notificaction",
+//                             databaseOperation: "Push",
+//                             table: "firebasePushNotification",
+//                             error: firebase.responses,
+//                           },
+//                         }
+//                       );
+//                     }
+//                   }
+//                 }
+//                 if (percentage > 75 && percentage <= 90) {
+//                   const deviceDataTwo = await module.exports.findDeviceToken();
+//                   if (deviceDataTwo.success) {
+//                     const tokens = deviceDataTwo.data;
+//                     const message = {
+//                       notification: {
+//                         title: `notificación de consumo diario`,
+//                         body: `la ${
+//                           element2.connectionName || ""
+//                         } ha consumido el ${percentage}% de lo estipulado`,
+//                       },
+//                       tokens: [tokens],
+//                     };
+//                     const firebase = await messaging.sendMulticast(message);
 
-                    if (firebase.failureCount > 0) {
-                      logger.log(
-                        "error",
-                        `Requesting [Send Push Notification1]`,
-                        {
-                          tags: "automationHelper",
-                          additionalInfo: {
-                            operation: "Send Push Notificaction",
-                            databaseOperation: "Push",
-                            table: "firebasePushNotification",
-                            error: firebase.responses,
-                          },
-                        }
-                      );
-                    } else {
-                      logger.log(
-                        "info",
-                        `Requesting [Send Push Notification1]`,
-                        {
-                          tags: "automationHelper",
-                          additionalInfo: {
-                            operation: "Send Push Notificaction",
-                            databaseOperation: "Push",
-                            table: "firebasePushNotification",
-                            error: firebase.responses,
-                          },
-                        }
-                      );
-                    }
-                  }
-                }
+//                     if (firebase.failureCount > 0) {
+//                       logger.log(
+//                         "error",
+//                         `Requesting [Send Push Notification1]`,
+//                         {
+//                           tags: "automationHelper",
+//                           additionalInfo: {
+//                             operation: "Send Push Notificaction",
+//                             databaseOperation: "Push",
+//                             table: "firebasePushNotification",
+//                             error: firebase.responses,
+//                           },
+//                         }
+//                       );
+//                     } else {
+//                       logger.log(
+//                         "info",
+//                         `Requesting [Send Push Notification1]`,
+//                         {
+//                           tags: "automationHelper",
+//                           additionalInfo: {
+//                             operation: "Send Push Notificaction",
+//                             databaseOperation: "Push",
+//                             table: "firebasePushNotification",
+//                             error: firebase.responses,
+//                           },
+//                         }
+//                       );
+//                     }
+//                   }
+//                 }
 
-                if (connectionMaxPerDay >= calculatedConnectionKilowatt) {
-                  // update database here
-                  // send notification helper
-                  try {
-                    logger.log("info", `Requesting [Write To DynamoDB]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                    const deviceData = await module.exports.findDeviceToken();
-                    if (deviceData.success) {
-                      const token = deviceData.data;
-                      const message = {
-                        notification: {
-                          title: `notificación de consumo diario`,
-                          body: `la ${
-                            element2.connectionName || ""
-                          } se va a apagar ya que ha consumido el maximo estipulado`,
-                        },
-                        tokens: [token],
-                      };
-                      const firebase = await messaging.sendMulticast(message);
-                      if (firebase.failureCount > 0) {
-                        logger.log(
-                          "error",
-                          `Requesting [Send Push Notification1]`,
-                          {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "Send Push Notificaction",
-                              databaseOperation: "Push",
-                              table: "firebasePushNotification",
-                              error: firebase.responses,
-                            },
-                          }
-                        );
-                      } else {
-                        logger.log(
-                          "info",
-                          `Requesting [Send Push Notification1]`,
-                          {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "Send Push Notificaction",
-                              databaseOperation: "Push",
-                              table: "firebasePushNotification",
-                              error: firebase.responses,
-                            },
-                          }
-                        );
-                      }
-                    }
-                  } catch (error) {
-                    logger.log("error", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  }
-                } else {
-                  try {
-                    logger.log("info", `Requesting [Write To DynamoDB]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                    // const sns = await publishSNS(snsParams);
+//                 if (connectionMaxPerDay >= calculatedConnectionKilowatt) {
+//                   // update database here
+//                   // send notification helper
+//                   try {
+//                     logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                     const deviceData = await module.exports.findDeviceToken();
+//                     if (deviceData.success) {
+//                       const token = deviceData.data;
+//                       const message = {
+//                         notification: {
+//                           title: `notificación de consumo diario`,
+//                           body: `la ${
+//                             element2.connectionName || ""
+//                           } se va a apagar ya que ha consumido el maximo estipulado`,
+//                         },
+//                         tokens: [token],
+//                       };
+//                       const firebase = await messaging.sendMulticast(message);
+//                       if (firebase.failureCount > 0) {
+//                         logger.log(
+//                           "error",
+//                           `Requesting [Send Push Notification1]`,
+//                           {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "Send Push Notificaction",
+//                               databaseOperation: "Push",
+//                               table: "firebasePushNotification",
+//                               error: firebase.responses,
+//                             },
+//                           }
+//                         );
+//                       } else {
+//                         logger.log(
+//                           "info",
+//                           `Requesting [Send Push Notification1]`,
+//                           {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "Send Push Notificaction",
+//                               databaseOperation: "Push",
+//                               table: "firebasePushNotification",
+//                               error: firebase.responses,
+//                             },
+//                           }
+//                         );
+//                       }
+//                     }
+//                   } catch (error) {
+//                     logger.log("error", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   }
+//                 } else {
+//                   try {
+//                     logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                     // const sns = await publishSNS(snsParams);
 
-                    logger.log("info", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  } catch (error) {
-                    logger.log("error", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  }
-                  // update database here
-                  // send notification helper
-                  // TODO check device Notification/Alerts configuration
-                }
-              }
-              if (element2.isItWeekly === true) {
-                const connectionMaxPerWeek = parseInt(
-                  element2.configurationMaximumKilowattsPerWeek
-                );
-                const calculatedKilowatt =
-                  module.exports.CalculateConnectionsInWeeklyConfig(
-                    data,
-                    element2.ConnectionName
-                  );
-                  const percentageW = module.exports.calculatePercentage(
-                    connectionMaxPerWeek,
-                    calculatedKilowatt
-                  );
-                  if (percentageW > 50 && percentageW < 75) {
-                    const deviceDataOneW = await module.exports.findDeviceToken();
-                    if (deviceDataOneW.success) {
-                      const tokensW = deviceDataOne.data;
-                      const message = {
-                        notification: {
-                          title: `notificación de consumo semanal`,
-                          body: `la ${
-                            element2.connectionName || ""
-                          } ha consumido el ${percentageW}% de lo estipulado`,
-                        },
-                        tokens: [tokensW],
-                      };
-                      const firebaseW = await messaging.sendMulticast(message);
-                      if (firebaseW.failureCount > 0) {
-                        logger.log(
-                          "error",
-                          `Requesting [Send Push Notification1]`,
-                          {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "Send Push Notificaction",
-                              databaseOperation: "Push",
-                              table: "firebasePushNotification",
-                              error: firebaseW.responses,
-                            },
-                          }
-                        );
-                      } else {
-                        logger.log(
-                          "info",
-                          `Requesting [Send Push Notification1]`,
-                          {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "Send Push Notificaction",
-                              databaseOperation: "Push",
-                              table: "firebasePushNotification",
-                              error: firebase.responses,
-                            },
-                          }
-                        );
-                      }
-                if (calculatedKilowatt >= connectionMaxPerWeek) {
-                  // update database here
-                  // set notification helper
-                  try {
-                    logger.log("info", `Requesting [Write To DynamoDB]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                    // const sns = await publishSNS(snsParams);
+//                     logger.log("info", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   } catch (error) {
+//                     logger.log("error", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   }
+//                   // update database here
+//                   // send notification helper
+//                   // TODO check device Notification/Alerts configuration
+//                 }
+//               }
+//               if (element2.isItWeekly === true) {
+//                 const connectionMaxPerWeek = parseInt(
+//                   element2.configurationMaximumKilowattsPerWeek
+//                 );
+//                 const calculatedKilowatt =
+//                   module.exports.CalculateConnectionsInWeeklyConfig(
+//                     data,
+//                     element2.ConnectionName
+//                   );
+//                   const percentageW = module.exports.calculatePercentage(
+//                     connectionMaxPerWeek,
+//                     calculatedKilowatt
+//                   );
+//                   if (percentageW > 50 && percentageW < 75) {
+//                     const deviceDataOneW = await module.exports.findDeviceToken();
+//                     if (deviceDataOneW.success) {
+//                       const tokensW = deviceDataOne.data;
+//                       const message = {
+//                         notification: {
+//                           title: `notificación de consumo semanal`,
+//                           body: `la ${
+//                             element2.connectionName || ""
+//                           } ha consumido el ${percentageW}% de lo estipulado`,
+//                         },
+//                         tokens: [tokensW],
+//                       };
+//                       const firebaseW = await messaging.sendMulticast(message);
+//                       if (firebaseW.failureCount > 0) {
+//                         logger.log(
+//                           "error",
+//                           `Requesting [Send Push Notification1]`,
+//                           {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "Send Push Notificaction",
+//                               databaseOperation: "Push",
+//                               table: "firebasePushNotification",
+//                               error: firebaseW.responses,
+//                             },
+//                           }
+//                         );
+//                       } else {
+//                         logger.log(
+//                           "info",
+//                           `Requesting [Send Push Notification1]`,
+//                           {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "Send Push Notificaction",
+//                               databaseOperation: "Push",
+//                               table: "firebasePushNotification",
+//                               error: firebase.responses,
+//                             },
+//                           }
+//                         );
+//                       }
+//                 if (calculatedKilowatt >= connectionMaxPerWeek) {
+//                   // update database here
+//                   // set notification helper
+//                   try {
+//                     logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                     // const sns = await publishSNS(snsParams);
 
-                    logger.log("info", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  } catch (error) {
-                    logger.log("error", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  }
-                } else {
-                  try {
-                    logger.log("info", `Requesting [Write To DynamoDB]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                    // const sns = await publishSNS(snsParams);
+//                     logger.log("info", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   } catch (error) {
+//                     logger.log("error", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   }
+//                 } else {
+//                   try {
+//                     logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                     // const sns = await publishSNS(snsParams);
 
-                    logger.log("info", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  } catch (error) {
-                    logger.log("error", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  }
-                }
-              }
-              if (element2.isItMonthly === true) {
-                const connectionMaxPerWeek = parseInt(
-                  element2.configurationMaximumKilowattsPerMonth
-                );
-                const calculatedKwh =
-                  module.exports.calculateConnectionsInMonthConfig(
-                    data,
-                    element2.ConnectionName
-                  );
-                if (connectionMaxPerWeek >= calculatedKwh) {
-                  // update database here
-                  // set notification helper
-                  try {
-                    logger.log("info", `Requesting [Write To DynamoDB]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                    // const sns = await publishSNS(snsParams);
+//                     logger.log("info", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   } catch (error) {
+//                     logger.log("error", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   }
+//                 }
+//               }
+//               if (element2.isItMonthly === true) {
+//                 const connectionMaxPerWeek = parseInt(
+//                   element2.configurationMaximumKilowattsPerMonth
+//                 );
+//                 const calculatedKwh =
+//                   module.exports.calculateConnectionsInMonthConfig(
+//                     data,
+//                     element2.ConnectionName
+//                   );
+//                 if (connectionMaxPerWeek >= calculatedKwh) {
+//                   // update database here
+//                   // set notification helper
+//                   try {
+//                     logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                     // const sns = await publishSNS(snsParams);
 
-                    logger.log("info", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  } catch (error) {
-                    logger.log("error", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  }
-                } else {
-                  // update database here
-                  // set notification helper
-                  try {
-                    logger.log("info", `Requesting [Write To DynamoDB]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                    // const sns = await publishSNS(snsParams);
+//                     logger.log("info", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   } catch (error) {
+//                     logger.log("error", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   }
+//                 } else {
+//                   // update database here
+//                   // set notification helper
+//                   try {
+//                     logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                     // const sns = await publishSNS(snsParams);
 
-                    logger.log("info", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  } catch (error) {
-                    logger.log("error", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  }
-                }
-                if (element.connectionsConfigurations.length > 0) {
-                  for (
-                    let index = 0;
-                    index < element.connectionsConfigurations.length;
-                    index++
-                  ) {
-                    const element2 = element.connectionsConfigurations[index];
-                    if (element2.isItDaily === true) {
-                      const connectionMaxPerDay = parseInt(
-                        element2.configurationMaximumKilowattsPerDay
-                      );
-                      const calculatedConnectionKilowatt =
-                        module.exports.calculateConnectionsInSameDay(
-                          data,
-                          element2.connectionName
-                        );
-                      if (connectionMaxPerDay >= calculatedConnectionKilowatt) {
-                        // update database here
-                        // send notification helper
-                        try {
-                          logger.log("info", `Requesting [Write To DynamoDB]`, {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "AutomateConsumption",
-                              databaseOperation: "PUT",
-                              table: config.dynamoBB.deviceConnection.name,
-                            },
-                          });
-                          // const sns = await publishSNS(snsParams);
+//                     logger.log("info", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   } catch (error) {
+//                     logger.log("error", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   }
+//                 }
+//                 if (element.connectionsConfigurations.length > 0) {
+//                   for (
+//                     let index = 0;
+//                     index < element.connectionsConfigurations.length;
+//                     index++
+//                   ) {
+//                     const element2 = element.connectionsConfigurations[index];
+//                     if (element2.isItDaily === true) {
+//                       const connectionMaxPerDay = parseInt(
+//                         element2.configurationMaximumKilowattsPerDay
+//                       );
+//                       const calculatedConnectionKilowatt =
+//                         module.exports.calculateConnectionsInSameDay(
+//                           data,
+//                           element2.connectionName
+//                         );
+//                       if (connectionMaxPerDay >= calculatedConnectionKilowatt) {
+//                         // update database here
+//                         // send notification helper
+//                         try {
+//                           logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "AutomateConsumption",
+//                               databaseOperation: "PUT",
+//                               table: config.dynamoBB.deviceConnection.name,
+//                             },
+//                           });
+//                           // const sns = await publishSNS(snsParams);
 
-                          logger.log("info", `Requesting [Write To SNS]`, {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "AutomateConsumption",
-                              databaseOperation: "PUT",
-                              table: config.dynamoBB.deviceConnection.name,
-                            },
-                          });
-                        } catch (error) {
-                          logger.log("error", `Requesting [Write To SNS]`, {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "AutomateConsumption",
-                              databaseOperation: "PUT",
-                              table: config.dynamoBB.deviceConnection.name,
-                            },
-                          });
-                        }
-                      } else {
-                        // update database here
-                        // send notification helper
-                        // TODO check device Notification/Alerts configuration
-                        try {
-                          logger.log("info", `Requesting [Write To DynamoDB]`, {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "AutomateConsumption",
-                              databaseOperation: "PUT",
-                              table: config.dynamoBB.deviceConnection.name,
-                            },
-                          });
-                          // const sns = await publishSNS(snsParams);
+//                           logger.log("info", `Requesting [Write To SNS]`, {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "AutomateConsumption",
+//                               databaseOperation: "PUT",
+//                               table: config.dynamoBB.deviceConnection.name,
+//                             },
+//                           });
+//                         } catch (error) {
+//                           logger.log("error", `Requesting [Write To SNS]`, {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "AutomateConsumption",
+//                               databaseOperation: "PUT",
+//                               table: config.dynamoBB.deviceConnection.name,
+//                             },
+//                           });
+//                         }
+//                       } else {
+//                         // update database here
+//                         // send notification helper
+//                         // TODO check device Notification/Alerts configuration
+//                         try {
+//                           logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "AutomateConsumption",
+//                               databaseOperation: "PUT",
+//                               table: config.dynamoBB.deviceConnection.name,
+//                             },
+//                           });
+//                           // const sns = await publishSNS(snsParams);
 
-                          logger.log("info", `Requesting [Write To SNS]`, {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "AutomateConsumption",
-                              databaseOperation: "PUT",
-                              table: config.dynamoBB.deviceConnection.name,
-                            },
-                          });
-                        } catch (error) {
-                          logger.log("error", `Requesting [Write To SNS]`, {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "AutomateConsumption",
-                              databaseOperation: "PUT",
-                              table: config.dynamoBB.deviceConnection.name,
-                            },
-                          });
-                        }
-                      }
-                    }
-                    if (element2.isItWeekly === true) {
-                      const connectionMaxPerWeek = parseInt(
-                        element2.configurationMaximumKilowattsPerWeek
-                      );
-                      const calculatedKilowatt =
-                        module.exports.CalculateConnectionsInWeeklyConfig(
-                          data,
-                          element2.ConnectionName
-                        );
-                      if (calculatedKilowatt >= connectionMaxPerWeek) {
-                        // update database here
-                        // set notification helper
-                        try {
-                          logger.log("info", `Requesting [Write To DynamoDB]`, {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "AutomateConsumption",
-                              databaseOperation: "PUT",
-                              table: config.dynamoBB.deviceConnection.name,
-                            },
-                          });
-                          // const sns = await publishSNS(snsParams);
+//                           logger.log("info", `Requesting [Write To SNS]`, {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "AutomateConsumption",
+//                               databaseOperation: "PUT",
+//                               table: config.dynamoBB.deviceConnection.name,
+//                             },
+//                           });
+//                         } catch (error) {
+//                           logger.log("error", `Requesting [Write To SNS]`, {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "AutomateConsumption",
+//                               databaseOperation: "PUT",
+//                               table: config.dynamoBB.deviceConnection.name,
+//                             },
+//                           });
+//                         }
+//                       }
+//                     }
+//                     if (element2.isItWeekly === true) {
+//                       const connectionMaxPerWeek = parseInt(
+//                         element2.configurationMaximumKilowattsPerWeek
+//                       );
+//                       const calculatedKilowatt =
+//                         module.exports.CalculateConnectionsInWeeklyConfig(
+//                           data,
+//                           element2.ConnectionName
+//                         );
+//                       if (calculatedKilowatt >= connectionMaxPerWeek) {
+//                         // update database here
+//                         // set notification helper
+//                         try {
+//                           logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "AutomateConsumption",
+//                               databaseOperation: "PUT",
+//                               table: config.dynamoBB.deviceConnection.name,
+//                             },
+//                           });
+//                           // const sns = await publishSNS(snsParams);
 
-                          logger.log("info", `Requesting [Write To SNS]`, {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "AutomateConsumption",
-                              databaseOperation: "PUT",
-                              table: config.dynamoBB.deviceConnection.name,
-                            },
-                          });
-                        } catch (error) {
-                          logger.log("error", `Requesting [Write To SNS]`, {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "AutomateConsumption",
-                              databaseOperation: "PUT",
-                              table: config.dynamoBB.deviceConnection.name,
-                            },
-                          });
-                        }
-                      } else {
-                        try {
-                          logger.log("info", `Requesting [Write To DynamoDB]`, {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "AutomateConsumption",
-                              databaseOperation: "PUT",
-                              table: config.dynamoBB.deviceConnection.name,
-                            },
-                          });
-                          // const sns = await publishSNS(snsParams);
+//                           logger.log("info", `Requesting [Write To SNS]`, {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "AutomateConsumption",
+//                               databaseOperation: "PUT",
+//                               table: config.dynamoBB.deviceConnection.name,
+//                             },
+//                           });
+//                         } catch (error) {
+//                           logger.log("error", `Requesting [Write To SNS]`, {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "AutomateConsumption",
+//                               databaseOperation: "PUT",
+//                               table: config.dynamoBB.deviceConnection.name,
+//                             },
+//                           });
+//                         }
+//                       } else {
+//                         try {
+//                           logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "AutomateConsumption",
+//                               databaseOperation: "PUT",
+//                               table: config.dynamoBB.deviceConnection.name,
+//                             },
+//                           });
+//                           // const sns = await publishSNS(snsParams);
 
-                          logger.log("info", `Requesting [Write To SNS]`, {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "AutomateConsumption",
-                              databaseOperation: "PUT",
-                              table: config.dynamoBB.deviceConnection.name,
-                            },
-                          });
-                        } catch (error) {
-                          logger.log("error", `Requesting [Write To SNS]`, {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "AutomateConsumption",
-                              databaseOperation: "PUT",
-                              table: config.dynamoBB.deviceConnection.name,
-                            },
-                          });
-                        }
-                      }
-                    }
-                    if (element2.isItMonthly === true) {
-                      const connectionMaxPerWeek = parseInt(
-                        element2.configurationMaximumKilowattsPerMonth
-                      );
-                      const calculatedKwh =
-                        module.exports.calculateConnectionsInMonthConfig(
-                          data,
-                          element2.ConnectionName
-                        );
-                      if (connectionMaxPerWeek >= calculatedKwh) {
-                        // update database here
-                        // set notification helper
-                        try {
-                          logger.log("info", `Requesting [Write To DynamoDB]`, {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "AutomateConsumption",
-                              databaseOperation: "PUT",
-                              table: config.dynamoBB.deviceConnection.name,
-                            },
-                          });
-                          // const sns = await publishSNS(snsParams);
+//                           logger.log("info", `Requesting [Write To SNS]`, {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "AutomateConsumption",
+//                               databaseOperation: "PUT",
+//                               table: config.dynamoBB.deviceConnection.name,
+//                             },
+//                           });
+//                         } catch (error) {
+//                           logger.log("error", `Requesting [Write To SNS]`, {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "AutomateConsumption",
+//                               databaseOperation: "PUT",
+//                               table: config.dynamoBB.deviceConnection.name,
+//                             },
+//                           });
+//                         }
+//                       }
+//                     }
+//                     if (element2.isItMonthly === true) {
+//                       const connectionMaxPerWeek = parseInt(
+//                         element2.configurationMaximumKilowattsPerMonth
+//                       );
+//                       const calculatedKwh =
+//                         module.exports.calculateConnectionsInMonthConfig(
+//                           data,
+//                           element2.ConnectionName
+//                         );
+//                       if (connectionMaxPerWeek >= calculatedKwh) {
+//                         // update database here
+//                         // set notification helper
+//                         try {
+//                           logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "AutomateConsumption",
+//                               databaseOperation: "PUT",
+//                               table: config.dynamoBB.deviceConnection.name,
+//                             },
+//                           });
+//                           // const sns = await publishSNS(snsParams);
 
-                          logger.log("info", `Requesting [Write To SNS]`, {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "AutomateConsumption",
-                              databaseOperation: "PUT",
-                              table: config.dynamoBB.deviceConnection.name,
-                            },
-                          });
-                        } catch (error) {
-                          logger.log("error", `Requesting [Write To SNS]`, {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "AutomateConsumption",
-                              databaseOperation: "PUT",
-                              table: config.dynamoBB.deviceConnection.name,
-                            },
-                          });
-                        }
-                      } else {
-                        // update database here
-                        // set notification helper
-                        try {
-                          logger.log("info", `Requesting [Write To DynamoDB]`, {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "AutomateConsumption",
-                              databaseOperation: "PUT",
-                              table: config.dynamoBB.deviceConnection.name,
-                            },
-                          });
-                          // const sns = await publishSNS(snsParams);
+//                           logger.log("info", `Requesting [Write To SNS]`, {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "AutomateConsumption",
+//                               databaseOperation: "PUT",
+//                               table: config.dynamoBB.deviceConnection.name,
+//                             },
+//                           });
+//                         } catch (error) {
+//                           logger.log("error", `Requesting [Write To SNS]`, {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "AutomateConsumption",
+//                               databaseOperation: "PUT",
+//                               table: config.dynamoBB.deviceConnection.name,
+//                             },
+//                           });
+//                         }
+//                       } else {
+//                         // update database here
+//                         // set notification helper
+//                         try {
+//                           logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "AutomateConsumption",
+//                               databaseOperation: "PUT",
+//                               table: config.dynamoBB.deviceConnection.name,
+//                             },
+//                           });
+//                           // const sns = await publishSNS(snsParams);
 
-                          logger.log("info", `Requesting [Write To SNS]`, {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "AutomateConsumption",
-                              databaseOperation: "PUT",
-                              table: config.dynamoBB.deviceConnection.name,
-                            },
-                          });
-                        } catch (error) {
-                          logger.log("error", `Requesting [Write To SNS]`, {
-                            tags: "automationHelper",
-                            additionalInfo: {
-                              operation: "AutomateConsumption",
-                              databaseOperation: "PUT",
-                              table: config.dynamoBB.deviceConnection.name,
-                            },
-                          });
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-                }
-          }
+//                           logger.log("info", `Requesting [Write To SNS]`, {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "AutomateConsumption",
+//                               databaseOperation: "PUT",
+//                               table: config.dynamoBB.deviceConnection.name,
+//                             },
+//                           });
+//                         } catch (error) {
+//                           logger.log("error", `Requesting [Write To SNS]`, {
+//                             tags: "automationHelper",
+//                             additionalInfo: {
+//                               operation: "AutomateConsumption",
+//                               databaseOperation: "PUT",
+//                               table: config.dynamoBB.deviceConnection.name,
+//                             },
+//                           });
+//                         }
+//                       }
+//                     }
+//                   }
+//                 }
+//               }
+//                 }
+//           }
 
-          // calculate connections
-        }
-        // validate is it weekly
-        if (element.isItWeekly === true) {
-          const maximumKilowatt = element.configurationMaximumKilowattsPerDay;
-          const calculatedKilowatt =
-            module.exports.calculateDeviceInSameWeek(data);
-          if (calculatedKilowatt >= maximumKilowatt) {
-            try {
-              logger.log("info", `Requesting [Write To DynamoDB]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "AutomateConsumption",
-                  databaseOperation: "PUT",
-                  table: config.dynamoBB.deviceConnection.name,
-                },
-              });
-              // const sns = await publishSNS(snsParams);
+//           // calculate connections
+//         }
+//         // validate is it weekly
+//         if (element.isItWeekly === true) {
+//           const maximumKilowatt = element.configurationMaximumKilowattsPerDay;
+//           const calculatedKilowatt =
+//             module.exports.calculateDeviceInSameWeek(data);
+//           if (calculatedKilowatt >= maximumKilowatt) {
+//             try {
+//               logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                 tags: "automationHelper",
+//                 additionalInfo: {
+//                   operation: "AutomateConsumption",
+//                   databaseOperation: "PUT",
+//                   table: config.dynamoBB.deviceConnection.name,
+//                 },
+//               });
+//               // const sns = await publishSNS(snsParams);
 
-              logger.log("info", `Requesting [Write To SNS]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "AutomateConsumption",
-                  databaseOperation: "PUT",
-                  table: config.dynamoBB.deviceConnection.name,
-                },
-              });
-            } catch (error) {
-              logger.log("error", `Requesting [Write To SNS]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "AutomateConsumption",
-                  databaseOperation: "PUT",
-                  table: config.dynamoBB.deviceConnection.name,
-                },
-              });
-            }
-            // update db here
-          } else {
-            try {
-              logger.log("info", `Requesting [Write To DynamoDB]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "AutomateConsumption",
-                  databaseOperation: "PUT",
-                  table: config.dynamoBB.deviceConnection.name,
-                },
-              });
+//               logger.log("info", `Requesting [Write To SNS]`, {
+//                 tags: "automationHelper",
+//                 additionalInfo: {
+//                   operation: "AutomateConsumption",
+//                   databaseOperation: "PUT",
+//                   table: config.dynamoBB.deviceConnection.name,
+//                 },
+//               });
+//             } catch (error) {
+//               logger.log("error", `Requesting [Write To SNS]`, {
+//                 tags: "automationHelper",
+//                 additionalInfo: {
+//                   operation: "AutomateConsumption",
+//                   databaseOperation: "PUT",
+//                   table: config.dynamoBB.deviceConnection.name,
+//                 },
+//               });
+//             }
+//             // update db here
+//           } else {
+//             try {
+//               logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                 tags: "automationHelper",
+//                 additionalInfo: {
+//                   operation: "AutomateConsumption",
+//                   databaseOperation: "PUT",
+//                   table: config.dynamoBB.deviceConnection.name,
+//                 },
+//               });
 
-              logger.log("info", `Requesting [Write To SNS]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "AutomateConsumption",
-                  databaseOperation: "PUT",
-                  table: config.dynamoBB.deviceConnection.name,
-                },
-              });
-            } catch (error) {
-              logger.log("error", `Requesting [Write To SNS]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "AutomateConsumption",
-                  databaseOperation: "PUT",
-                  table: config.dynamoBB.deviceConnection.name,
-                },
-              });
-            }
-            // update db here
-          }
-          if (element.connectionsConfigurations.length > 0) {
-            for (
-              let index = 0;
-              index < element.connectionsConfigurations.length;
-              index++
-            ) {
-              const element2 = element.connectionsConfigurations[index];
-              if (element2.isItDaily === true) {
-                const connectionMaxPerDay = parseInt(
-                  element2.configurationMaximumKilowattsPerDay
-                );
-                const calculatedConnectionKilowatt =
-                  module.exports.calculateConnectionsInSameDay(
-                    data,
-                    element2.connectionName
-                  );
-                if (connectionMaxPerDay >= calculatedConnectionKilowatt) {
-                  // update database here
-                  // send notification helper
-                  try {
-                    logger.log("info", `Requesting [Write To DynamoDB]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                    // const sns = await publishSNS(snsParams);
+//               logger.log("info", `Requesting [Write To SNS]`, {
+//                 tags: "automationHelper",
+//                 additionalInfo: {
+//                   operation: "AutomateConsumption",
+//                   databaseOperation: "PUT",
+//                   table: config.dynamoBB.deviceConnection.name,
+//                 },
+//               });
+//             } catch (error) {
+//               logger.log("error", `Requesting [Write To SNS]`, {
+//                 tags: "automationHelper",
+//                 additionalInfo: {
+//                   operation: "AutomateConsumption",
+//                   databaseOperation: "PUT",
+//                   table: config.dynamoBB.deviceConnection.name,
+//                 },
+//               });
+//             }
+//             // update db here
+//           }
+//           if (element.connectionsConfigurations.length > 0) {
+//             for (
+//               let index = 0;
+//               index < element.connectionsConfigurations.length;
+//               index++
+//             ) {
+//               const element2 = element.connectionsConfigurations[index];
+//               if (element2.isItDaily === true) {
+//                 const connectionMaxPerDay = parseInt(
+//                   element2.configurationMaximumKilowattsPerDay
+//                 );
+//                 const calculatedConnectionKilowatt =
+//                   module.exports.calculateConnectionsInSameDay(
+//                     data,
+//                     element2.connectionName
+//                   );
+//                 if (connectionMaxPerDay >= calculatedConnectionKilowatt) {
+//                   // update database here
+//                   // send notification helper
+//                   try {
+//                     logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                     // const sns = await publishSNS(snsParams);
 
-                    logger.log("info", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  } catch (error) {
-                    logger.log("error", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  }
-                } else {
-                  try {
-                    logger.log("info", `Requesting [Write To DynamoDB]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                    // const sns = await publishSNS(snsParams);
+//                     logger.log("info", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   } catch (error) {
+//                     logger.log("error", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   }
+//                 } else {
+//                   try {
+//                     logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                     // const sns = await publishSNS(snsParams);
 
-                    logger.log("info", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  } catch (error) {
-                    logger.log("error", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  }
-                  // update database here
-                  // send notification helper
-                  // TODO check device Notification/Alerts configuration
-                }
-              }
-              if (element2.isItWeekly === true) {
-                const connectionMaxPerWeek = parseInt(
-                  element2.configurationMaximumKilowattsPerWeek
-                );
-                const calculatedKilowatt =
-                  module.exports.CalculateConnectionsInWeeklyConfig(
-                    data,
-                    element2.ConnectionName
-                  );
-                if (calculatedKilowatt >= connectionMaxPerWeek) {
-                  // update database here
-                  // set notification helper
-                  try {
-                    logger.log("info", `Requesting [Write To DynamoDB]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                    // const sns = await publishSNS(snsParams);
+//                     logger.log("info", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   } catch (error) {
+//                     logger.log("error", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   }
+//                   // update database here
+//                   // send notification helper
+//                   // TODO check device Notification/Alerts configuration
+//                 }
+//               }
+//               if (element2.isItWeekly === true) {
+//                 const connectionMaxPerWeek = parseInt(
+//                   element2.configurationMaximumKilowattsPerWeek
+//                 );
+//                 const calculatedKilowatt =
+//                   module.exports.CalculateConnectionsInWeeklyConfig(
+//                     data,
+//                     element2.ConnectionName
+//                   );
+//                 if (calculatedKilowatt >= connectionMaxPerWeek) {
+//                   // update database here
+//                   // set notification helper
+//                   try {
+//                     logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                     // const sns = await publishSNS(snsParams);
 
-                    logger.log("info", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  } catch (error) {
-                    logger.log("error", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  }
-                } else {
-                  try {
-                    logger.log("info", `Requesting [Write To DynamoDB]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                    // const sns = await publishSNS(snsParams);
+//                     logger.log("info", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   } catch (error) {
+//                     logger.log("error", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   }
+//                 } else {
+//                   try {
+//                     logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                     // const sns = await publishSNS(snsParams);
 
-                    logger.log("info", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  } catch (error) {
-                    logger.log("error", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  }
-                }
-              }
-              if (element2.isItMonthly === true) {
-                const connectionMaxPerWeek = parseInt(
-                  element2.configurationMaximumKilowattsPerMonth
-                );
-                const calculatedKwh =
-                  module.exports.calculateConnectionsInMonthConfig(
-                    data,
-                    element2.ConnectionName
-                  );
-                if (connectionMaxPerWeek >= calculatedKwh) {
-                  // update database here
-                  // set notification helper
-                  try {
-                    logger.log("info", `Requesting [Write To DynamoDB]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                    // const sns = await publishSNS(snsParams);
+//                     logger.log("info", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   } catch (error) {
+//                     logger.log("error", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   }
+//                 }
+//               }
+//               if (element2.isItMonthly === true) {
+//                 const connectionMaxPerWeek = parseInt(
+//                   element2.configurationMaximumKilowattsPerMonth
+//                 );
+//                 const calculatedKwh =
+//                   module.exports.calculateConnectionsInMonthConfig(
+//                     data,
+//                     element2.ConnectionName
+//                   );
+//                 if (connectionMaxPerWeek >= calculatedKwh) {
+//                   // update database here
+//                   // set notification helper
+//                   try {
+//                     logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                     // const sns = await publishSNS(snsParams);
 
-                    logger.log("info", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  } catch (error) {
-                    logger.log("error", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  }
-                } else {
-                  // update database here
-                  // set notification helper
-                  try {
-                    logger.log("info", `Requesting [Write To DynamoDB]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                    // const sns = await publishSNS(snsParams);
+//                     logger.log("info", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   } catch (error) {
+//                     logger.log("error", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   }
+//                 } else {
+//                   // update database here
+//                   // set notification helper
+//                   try {
+//                     logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                     // const sns = await publishSNS(snsParams);
 
-                    logger.log("info", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  } catch (error) {
-                    logger.log("error", `Requesting [Write To SNS]`, {
-                      tags: "automationHelper",
-                      additionalInfo: {
-                        operation: "AutomateConsumption",
-                        databaseOperation: "PUT",
-                        table: config.dynamoBB.deviceConnection.name,
-                      },
-                    });
-                  }
-                }
-              }
-            }
-          }
-        }
-        if (element.isItMonthly === true) {
-          const maximumKilowatt = element.MaximumKilowattsPerMonth;
-          var calculatedKilowatt =
-            module.exports.calculateDeviceInSameMonth(data);
-          if (calculatedKilowatt >= maximumKilowatt) {
-            // update database here
-            // set notification helper
-            try {
-              logger.log("info", `Requesting [Write To DynamoDB]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "AutomateConsumption",
-                  databaseOperation: "PUT",
-                  table: config.dynamoBB.deviceConnection.name,
-                },
-              });
-              // const sns = await publishSNS(snsParams);
+//                     logger.log("info", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   } catch (error) {
+//                     logger.log("error", `Requesting [Write To SNS]`, {
+//                       tags: "automationHelper",
+//                       additionalInfo: {
+//                         operation: "AutomateConsumption",
+//                         databaseOperation: "PUT",
+//                         table: config.dynamoBB.deviceConnection.name,
+//                       },
+//                     });
+//                   }
+//                 }
+//               }
+//             }
+//           }
+//         }
+//         if (element.isItMonthly === true) {
+//           const maximumKilowatt = element.MaximumKilowattsPerMonth;
+//           var calculatedKilowatt =
+//             module.exports.calculateDeviceInSameMonth(data);
+//           if (calculatedKilowatt >= maximumKilowatt) {
+//             // update database here
+//             // set notification helper
+//             try {
+//               logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                 tags: "automationHelper",
+//                 additionalInfo: {
+//                   operation: "AutomateConsumption",
+//                   databaseOperation: "PUT",
+//                   table: config.dynamoBB.deviceConnection.name,
+//                 },
+//               });
+//               // const sns = await publishSNS(snsParams);
 
-              logger.log("info", `Requesting [Write To SNS]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "AutomateConsumption",
-                  databaseOperation: "PUT",
-                  table: config.dynamoBB.deviceConnection.name,
-                },
-              });
-            } catch (error) {
-              logger.log("error", `Requesting [Write To SNS]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "AutomateConsumption",
-                  databaseOperation: "PUT",
-                  table: config.dynamoBB.deviceConnection.name,
-                  error: error,
-                },
-              });
-            }
-          } else {
-            // update database here
-            // set notification helper
+//               logger.log("info", `Requesting [Write To SNS]`, {
+//                 tags: "automationHelper",
+//                 additionalInfo: {
+//                   operation: "AutomateConsumption",
+//                   databaseOperation: "PUT",
+//                   table: config.dynamoBB.deviceConnection.name,
+//                 },
+//               });
+//             } catch (error) {
+//               logger.log("error", `Requesting [Write To SNS]`, {
+//                 tags: "automationHelper",
+//                 additionalInfo: {
+//                   operation: "AutomateConsumption",
+//                   databaseOperation: "PUT",
+//                   table: config.dynamoBB.deviceConnection.name,
+//                   error: error,
+//                 },
+//               });
+//             }
+//           } else {
+//             // update database here
+//             // set notification helper
 
-            try {
-              logger.log("info", `Requesting [Write To DynamoDB]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "AutomateConsumption",
-                  databaseOperation: "PUT",
-                  table: config.dynamoBB.deviceConnection.name,
-                },
-              });
+//             try {
+//               logger.log("info", `Requesting [Write To DynamoDB]`, {
+//                 tags: "automationHelper",
+//                 additionalInfo: {
+//                   operation: "AutomateConsumption",
+//                   databaseOperation: "PUT",
+//                   table: config.dynamoBB.deviceConnection.name,
+//                 },
+//               });
 
-              logger.log("info", `Requesting [Write To SNS]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "AutomateConsumption",
-                  databaseOperation: "PUT",
-                  table: config.dynamoBB.deviceConnection.name,
-                },
-              });
-            } catch (error) {
-              logger.log("error", `Requesting [Write To SNS]`, {
-                tags: "automationHelper",
-                additionalInfo: {
-                  operation: "AutomateConsumption",
-                  databaseOperation: "PUT",
-                  table: config.dynamoBB.deviceConnection.name,
-                  error: error,
-                },
-              });
-            }
-          }
-        }
-        // validate is it monthly
-      }
-    } else {
-      throw new Error("error detected");
-    }
-  } catch (error) {
-    console.error(error);
-  }
-};
+//               logger.log("info", `Requesting [Write To SNS]`, {
+//                 tags: "automationHelper",
+//                 additionalInfo: {
+//                   operation: "AutomateConsumption",
+//                   databaseOperation: "PUT",
+//                   table: config.dynamoBB.deviceConnection.name,
+//                 },
+//               });
+//             } catch (error) {
+//               logger.log("error", `Requesting [Write To SNS]`, {
+//                 tags: "automationHelper",
+//                 additionalInfo: {
+//                   operation: "AutomateConsumption",
+//                   databaseOperation: "PUT",
+//                   table: config.dynamoBB.deviceConnection.name,
+//                   error: error,
+//                 },
+//               });
+//             }
+//           }
+//         }
+//         // validate is it monthly
+//       }
+//     } else {
+//       throw new Error("error detected");
+//     }
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 /**
  * @author Claudio Raul Brito Mercedes
  * @function calculateDeviceInTheSameDay
@@ -1647,3 +1648,103 @@ module.exports.findDeviceToken = async function () {
 module.exports.calculatePercentage = function (numberOne, numberTwo) {
   return (100 * numberOne) / numberTwo;
 };
+/**
+ *@author Claudio Raul Brito Mercedes
+ * @param {*} arrayOne firstArray
+ * @param {*} arrayTwo second Array
+ * @returns boolean
+ */
+module.exports.validateArray = function (arrayOne, arrayTwo) {
+  return Array.isArray(arrayOne) && Array.isArray(arrayTwo);
+};
+
+/**
+ * @author Claudio Raul Brito Mercedes
+ * @param {*} arrayOne connectionsArray
+ * @returns array <filtered>
+ */
+module.exports.filterConnectionsArray = function (arrayOne) {
+  try {
+    return arrayOne.filter(x => x.connectionsConfigurations.length > 0);
+  } catch (error) {
+    logger.log("error", `Requesting [filterArray]`, {
+      tags: "automationHelper",
+      additionalInfo: {
+        operation: "Send Push Notificaction",
+        databaseOperation: "Filter",
+        table: "firebasePushNotification",
+        error: error,
+      },
+    });
+
+  }
+};
+
+module.exports.automateConsumptionDaily = async function (data,array) {
+  try {
+    for (const dayIterator of array) {
+      const connectionMaxPerDay = parseInt(dayIterator.configurationMaximumKilowattsPerDay);
+      const calculatedConectionKilowatt = module.exports.calculateConnectionsInSameDay(data,dayIterator.connectionName);
+      const percentage = module.exports.calculatePercentage(connectionMaxPerDay,calculatedConectionKilowatt);
+      if (percentage > 50 && percentage < 75) {
+        const deviceData = await module.exports.findDeviceToken();
+        if (deviceData.success) {
+          await module.exports.sendPushNotification(`notificacion de consumo diario`,`la ${dayIterator.connectionName} ha consumido el ${percentage}% de lo estipulado`,deviceData.data);
+        }
+        
+      }
+      if (percentage > 90 && percentage <=99) {
+        const deviceDataTwo = await module.exports.findDeviceToken();
+        await module.exports.sendPushNotification(`notificacion de consumo diario`,`la ${dayIterator.connectionName} ha consumido el ${percentage}% de lo estipulado`,deviceDataTwo.data);
+      }
+      if (connectionMaxPerDay >= calculatedConectionKilowatt) {
+        const deviceDataThree = await module.exports.findDeviceToken();
+        await module.exports.sendPushNotification(`notificacion de consumo diario`,`la ${dayIterator.connectionName} se va a apagar ya que ha consumido el maximo estipulado`,deviceDataThree.data);
+
+      }
+    }
+  } catch (error) {
+    
+  }
+
+};
+module.exports.automateConsumptionWeekly = function (array) {};
+module.exports.automateConsumptionMonthly = function (array) {};
+module.exports.sendPushNotification = async function (
+  messageTitle,
+  body,
+  token
+) {
+  const message = {
+    title: messageTitle,
+    body: body,
+    tokens: [token],
+  };
+  const firebaseMessage = await messaging.sendMulticast(
+    message
+  );
+  if (firebaseMessage.failureCount > 0) {
+    logger.log("error", `Requesting [Send Push Notification1]`, {
+      tags: "automationHelper",
+      additionalInfo: {
+        operation: "Send Push Notificaction",
+        databaseOperation: "Push",
+        table: "firebasePushNotification",
+        error: firebase.responses,
+      },
+    });
+  } else {
+    logger.log("info", `Requesting [Send Push Notification1]`, {
+      tags: "automationHelper",
+      additionalInfo: {
+        operation: "Send Push Notificaction",
+        databaseOperation: "Push",
+        table: "firebasePushNotification",
+        error: firebase.responses,
+      },
+    });
+  }
+};
+module.exports.updateConnectionInformation = async function (information) {
+
+}

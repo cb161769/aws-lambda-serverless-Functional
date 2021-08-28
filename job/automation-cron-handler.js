@@ -334,6 +334,7 @@ async function fetchConfigurationData(){
     
     
     }];
+    const filterted = fareConfigurations.filter(x => x.connectionsConfigurations.length >0)
     return fareConfigurations;
 };
 module.exports.handler = async () =>{
