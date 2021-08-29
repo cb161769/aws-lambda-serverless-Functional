@@ -27,6 +27,9 @@ module.exports.config = {
         },
         deviceConnection:{
             name:"DeviceConnection"
+        },
+        relaysConfiguration:{
+            name:"relaysConfiguration"
         }
     },    
     S3:{
