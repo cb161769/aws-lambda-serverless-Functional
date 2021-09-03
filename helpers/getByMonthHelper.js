@@ -1189,13 +1189,13 @@ module.exports.getByMonth = async function (params){
     }
     totalAmpsProm = MonthInformation.allMonthAmps/ params.length;
     totalWAttsProm = MonthInformation.allMonthWatts/ params.length;
-    const ob = [
+    return  [
        { detail: MonthInformation, count:counter,
         dayWattsProm:dayWattsProms, NightWattsProm:nightWattsProms, NightsKhwProm:nightKhwProms,
         dayKhwProms:dayKhwProms,
         Timestamp:weekTimeStamp
        }
     ];
-    return ob;
+
 }
 

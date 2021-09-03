@@ -5,7 +5,6 @@ const { config } = require("../../connections/config/config");
 const admin = require("firebase-admin");
 const { dynamoDBConnection } = require("../../connections/connections");
 var serviceAccount = require("../../connections/config/firebase.config.json");
-const { writeToDynamoDB } = require("../../functions/generalFunctions");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });

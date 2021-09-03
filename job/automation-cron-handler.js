@@ -65,12 +65,12 @@ module.exports.handler = async () => {
     const data = await fetchTodaysData();
     const configuration =await fetchConfigurationData();
     const automation = await AutomateConsumption(data, configuration);
-    console.log(automation);
     logger.log("info", `Requesting [automation-cron-job]`, {
       tags: "automation-cron-job",
       additionalInfo: {
         operation: "cron-job-handler",
         table: config.dynamoBB.deviceReadings.name,
+        automation: automation
       },
     });
   } catch (error) {

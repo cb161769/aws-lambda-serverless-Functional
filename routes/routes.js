@@ -587,27 +587,23 @@ routes.post("/configureDevice", async (req, res) => {
  * @route /getDeviceWeekly/:start/:end
  */
 routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
+
   if (
-    parseInt(req.params.start) > parseInt(req.params.end) &&
-    parseInt(req.params.priorStart) > parseInt(req.params.priorEnd)
+    parseInt(req.params.start) >= parseInt(req.params.end)
   ) {
     var startChanged = parseInt(req.params.end);
     var endChanged = parseInt(req.params.start);
     //TODO change to date :3
-    var priorStartChanged = parseInt(req.params.start);
-    var priorEndChanged = parseInt(req.params.end);
+    var priorStartChanged = parseInt(req.params.end);
+    var priorEndChanged = parseInt(req.params.start);
     const priorStartDate = new Date(priorStartChanged * 1000);
-    var pastDate = priorStartDate.getDate() - 7;
-    const setedStartDate = new Date();
-    setedStartDate.setDate(pastDate);
+    var pastWeekDay = new Date(priorStartDate.getFullYear(), priorStartDate.getMonth(), priorStartDate.getDate() -7);
     // seted final date
     const priorEndDate = new Date(priorEndChanged * 1000);
-    const setedFinalDate = new Date();
-    var pastFinalDate = priorEndDate.getDate() - 7;
-    setedFinalDate.setDate(pastFinalDate);
+    var pastWeekDay2 = new Date(priorEndDate.getFullYear(), priorEndDate.getMonth(), priorEndDate.getDate() -7);
 
-    const priorEpochStart = setedStartDate / 1000;
-    const priorEpochEnd = setedFinalDate / 1000;
+    const priorEpochStart = Math.floor(pastWeekDay.getTime() / 1000);
+    const priorEpochEnd = Math.floor(pastWeekDay2.getTime() / 1000);
     const params = {
       TableName: config.dynamoBB.deviceReadings.name,
       KeyConditionExpression:
@@ -628,7 +624,7 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
       TableName: config.dynamoBB.deviceReadings.name,
       KeyConditionExpression:
         "#key = :key and #sortkey BETWEEN :start AND :end",
-      ScanIndexForward: false,
+      ScanIndexForward: true,
       ConsistentRead: false,
       ExpressionAttributeNames: {
         "#key": "primarykey",
@@ -669,6 +665,9 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
           NightsKhwProm: 0,
           dayKhwProms: 0,
           Timestamp: [],
+          dataOne:data,
+          secondData: secondData
+        
         },
       ];
       const returnObject = {
@@ -727,13 +726,17 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
         health: returnObject,
         dayNight: returnWatts,
         dayNightKilowatts: returnKHWatts,
+        test:data,
+        test2:secondData,
+        priorEpochStart: priorEpochStart,
+        priorEpochEnd: priorEpochEnd
       });
     } else {
       try {
-        const week = await getWeeklyHelper(data.Items);
-        const health = await healthWeeklyHelper(data.Items, secondData.Items);
-        const dayNight = await DeviceWeeklyWattsDayNightHelper(data.Items);
-        const dayNightKilowatts = await DeviceWeeklyKiloWattsDayNightHelper(
+        const week =  getWeeklyHelper(data.Items);
+        const health =  healthWeeklyHelper(data.Items, secondData.Items);
+        const dayNight =  DeviceWeeklyWattsDayNightHelper(data.Items);
+        const dayNightKilowatts =  DeviceWeeklyKiloWattsDayNightHelper(
           data.Items
         );
         res.status(200).json({
@@ -741,6 +744,7 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
           health: health,
           dayNight: dayNight,
           dayNightKilowatts: dayNightKilowatts,
+          test:data
         });
       } catch (error) {
         const ob = [
@@ -763,6 +767,11 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
             NightsKhwProm: 0,
             dayKhwProms: 0,
             Timestamp: [],
+            test:data,
+            test2:secondData,
+            error: error,
+            priorEpochStart: priorEpochStart,
+            priorEpochEnd: priorEpochEnd
           },
         ];
         const returnObject = {
@@ -817,6 +826,9 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
       }
     }
   } else {
+    var startDate = parseInt(req.params.start);
+    var endDate = parseInt(req.params.end);
+
     var priorStartChanged = parseInt(req.params.start);
     var priorEndChanged = parseInt(req.params.end);
     const priorStartDate = new Date(priorStartChanged * 1000);
@@ -837,15 +849,14 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
         "#key = :key and #sortkey BETWEEN :start AND :end",
       ScanIndexForward: false,
       ConsistentRead: false,
-      limit: 10,
       ExpressionAttributeNames: {
         "#key": "primarykey",
         "#sortkey": "sortkey",
       },
       ExpressionAttributeValues: {
         ":key": config.deviceName,
-        ":start": parseInt(req.params.start),
-        ":end": parseInt(req.params.end),
+        ":start": startDate,
+        ":end":endDate,
       },
     };
     const secondParams = {
@@ -958,7 +969,6 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
             table: config.dynamoBB.deviceReadings.name,
           },
         });
-        // res.status(200).json({ usage:week,health:health});
       } catch (error) {
         const ob = [
           {
