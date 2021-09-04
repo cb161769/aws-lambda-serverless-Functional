@@ -14247,7 +14247,7 @@ module.exports.getMinConsumption = function(arr, prop) {
  * @author Claudio Raul Brito Mercedes
  * @function ConnectionGrahphHelper
  */
-module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
+module.exports.ConnectionGrahphHelper =  function (ConnectionName,Params){
     const moment = require('moment');
     let counter = 0;
     var totalWatts = 0;

@@ -7,8 +7,8 @@ const {dailyHelperFromConnections} = require('../../helpers/connectionHelpers/da
  * @param {*} dynamoDBArray data to be processed
  * @returns 
  */
-module.exports.ConnectionsDailyWattsDayNight = async function(ConnectionName,dynamoDBArray){
-    const helper = await connectionsDailyHelper(ConnectionName,dynamoDBArray);
+module.exports.ConnectionsDailyWattsDayNight =  function(ConnectionName,dynamoDBArray){
+    const helper =  connectionsDailyHelper(ConnectionName,dynamoDBArray);
     const days= helper[0].dayWattsProm;
     const night = helper[0].NightWattsProm;
     const dataset = [{
@@ -17,19 +17,19 @@ module.exports.ConnectionsDailyWattsDayNight = async function(ConnectionName,dyn
         data:[days,night],
         hoverOffset: 4
     }];
-    const returnObject ={
+    return{
         labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
-    return returnObject;
+   
 };
 /**
  * @function ConnectionsWeekKiloWattsDayNight     
  * @param {*} dynamoDBArray dynamoDBArray 
  * @returns Array<any>
  */
-module.exports.ConnectionsWeekKiloWattsDayNight = async function(ConnectionName,dynamoDBArray){
-    const helper = await dailyHelperFromConnections(ConnectionName,dynamoDBArray);
+module.exports.ConnectionsWeekKiloWattsDayNight =  function(ConnectionName,dynamoDBArray){
+    const helper =  dailyHelperFromConnections(ConnectionName,dynamoDBArray);
     const days= helper[0].dayKhwProms;
     const night = helper[0].NightsKhwProm;
     const dataset = [{
@@ -38,14 +38,14 @@ module.exports.ConnectionsWeekKiloWattsDayNight = async function(ConnectionName,
         data:[days,night],
         hoverOffset: 4
     }];
-    const returnObject ={
+    return{
         labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
-    return returnObject;
+
 };
-module.exports.ConnectionsWeeklyWattsDayNight = async function(ConnectionName,dynamoDBArray){
-    const helper = await dailyHelperFromConnections(ConnectionName,dynamoDBArray);
+module.exports.ConnectionsWeeklyWattsDayNight =  function(ConnectionName,dynamoDBArray){
+    const helper =  dailyHelperFromConnections(ConnectionName,dynamoDBArray);
     const days= helper[0].dayWattsProm;
     const night = helper[0].NightWattsProm;
     const dataset = [{
@@ -54,19 +54,19 @@ module.exports.ConnectionsWeeklyWattsDayNight = async function(ConnectionName,dy
         data:[days,night],
         hoverOffset: 4
     }];
-    const returnObject ={
+    return{
         labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
-    return returnObject;
+
 };
 /**
  *      
  * @param {*} dynamoDBArray dynamoDBArray 
  * @returns Array<any>
  */
-module.exports.ConnectionsWeeklyKiloWattsDayNight = async function(ConnectionName,dynamoDBArray){
-    const helper = await dailyHelperFromConnections(ConnectionName,dynamoDBArray);
+module.exports.ConnectionsWeeklyKiloWattsDayNight =  function(ConnectionName,dynamoDBArray){
+    const helper =  dailyHelperFromConnections(ConnectionName,dynamoDBArray);
     const days= helper[0].dayKhwProms;
     const night = helper[0].NightsKhwProm;
     const dataset = [{
@@ -75,15 +75,15 @@ module.exports.ConnectionsWeeklyKiloWattsDayNight = async function(ConnectionNam
         data:[days,night],
         hoverOffset: 4
     }];
-    const returnObject ={
+    return{
         labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
-    return returnObject;
+ 
 };
 //monthly
-module.exports.ConnectionsMonthlyWattsDayNight = async function(ConnectionName,dynamoDBArray){
-    const helper = await dailyHelperFromConnections(ConnectionName,dynamoDBArray);
+module.exports.ConnectionsMonthlyWattsDayNight =  function(ConnectionName,dynamoDBArray){
+    const helper =  dailyHelperFromConnections(ConnectionName,dynamoDBArray);
     const days= helper[0].dayWattsProm;
     const night = helper[0].NightWattsProm;
     const dataset = [{
@@ -92,19 +92,19 @@ module.exports.ConnectionsMonthlyWattsDayNight = async function(ConnectionName,d
         data:[days,night],
         hoverOffset: 4
     }];
-    const returnObject ={
+    return{
         labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
-    return returnObject;
+   
 };
 /**
  *      
  * @param {*} dynamoDBArray dynamoDBArray 
  * @returns Array<any>
  */
-module.exports.ConnectionsMonthlyKiloWattsDayNight = async function(ConnectionName,dynamoDBArray){
-    const helper = await dailyHelperFromConnections(ConnectionName,dynamoDBArray);
+module.exports.ConnectionsMonthlyKiloWattsDayNight =  function(ConnectionName,dynamoDBArray){
+    const helper =  dailyHelperFromConnections(ConnectionName,dynamoDBArray);
     const days= helper[0].dayKhwProms;
     const night = helper[0].NightsKhwProm;
     const dataset = [{
@@ -113,9 +113,9 @@ module.exports.ConnectionsMonthlyKiloWattsDayNight = async function(ConnectionNa
         data:[days,night],
         hoverOffset: 4
     }];
-    const returnObject ={
+    return{
         labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
-    return returnObject;
+
 };

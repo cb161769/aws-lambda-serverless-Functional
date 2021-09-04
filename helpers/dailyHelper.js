@@ -54,6 +54,7 @@ module.exports.dailyHelper =  function (params){
     var nightWattsProms = 0;
     var dayKhwProms = 0;
     var nightKhwProms = 0;
+    let totalWAttsProm = 0;
     const fixedParams = params.filter(x => x.sortkey != undefined);
     for (let index = 0; index <= fixedParams.length; index++) {
         var dataElement = fixedParams[index];

@@ -599,7 +599,7 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
       priorStartDate.getMonth(),
       priorStartDate.getDate() - 7
     );
-    // seted final date
+    // steed final date
     const priorEndDate = new Date(priorEndChanged * 1000);
     var pastWeekDay2 = new Date(
       priorEndDate.getFullYear(),
@@ -641,16 +641,21 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
         ":end": priorEpochEnd,
       },
     };
-    const data = await db.query(params).promise();
-    const secondData = await db.query(secondParams).promise();
-    if (
-      data.ScannedCount == 0 ||
-      data == null ||
-      data == undefined ||
-      !data ||
-      data.Count == 0
-    ) {
-      const ob = [
+    try {
+      const data = await db.query(params).promise();
+      const secondData = await db.query(secondParams).promise();
+      const week = getWeeklyHelper(data.Items);
+        const health = healthWeeklyHelper(data.Items, secondData.Items);
+        const dayNight = DeviceWeeklyWattsDayNightHelper(data.Items);
+        const dayNightKilowatts = DeviceWeeklyKiloWattsDayNightHelper(data.Items);
+        res.status(200).json({
+          usage: week,
+          health: health,
+          dayNight: dayNight,
+          dayNightKilowatts: dayNightKilowatts,
+        });
+    } catch (error) {
+        const ob = [
         {
           registros: 0,
           lunes: { registros: 0, amperios: 0, watts: 0 },
@@ -670,8 +675,6 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
           NightsKhwProm: 0,
           dayKhwProms: 0,
           Timestamp: [],
-          dataOne: data,
-          secondData: secondData,
         },
       ];
       const returnObject = {
@@ -687,10 +690,6 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
           hoverOffset: 4,
         },
       ];
-      const returnWatts = {
-        labels: ["Analisis de consumo de dia", "Analisis de consumo de noche"],
-        datasets: dataset,
-      };
       const Kwhdataset = [
         {
           label: "Consumo semanal en KiloWatts",
@@ -703,131 +702,35 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
         labels: ["Analisis de consumo de dia", "Analisis de consumo de noche"],
         datasets: Kwhdataset,
       };
-      logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
+      const returnWatts = {
+        labels: ["Analisis de consumo"],
+        datasets: dataset,
+      };
+      logger.log("error", `Requesting ${req.method} ${req.originalUrl}`, {
         tags: "http",
         additionalInfo: {
           operation: "getDeviceWeekly",
           body: req.body,
           headers: req.headers,
+          error: error,
           databaseOperation: "GET",
           table: config.dynamoBB.deviceReadings.name,
         },
       });
-      if (secondData.ScannedCount == 0) {
-        logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
-          tags: "http",
-          additionalInfo: {
-            operation: "getDeviceWeekly",
-            body: req.body,
-            headers: req.headers,
-            databaseOperation: "GET",
-            table: config.dynamoBB.deviceReadings.name,
-          },
-        });
-      }
       res.status(200).json({
         usage: ob,
         health: returnObject,
         dayNight: returnWatts,
         dayNightKilowatts: returnKHWatts,
-        test: data,
-        test2: secondData,
-        priorEpochStart: priorEpochStart,
-        priorEpochEnd: priorEpochEnd,
+        text:'is error'
       });
-    } else {
-      try {
-        const week = getWeeklyHelper(data.Items);
-        const health = healthWeeklyHelper(data.Items, secondData.Items);
-        const dayNight = DeviceWeeklyWattsDayNightHelper(data.Items);
-        const dayNightKilowatts = DeviceWeeklyKiloWattsDayNightHelper(
-          data.Items
-        );
-        res.status(200).json({
-          usage: week,
-          health: health,
-          dayNight: dayNight,
-          dayNightKilowatts: dayNightKilowatts,
-        });
-      } catch (error) {
-        const ob = [
-          {
-            registros: 0,
-            lunes: { registros: 0, amperios: 0, watts: 0 },
-            martes: { registros: 0, amperios: 0, watts: 0 },
-            miercoles: { registros: 0, amperios: 0, watts: 0 },
-            jueves: { registros: 0, amperios: 0, watts: 0 },
-            viernes: { registros: 0, amperios: 0, watts: 0 },
-            sabado: { registros: 0, amperios: 0, watts: 0 },
-            domingo: { registros: 0, amperios: 0, watts: 0 },
-            totalWatts: 0,
-            totalAmps: 0,
-            diaConsulta: new Date().toISOString(),
-            promedioWattsSemanal: 0,
-            promedioAmpsSemanal: 0,
-            dayWattsProm: 0,
-            NightWattsProm: 0,
-            NightsKhwProm: 0,
-            dayKhwProms: 0,
-            Timestamp: [],
-            test: data,
-            test2: secondData,
-            error: error,
-            priorEpochStart: priorEpochStart,
-            priorEpochEnd: priorEpochEnd,
-          },
-        ];
-        const returnObject = {
-          health: 0,
-          message: "",
-          isError: false,
-        };
-        const dataset = [
-          {
-            label: "Consumo semanal en Watts",
-            backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
-            data: [0, 0],
-            hoverOffset: 4,
-          },
-        ];
-        const Kwhdataset = [
-          {
-            label: "Consumo semanal en KiloWatts",
-            backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
-            data: [0, 0],
-            hoverOffset: 4,
-          },
-        ];
-        const returnKHWatts = {
-          labels: [
-            "Analisis de consumo de dia",
-            "Analisis de consumo de noche",
-          ],
-          datasets: Kwhdataset,
-        };
-        const returnWatts = {
-          labels: ["Analisis de consumo"],
-          datasets: dataset,
-        };
-        logger.log("error", `Requesting ${req.method} ${req.originalUrl}`, {
-          tags: "http",
-          additionalInfo: {
-            operation: "getDeviceWeekly",
-            body: req.body,
-            headers: req.headers,
-            error: error,
-            databaseOperation: "GET",
-            table: config.dynamoBB.deviceReadings.name,
-          },
-        });
-        res.status(200).json({
-          usage: ob,
-          health: returnObject,
-          dayNight: returnWatts,
-          dayNightKilowatts: returnKHWatts,
-        });
-      }
     }
+
+    // try {
+      
+    // } catch (error) {
+    
+    // }
   } else {
     var startDate = parseInt(req.params.start);
     var endDate = parseInt(req.params.end);
@@ -882,10 +785,10 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
     const data = await db.query(params).promise();
     const secondData = await db.query(secondParams).promise();
     try {
-      const dayNight = await DeviceWeeklyWattsDayNightHelper(data.Items);
-      const dayNightKilowatts = await DeviceWeeklyKiloWattsDayNightHelper(
-        data.Items
-      );
+      const week = getWeeklyHelper(data.Items, secondData.Items);
+      const health = healthWeeklyHelper(data.Items, secondData.Items);
+      const dayNight = DeviceWeeklyWattsDayNightHelper(data.Items);
+      const dayNightKilowatts = DeviceWeeklyKiloWattsDayNightHelper(data.Items);
       res.status(200).json({
         usage: week,
         health: health,
@@ -972,6 +875,7 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
         health: returnObject,
         dayNight: returnWatts,
         dayNightKilowatts: returnKHWatts,
+        text: "ha ocurrido un error",
       });
     }
   }
@@ -1551,10 +1455,10 @@ routes.get("/getMonthly/:day", async (req, res) => {
         dayNightKilowatts: returnKHWatts,
       });
     } else {
-      const month = await getByMonth(data.Items);
+      const month = getByMonth(data.Items);
       const health = healthMonthlyHelper(data.Items, secondData.Items);
-      const dayNight = await DeviceMonthlyWattsDayNightHelper(data.Items);
-      const dayNightKilowatts = await DeviceMonthlyKiloWattsDayNightHelper(
+      const dayNight = DeviceMonthlyWattsDayNightHelper(data.Items);
+      const dayNightKilowatts = DeviceMonthlyKiloWattsDayNightHelper(
         data.Items
       );
       logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
@@ -7445,10 +7349,10 @@ routes.get("/getYearly/", async (req, res) => {
         dayNightKilowatts: returnKHWatts,
       });
     } else {
-      const response = await getMonthlyHelper(data.Items);
-      const health = await healthYearlyHelper(data.Items, data.Items);
-      const dayNight = await DeviceMonthlyYearlyWattsDayNight(data.Items);
-      const dayNightKilowatts = await DeviceMonthlyYearlyKiloWattsDayNight(
+      const response = getMonthlyHelper(data.Items);
+      const health = healthYearlyHelper(data.Items, data.Items);
+      const dayNight = DeviceMonthlyYearlyWattsDayNight(data.Items);
+      const dayNightKilowatts = DeviceMonthlyYearlyKiloWattsDayNight(
         data.Items
       );
       logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
@@ -12719,7 +12623,6 @@ routes.get("/getYearly/", async (req, res) => {
     var DecemberAmps = 0;
     var totalAmpsProm = 0;
     var TimesTamp = [];
-    var KiloWattsTimeStamp = [];
     const ob = [
       {
         registros: counter,
@@ -12832,12 +12735,10 @@ routes.get("/getDeviceYearly/allConfig", async (req, res) => {
   };
   const result = await db.scan(params).promise();
   try {
-    const data = await getMonthlyHelper(result.Items);
-    const health = await healthYearlyHelper(result.Items, result.Items);
-    const dayNight = await DeviceWeeklyWattsDayNightHelper(data.Items);
-    const dayNightKilowatts = await DeviceWeeklyKiloWattsDayNightHelper(
-      data.Items
-    );
+    const data = getMonthlyHelper(result.Items);
+    const health = healthYearlyHelper(result.Items, result.Items);
+    const dayNight = DeviceWeeklyWattsDayNightHelper(data.Items);
+    const dayNightKilowatts = DeviceWeeklyKiloWattsDayNightHelper(data.Items);
     logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
       tags: "http",
       additionalInfo: {
@@ -12992,53 +12893,6 @@ routes.get("/getDeviceRelaysTwo/:userName", async (req, res) => {
   };
   const data = await db.query(params).promise();
   res.status(200).json({ data: data });
-  // try {
-  //   if (!req.params.userName) {
-  //       return res.status(400).json({
-  //           status: 'error',
-  //           error: 'req body cannot be empty',
-  //         });
-  //   }
-  //   const result = await db.query(params).promise();
-  //   if (result.ScannedCount == 1 || result.Count == 1 || result.Items.length == 1) {
-  //     try {
-  //       var deviceName = result.Items[0].deviceName;
-  //       var time = Math.floor(Date.now()/1000)
-  //       var timeFloat = parseFloat(time);
-  //       const data = await db.query({
-  //         TableName: config.dynamoBB.deviceReadings.name,
-  //         KeyConditionExpression:'#key = :key and #sortkey <= :timestamp',
-  //         ScanIndexForward: false,
-  //         ConsistentRead: false,
-  //         Limit:1,
-  //         ExpressionAttributeNames:{
-  //           '#key': 'primarykey',
-  //           '#sortkey': 'sortkey',
-  //         },
-  //         ExpressionAttributeValues:{
-  //           ':key':deviceName,
-  //           ':timestamp': timeFloat
-  //         }
-
-  //       }).promise();
-
-  //       if (data.ScannedCount == 0 || data == null || data == undefined || !data || data.Count == 0){
-  //         res.status(404).json({notfound:'NO ROWS'});
-  //       }
-  //       logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceRelays',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
-  //       res.status(200).json({data:data.Items[0].Relays});
-  //     } catch (error) {
-  //       logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceRelays',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name  }});
-  //       res.status(400).json({error: error});
-  //     }
-  //   }
-  //   else{
-  //     res.status(404).json({result:'not found'});
-  //   }
-  // } catch (error) {
-  //   logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceRelays',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name  }});
-  //   res.status(400).json({error: error});
-  // }
 });
 routes.post("/addDeviceConfiguration", async (req, res) => {
   const data = req.body;
@@ -13253,7 +13107,7 @@ routes.get("/getAllDeviceReadingsByGivenDay/:day", async (req, res) => {
         countedRows: data.ScannedCount,
       });
     } else {
-      const day = await dailyHelper(data.Items);
+      const day = dailyHelper(data.Items);
       res.status(200).json({ usage: day, Items: data.Items });
     }
   } else {
@@ -13320,7 +13174,7 @@ routes.get("/getAllDeviceReadingsByGivenDay/:day", async (req, res) => {
 
       res.status(200).json({ usage: ob, message: "Not Found" });
     } else {
-      const day = await dailyHelper(data.Items);
+      const day = dailyHelper(data.Items);
       logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
         tags: "http",
         additionalInfo: {
@@ -13834,7 +13688,7 @@ routes.get("/getAllDeviceReadingsByGivenMonth/:day", async (req, res) => {
 
     res.status(200).json({ usage: ob, message: "Not Found" });
   } else {
-    const month = await getByMonth(data.Items);
+    const month = getByMonth(data.Items);
     logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
       tags: "http",
       additionalInfo: {
@@ -14355,8 +14209,8 @@ routes.get(
         .status(200)
         .json({ usage: ob, message: "Not Found", dataFound: data });
     } else {
-      const month = await DeviceGraphHelper(data.Items);
-      const elapsedT = await elapsedTime(completedDay, secondCompletedDay);
+      const month = DeviceGraphHelper(data.Items);
+      const elapsedT = elapsedTime(completedDay, secondCompletedDay);
       logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
         tags: "http",
         additionalInfo: {
@@ -14449,8 +14303,8 @@ routes.get(
 
       res.status(200).json({ usage: ob });
     } else {
-      const usage = await ConnectionGrahphHelper(ConnectionName, data.Items);
-      const elapsedT = await elapsedTime(completedDay, secondCompletedDay);
+      const usage = ConnectionGrahphHelper(ConnectionName, data.Items);
+      const elapsedT = elapsedTime(completedDay, secondCompletedDay);
       logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
         tags: "http",
         additionalInfo: {
@@ -14575,11 +14429,8 @@ routes.get(
         });
       } else {
         try {
-          const week = await dailyHelperFromConnections(
-            ConnectionName,
-            data.Items
-          );
-          const health = await ConnectionsHealthWeeklyHelper(
+          const week = dailyHelperFromConnections(ConnectionName, data.Items);
+          const health = ConnectionsHealthWeeklyHelper(
             ConnectionName,
             data.Items,
             secondData.Items
@@ -14716,11 +14567,8 @@ routes.get(
         res.status(200).json({ usage: ob, health: returnObject });
       } else {
         try {
-          const week = await dailyHelperFromConnections(
-            ConnectionName,
-            data.Items
-          );
-          const health = await ConnectionsHealthWeeklyHelper(
+          const week = dailyHelperFromConnections(ConnectionName, data.Items);
+          const health = ConnectionsHealthWeeklyHelper(
             ConnectionName,
             data.Items,
             secondData.Items
@@ -15318,8 +15166,8 @@ routes.get(
         .status(200)
         .json({ usage: ob, health: returnObject, message: "Not Found" });
     } else {
-      const month = await getByMonthConnections(ConnectionName, data.Items);
-      const health = await ConnectionsHealthYearlyHelper(
+      const month = getByMonthConnections(ConnectionName, data.Items);
+      const health = ConnectionsHealthYearlyHelper(
         ConnectionName,
         data.Items,
         secondData.Items
@@ -15349,15 +15197,12 @@ routes.get(
     };
     try {
       const result = await db.scan(params).promise();
-      const health = await ConnectionsHealthMonthlyHelper(
+      const health = ConnectionsHealthMonthlyHelper(
         ConnectionName,
         data.Items,
         data.Items
       );
-      const data = await getMonthlyHelperConnection(
-        connectionName,
-        result.Items
-      );
+      const data = getMonthlyHelperConnection(connectionName, result.Items);
       logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
         tags: "http",
         additionalInfo: {
@@ -15460,7 +15305,7 @@ routes.get(
         });
       }
     } else {
-      const day = await connectionsDailyHelper(connectionName, data.Items);
+      const day = connectionsDailyHelper(connectionName, data.Items);
       logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
         tags: "http",
         additionalInfo: {
@@ -15595,15 +15440,8 @@ routes.post("/createTemplate", async (req, res) => {
   });
 });
 routes.post("/sendEmail", async (req, res) => {
-  const { templateName, subject, body, sendTo, source } = req.body;
+  const { templateName, sendTo, source } = req.body;
 
-  // var params = {
-  //   Template: {
-  //     TemplateName: templateName,
-  //     HtmlPart: body,
-  //     SubjectPart: subject,
-  //   }
-  // };
   const params2 = {
     Template: templateName,
     Destination: {

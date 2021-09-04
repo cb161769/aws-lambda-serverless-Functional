@@ -53,6 +53,7 @@ module.exports.findFirstDay = function(y,m){
  */
 module.exports.getByMonth =  function (params){
     const moment = require('moment');
+    let totalWAttsProm = 0;
     var MonthInformation = {
         MonthName:'',
         allMonthAmps:0,

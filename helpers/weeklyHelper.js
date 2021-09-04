@@ -30,7 +30,8 @@ module.exports.getWeeklyHelper = function (dynamoDBArray) {
   var dayKhwProms = 0;
   var nightKhwProms = 0;
   var weekTimeStamp = [];
-  let totalWattsProm = 0;
+  let totalWAttsProm  = 0;
+  let KWProm = 0;
   if (dynamoDBArray.length === 0) {
     return [
       {
@@ -177,9 +178,15 @@ module.exports.getWeeklyHelper = function (dynamoDBArray) {
       counter++;
       totalWatts += readings2.device_watts;
       totalAmps += readings2.device_amps;
+      const seconds =
+      (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
+    const kwhT =
+      (readings2.device_watts * seconds * (1 / (60 * 60))) / 590;
+      KWProm += Math.abs(kwhT);
     }
     totalAmpsProm = totalAmps / dynamoDBArray.length;
-    totalWattsProm = totalWatts / dynamoDBArray.length;
+    totalWAttsProm = totalWatts / dynamoDBArray.length;
+
 
     return [
       {
@@ -229,6 +236,7 @@ module.exports.getWeeklyHelper = function (dynamoDBArray) {
         NightsKhwProm: nightKhwProms,
         dayKhwProms: dayKhwProms,
         Timestamp: weekTimeStamp,
+        KHWProms:KWProm
       },
     ];
   }

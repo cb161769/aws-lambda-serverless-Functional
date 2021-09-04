@@ -78,7 +78,7 @@ module.exports.DeviceMonthlyWattsDayNightHelper = function (dynamoDBArray) {
  *
  * @param {*} dynamoDBArray
  */
-module.exports.DeviceMonthlyKiloWattsDayNightHelper = async function (
+module.exports.DeviceMonthlyKiloWattsDayNightHelper =  function (
   dynamoDBArray
 ) {
   const helper =  getMonthlyHelper(dynamoDBArray);
@@ -101,7 +101,7 @@ module.exports.DeviceMonthlyKiloWattsDayNightHelper = async function (
  * @function DeviceMonthlyYearlyWattsDayNight
  * @param {*} dynamoDBArray
  */
-module.exports.DeviceMonthlyYearlyWattsDayNight = async function (
+module.exports.DeviceMonthlyYearlyWattsDayNight =  function (
   dynamoDBArray
 ) {
   const helper =  getByMonth(dynamoDBArray);
@@ -126,7 +126,7 @@ module.exports.DeviceMonthlyYearlyWattsDayNight = async function (
  * @param {*} dynamoDBArray dynamoDBArray
  * @returns Array<any>
  */
-module.exports.DeviceMonthlyYearlyKiloWattsDayNight = async function (
+module.exports.DeviceMonthlyYearlyKiloWattsDayNight =  function (
   dynamoDBArray
 ) {
   const helper =  getByMonth(dynamoDBArray);
@@ -150,7 +150,7 @@ module.exports.DeviceMonthlyYearlyKiloWattsDayNight = async function (
  * @function DeviceDailyWattsDayNight
  * @param {*} dynamoDBArray
  */
-module.exports.DeviceDailyWattsDayNight = async function (dynamoDBArray) {
+module.exports.DeviceDailyWattsDayNight =  function (dynamoDBArray) {
   const helper = dailyHelper(dynamoDBArray);
   const days = helper[0].dayWattsProm;
   const night = helper[0].NightWattsProm;
@@ -172,7 +172,7 @@ module.exports.DeviceDailyWattsDayNight = async function (dynamoDBArray) {
  * @param {*} dynamoDBArray dynamoDBArray
  * @returns Array<any>
  */
-module.exports.DeviceDailyKiloWattsDayNight = async function (dynamoDBArray) {
+module.exports.DeviceDailyKiloWattsDayNight =  function (dynamoDBArray) {
   const helper = dailyHelper(dynamoDBArray);
   const days = helper[0].dayKhwProms;
   const night = helper[0].NightsKhwProm;

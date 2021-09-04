@@ -52,7 +52,7 @@
  * @function getByMonthConnections()
  * @param {*} params parameters
  */
-module.exports.getByMonthConnections = async function(ConnectionName,Params){
+module.exports.getByMonthConnections =  function(ConnectionName,Params){
     const moment = require('moment');
     var MonthInformation = {
         MonthName:'',

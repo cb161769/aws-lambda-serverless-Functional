@@ -17,8 +17,9 @@ const {
 module.exports.healthWeeklyHelper = function (currentWeek, otherWeek) {
   const otherMonth = getWeeklyHelper(otherWeek);
   const currentMonth = getWeeklyHelper(currentWeek);
+  let healthPromPercentage = 0;
   if (currentMonth[0].totalWatts > otherMonth[0].totalWatts) {
-    const healthPromPercentage =
+     healthPromPercentage =
       currentMonth[0].totalWatts / otherMonth[0].totalWatts;
     const message =
       "el consumo de la semana actual es mayor al pasado, favor considerar tu consumo";
@@ -27,9 +28,9 @@ module.exports.healthWeeklyHelper = function (currentWeek, otherWeek) {
       message: message,
       isBigger: true,
     };
-  } else if (currentMonth[0].totalWatts == nextMonthly[0].totalWatts) {
-    const healthPromPercentage =
-      currentMonth[0].totalWatts / nextMonthly[0].totalWatts;
+  } else if (currentMonth[0].totalWatts == otherMonth[0].totalWatts) {
+     healthPromPercentage =
+      currentMonth[0].totalWatts / otherMonth[0].totalWatts;
     const message =
       "el consumo de la semana actual es igual al pasado, excelente!";
     return {
@@ -38,7 +39,7 @@ module.exports.healthWeeklyHelper = function (currentWeek, otherWeek) {
       isEqual: true,
     };
   } else if (currentMonth[0].totalWatts < otherMonth[0].totalWatts) {
-    const healthPromPercentage =
+     healthPromPercentage =
       currentMonth[0].totalWatts / otherMonth[0].totalWatts;
     const message =
       "el consumo de la semana actual es menor al pasado, muy bien!";
@@ -49,7 +50,7 @@ module.exports.healthWeeklyHelper = function (currentWeek, otherWeek) {
     };
   }
 };
-module.exports.healthMonthlyHelper = async function (currentMonth, otherMonth) {
+module.exports.healthMonthlyHelper =  function (currentMonth, otherMonth) {
   const currentMonthly = getMonthlyHelper(currentWeek);
   const nextMonthly = getMonthlyHelper(otherMonth);
   if (currentMonthly[0].totalWattsProm > nextMonthly[0].totalWattsProm) {
