@@ -5389,7 +5389,7 @@ module.exports.getMonthlyHelperConnection =  function (ConnectionName,Params){
             //january
             const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
             // to do
-            const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/590;
+            const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
             TimesTamp.push({t:sortKeyEpoch.toISOString(),y:filteredReadings[0].CT1_Watts});
             KiloWattsTimeStamp.push({t:sortKeyEpoch.toISOString(),y:kwh});
             AmpsTimeStamp.push({t:sortKeyEpoch.toISOString(),y:filteredReadings[0].CT1_Amps});
@@ -12675,7 +12675,7 @@ module.exports.getMonthlyHelperConnection =  function (ConnectionName,Params){
         }
         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
         // to do
-        const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/590;
+        const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
         counter++;
         totalAmps += filteredReadings[0].CT1_Amps;
         totalWatts += filteredReadings[0].CT1_Watts;

@@ -120,14 +120,14 @@ module.exports.dailyHelperFromConnections =  function(connectionName,params){
         const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
         if (isNight == true) {
             const seconds = (secondKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
-            const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/590;
+            const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
             nightWattsProms += readings2.device_watts;
             nightKhwProms += Math.abs(kwh);
 
         }
         else{
             const seconds = (secondKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
-            const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/590;
+            const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
             dayWattsProms += readings2.device_watts;
             dayKhwProms += Math.abs(kwh);
 

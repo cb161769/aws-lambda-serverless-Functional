@@ -51,7 +51,7 @@ module.exports.healthWeeklyHelper = function (currentWeek, otherWeek) {
   }
 };
 module.exports.healthMonthlyHelper =  function (currentMonth, otherMonth) {
-  const currentMonthly = getMonthlyHelper(currentWeek);
+  const currentMonthly = getMonthlyHelper(currentMonth);
   const nextMonthly = getMonthlyHelper(otherMonth);
   if (currentMonthly[0].totalWattsProm > nextMonthly[0].totalWattsProm) {
     const healthPromPercentage =
