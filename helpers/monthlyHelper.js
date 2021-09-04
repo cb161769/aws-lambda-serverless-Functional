@@ -45,7 +45,7 @@ module.exports.isNightTarif = function(dateObj){
  * @function getMonthlyHelper
  * @author Claudio Raul Brito Mercedes
  */
- module.exports.getMonthlyHelper = async function (params){
+ module.exports.getMonthlyHelper =  function (params){
     const moment = require('moment');
     let counter = 0;
     var totalWatts = 0;

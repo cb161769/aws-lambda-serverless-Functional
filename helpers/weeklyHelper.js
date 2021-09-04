@@ -30,6 +30,7 @@ module.exports.getWeeklyHelper = function (dynamoDBArray) {
   var dayKhwProms = 0;
   var nightKhwProms = 0;
   var weekTimeStamp = [];
+  let totalWattsProm = 0;
   if (dynamoDBArray.length === 0) {
     return [
       {
@@ -178,7 +179,7 @@ module.exports.getWeeklyHelper = function (dynamoDBArray) {
       totalAmps += readings2.device_amps;
     }
     totalAmpsProm = totalAmps / dynamoDBArray.length;
-    totalWAttsProm = totalWatts / dynamoDBArray.length;
+    totalWattsProm = totalWatts / dynamoDBArray.length;
 
     return [
       {

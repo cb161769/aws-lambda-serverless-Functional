@@ -48,7 +48,7 @@ module.exports.isInCurrentWEEK = function(date){
  * @param {*} params the DynamoDBArray 
  * 
  */
-module.exports.dailyHelperFromConnections = async function(connectionName,params){
+module.exports.dailyHelperFromConnections =  function(connectionName,params){
     const moment = require('moment');
     let counter = 0;
     var totalWatts = 0;

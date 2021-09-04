@@ -58,7 +58,7 @@ module.exports.DeviceWeeklyKiloWattsDayNightHelper = function (dynamoDBArray) {
  * @returns
  */
 module.exports.DeviceMonthlyWattsDayNightHelper = function (dynamoDBArray) {
-  const helper = await getMonthlyHelper(dynamoDBArray);
+  const helper =  getMonthlyHelper(dynamoDBArray);
   const days = helper[0].dayWattsProm;
   const night = helper[0].NightWattsProm;
   const dataset = [
@@ -81,7 +81,7 @@ module.exports.DeviceMonthlyWattsDayNightHelper = function (dynamoDBArray) {
 module.exports.DeviceMonthlyKiloWattsDayNightHelper = async function (
   dynamoDBArray
 ) {
-  const helper = await getMonthlyHelper(dynamoDBArray);
+  const helper =  getMonthlyHelper(dynamoDBArray);
   const days = helper[0].dayKhwProms;
   const night = helper[0].NightsKhwProm;
   const dataset = [
@@ -104,7 +104,7 @@ module.exports.DeviceMonthlyKiloWattsDayNightHelper = async function (
 module.exports.DeviceMonthlyYearlyWattsDayNight = async function (
   dynamoDBArray
 ) {
-  const helper = await getByMonth(dynamoDBArray);
+  const helper =  getByMonth(dynamoDBArray);
   const days = helper[0].dayWattsProm;
   const night = helper[0].NightWattsProm;
   const dataset = [
@@ -129,7 +129,7 @@ module.exports.DeviceMonthlyYearlyWattsDayNight = async function (
 module.exports.DeviceMonthlyYearlyKiloWattsDayNight = async function (
   dynamoDBArray
 ) {
-  const helper = await getByMonth(dynamoDBArray);
+  const helper =  getByMonth(dynamoDBArray);
   const days = helper[0].dayKhwProms;
   const night = helper[0].NightsKhwProm;
   const dataset = [

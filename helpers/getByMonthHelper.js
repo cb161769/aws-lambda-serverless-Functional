@@ -51,7 +51,7 @@ module.exports.findFirstDay = function(y,m){
  * @function getByMonth()
  * @param {*} params parameters
  */
-module.exports.getByMonth = async function (params){
+module.exports.getByMonth =  function (params){
     const moment = require('moment');
     var MonthInformation = {
         MonthName:'',

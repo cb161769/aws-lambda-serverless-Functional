@@ -70,7 +70,7 @@ module.exports.elapsedTime = function(date1,date2){
  * @function getMonthlyHelper
  * @author Claudio Raul Brito Mercedes
  */
- module.exports.DeviceGraphHelper = async function (params){
+ module.exports.DeviceGraphHelper =  function (params){
     const moment = require('moment');
     let counter = 0;
     let CountAtNight =0;

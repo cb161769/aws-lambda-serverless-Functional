@@ -45,7 +45,7 @@
  * @param {*} Params DYNAMOBD ARRAY
  * @returns <array<any>>
  */
-module.exports.getMonthlyHelperConnection = async function (ConnectionName,Params){
+module.exports.getMonthlyHelperConnection =  function (ConnectionName,Params){
     
     const moment = require('moment');
     let counter = 0;
