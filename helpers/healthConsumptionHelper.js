@@ -94,7 +94,7 @@ module.exports.healthYearlyHelper = function (currentYear, otherYear) {
     const healthPromPercentage =
       currentYears[0].totalWattsProm / currentYears[0].totalWattsProm;
     const message =
-      "el consumo del mes  actual es mayor al pasado, favor considerar tu consumo";
+      "el consumo del año  actual es mayor al pasado, favor considerar tu consumo";
     return {
       health: healthPromPercentage,
       message: message,
@@ -103,7 +103,7 @@ module.exports.healthYearlyHelper = function (currentYear, otherYear) {
   } else if (currentYears[0].totalWattsProm == otherYears[0].totalWattsProm) {
     const healthPromPercentage =
       currentYears[0].totalWattsProm / otherYears[0].totalWattsProm;
-    const message = "el consumo del mes  actual es igual al pasado, excelente!";
+    const message = "el consumo del año  actual es igual al pasado, excelente!";
     return {
       health: healthPromPercentage,
       message: message,
@@ -112,7 +112,7 @@ module.exports.healthYearlyHelper = function (currentYear, otherYear) {
   } else if (currentYears[0].totalWattsProm < otherYears[0].totalWattsProm) {
     const healthPromPercentage =
       currentYears[0].totalWattsProm / otherYears[0].totalWattsProm;
-    const message = "el consumo del mes  actual es menor al pasado, muy bien!";
+    const message = "el consumo del año  actual es menor al pasado, muy bien!";
     return {
       health: healthPromPercentage,
       message: message,

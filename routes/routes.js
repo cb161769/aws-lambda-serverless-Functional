@@ -645,17 +645,17 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
       const data = await db.query(params).promise();
       const secondData = await db.query(secondParams).promise();
       const week = getWeeklyHelper(data.Items);
-        const health = healthWeeklyHelper(data.Items, secondData.Items);
-        const dayNight = DeviceWeeklyWattsDayNightHelper(data.Items);
-        const dayNightKilowatts = DeviceWeeklyKiloWattsDayNightHelper(data.Items);
-        res.status(200).json({
-          usage: week,
-          health: health,
-          dayNight: dayNight,
-          dayNightKilowatts: dayNightKilowatts,
-        });
+      const health = healthWeeklyHelper(data.Items, secondData.Items);
+      const dayNight = DeviceWeeklyWattsDayNightHelper(data.Items);
+      const dayNightKilowatts = DeviceWeeklyKiloWattsDayNightHelper(data.Items);
+      res.status(200).json({
+        usage: week,
+        health: health,
+        dayNight: dayNight,
+        dayNightKilowatts: dayNightKilowatts,
+      });
     } catch (error) {
-        const ob = [
+      const ob = [
         {
           registros: 0,
           lunes: { registros: 0, amperios: 0, watts: 0 },
@@ -722,10 +722,9 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
         health: returnObject,
         dayNight: returnWatts,
         dayNightKilowatts: returnKHWatts,
-        text:'is error'
+        text: "is error",
       });
     }
-
   } else {
     var startDate = parseInt(req.params.start);
     var endDate = parseInt(req.params.end);
@@ -942,29 +941,25 @@ routes.get("/getMonthly/:day", async (req, res) => {
     const data = await db.query(params).promise();
     const secondData = await db.query(secondParams).promise();
     const month = getByMonth(data.Items);
-   const health = healthMonthlyHelper(data.Items,secondData.Items);
-     const dayNight = DeviceMonthlyWattsDayNightHelper(data.Items);
-       const dayNightKilowatts = DeviceMonthlyKiloWattsDayNightHelper(
-        data.Items
-      );
-      logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
-        tags: "http",
-        additionalInfo: {
-          operation: "Connections/getAllDeviceReadingsByGivenMonth",
-          body: req.body,
-          headers: req.headers,
-          databaseOperation: "GET",
-          table: config.dynamoBB.deviceReadings.name,
-
-        },
-      });
+    const health = healthMonthlyHelper(data.Items, secondData.Items);
+    const dayNight = DeviceMonthlyWattsDayNightHelper(data.Items);
+    const dayNightKilowatts = DeviceMonthlyKiloWattsDayNightHelper(data.Items);
+    logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
+      tags: "http",
+      additionalInfo: {
+        operation: "Connections/getAllDeviceReadingsByGivenMonth",
+        body: req.body,
+        headers: req.headers,
+        databaseOperation: "GET",
+        table: config.dynamoBB.deviceReadings.name,
+      },
+    });
     res.status(200).json({
       usage: month,
       health: health,
       dayNight: dayNight,
       dayNightKilowatts: dayNightKilowatts,
     });
-   
   } catch (error) {
     var MonthInformation = {
       MonthName: "",
@@ -12238,7 +12233,7 @@ routes.get("/getDeviceYearly/allConfig", async (req, res) => {
     });
     res.status(200).json({
       usage: data,
-       health: health,
+      health: health,
       dayNight: dayNight,
       dayNightKilowatts: dayNightKilowatts,
     });
@@ -14017,14 +14012,38 @@ routes.get(
       };
       const data = await db.query(params).promise();
       const secondData = await db.query(secondParams).promise();
-      if (
-        (data.ScannedCount == 0 ||
-          data == null ||
-          data == undefined ||
-          !data ||
-          data.Count == 0) &&
-        (secondData.ScannedCount == 0 || secondData == undefined)
-      ) {
+      try {
+        const week = dailyHelperFromConnections(ConnectionName, data.Items);
+        // const health = ConnectionsHealthWeeklyHelper(
+        //   ConnectionName,
+        //   data.Items,
+        //   secondData.Items
+        // );
+        // const dayNightKilowatts = ConnectionsWeekKiloWattsDayNight(
+        //   ConnectionName,
+        //   data.Items
+        // );
+        // const dayNight = ConnectionsWeeklyWattsDayNight(
+        //   ConnectionName,
+        //   data.Items
+        // );
+        logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
+          tags: "http",
+          additionalInfo: {
+            operation: "Connections/getConnectionReadingsCurrentWeek",
+            body: req.body,
+            headers: req.headers,
+            databaseOperation: "GET",
+            table: config.dynamoBB.deviceReadings.name,
+          },
+        });
+        res.status(200).json({
+          usage: week,
+          health: [],
+         // dayNight: dayNight,
+         // dayNightKilowatts: dayNightKilowatts,
+        });
+      } catch (error) {
         const ob = [
           {
             registros: 0,
@@ -14043,7 +14062,6 @@ routes.get(
             promedioWattsSemanal: 0,
             promedioAmpsSemanal: 0,
             promedioKwhSemanal: 0,
-            usage: data.Items,
           },
         ];
         const returnObject = {
@@ -14051,68 +14069,51 @@ routes.get(
           message: "",
           isError: true,
         };
-        res.status(200).json({ usage: ob, health: returnObject });
-      } else {
-        try {
-          const week = dailyHelperFromConnections(ConnectionName, data.Items);
-          const health = ConnectionsHealthWeeklyHelper(
-            ConnectionName,
-            data.Items,
-            secondData.Items
-          );
-          logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
-            tags: "http",
-            additionalInfo: {
-              operation: "Connections/getConnectionReadingsCurrentWeek",
-              body: req.body,
-              headers: req.headers,
-              databaseOperation: "GET",
-              table: config.dynamoBB.deviceReadings.name,
-            },
+        const dataset = [
+          {
+            labels: "Consumo semanal en Watts",
+            backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
+            data: [0, 0],
+          },
+        ];
+        const returnWatts = {
+          label: "Analisis de consumo",
+          datasets: dataset,
+        };
+        const Kwhdataset = [
+          {
+            labels: "Consumo semanal en KiloWatts",
+            backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
+            data: [0, 0],
+          },
+        ];
+        const returnKHWatts = {
+          label: "Analisis de consumo",
+          datasets: Kwhdataset,
+        };
+        logger.log("error", `Requesting ${req.method} ${req.originalUrl}`, {
+          tags: "http",
+          additionalInfo: {
+            operation: "Connections/getConnectionReadingsCurrentWeek",
+            body: req.body,
+            headers: req.headers,
+            error: error,
+            databaseOperation: "GET",
+            table: config.dynamoBB.deviceReadings.name,
+          },
+        });
+        res
+          .status(200)
+          .json({
+            usage: ob,
+            health: returnObject,
+            dayNight: returnWatts,
+            dayNightKilowatts: returnKHWatts,
           });
-
-          res.status(200).json({ usage: week, health: health });
-        } catch (error) {
-          const ob = [
-            {
-              registros: 0,
-              Connextion: ConnectionName,
-              Timestamp: [],
-              lunes: { registros: 0, amperios: 0, watts: 0, Timestamp: [] },
-              martes: { registros: 0, amperios: 0, watts: 0, Timestamp: [] },
-              miercoles: { registros: 0, amperios: 0, watts: 0, Timestamp: [] },
-              jueves: { registros: 0, amperios: 0, watts: 0, Timestamp: [] },
-              viernes: { registros: 0, amperios: 0, watts: 0, Timestamp: [] },
-              sabado: { registros: 0, amperios: 0, watts: 0, Timestamp: [] },
-              domingo: { registros: 0, amperios: 0, watts: 0, Timestamp: [] },
-              totalWatts: 0,
-              totalAmps: 0,
-              diaConsulta: new Date().toISOString(),
-              promedioWattsSemanal: 0,
-              promedioAmpsSemanal: 0,
-              promedioKwhSemanal: 0,
-            },
-          ];
-          const returnObject = {
-            health: 0,
-            message: "",
-            isError: true,
-          };
-          logger.log("error", `Requesting ${req.method} ${req.originalUrl}`, {
-            tags: "http",
-            additionalInfo: {
-              operation: "Connections/getConnectionReadingsCurrentWeek",
-              body: req.body,
-              headers: req.headers,
-              error: error,
-              databaseOperation: "GET",
-              table: config.dynamoBB.deviceReadings.name,
-            },
-          });
-          res.status(200).json({ usage: ob, health: returnObject });
-        }
       }
     }
+
+
   }
 );
 
