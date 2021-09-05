@@ -13803,10 +13803,10 @@ routes.get(
   }
 );
 
-routes.get(
-  "/Connections/getConnectionReadingsCurrentWeek/:start/:end/:ConnectionName",
+routes.post(
+  "/Connections/getConnectionReadingsCurrentWeek",
   async (req, res) => {
-    var ConnectionName = req.params.ConnectionName;
+    var ConnectionName = req.body.ConnectionName;
     if (
       ConnectionName == "" ||
       ConnectionName == null ||
@@ -13814,7 +13814,7 @@ routes.get(
     ) {
       res.status(404).json({ error: "The name is incorrect" });
     }
-    if (parseInt(req.params.start) > parseInt(req.params.end)) {
+    if (parseInt(req.body.start) > parseInt(req.body.end)) {
       var startChanged = parseInt(req.params.end);
       var endChanged = parseInt(req.params.start);
       var priorStartChanged = parseInt(req.params.end);
@@ -13974,14 +13974,14 @@ routes.get(
         },
         ExpressionAttributeValues: {
           ":key": config.deviceName,
-          ":start": parseInt(req.params.start),
-          ":end": parseInt(req.params.end),
+          ":start": parseInt(req.body.start),
+          ":end": parseInt(req.body.end),
         },
       };
-      var startChanged = parseInt(req.params.end);
-      var endChanged = parseInt(req.params.start);
-      var priorStartChanged = parseInt(req.params.end);
-      var priorEndChanged = parseInt(req.params.start);
+      var startChanged = parseInt(req.body.end);
+      var endChanged = parseInt(req.body.start);
+      var priorStartChanged = parseInt(req.body.end);
+      var priorEndChanged = parseInt(req.body.start);
       const priorStartDate = new Date(priorStartChanged * 1000);
       var pastDate = priorStartDate.getDate() - 7;
       const setedStartDate = new Date();
@@ -14014,19 +14014,19 @@ routes.get(
       const secondData = await db.query(secondParams).promise();
       try {
         const week = dailyHelperFromConnections(ConnectionName, data.Items);
-        // const health = ConnectionsHealthWeeklyHelper(
-        //   ConnectionName,
-        //   data.Items,
-        //   secondData.Items
-        // );
-        // const dayNightKilowatts = ConnectionsWeekKiloWattsDayNight(
-        //   ConnectionName,
-        //   data.Items
-        // );
-        // const dayNight = ConnectionsWeeklyWattsDayNight(
-        //   ConnectionName,
-        //   data.Items
-        // );
+        const health = ConnectionsHealthWeeklyHelper(
+          ConnectionName,
+          data.Items,
+          secondData.Items
+        );
+        const dayNightKilowatts = ConnectionsWeekKiloWattsDayNight(
+          ConnectionName,
+          data.Items
+        );
+        const dayNight = ConnectionsWeeklyWattsDayNight(
+          ConnectionName,
+          data.Items
+        );
         logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
           tags: "http",
           additionalInfo: {
@@ -14039,9 +14039,9 @@ routes.get(
         });
         res.status(200).json({
           usage: week,
-          health: [],
-         // dayNight: dayNight,
-         // dayNightKilowatts: dayNightKilowatts,
+         health: health,
+        dayNight: dayNight,
+        dayNightKilowatts: dayNightKilowatts,
         });
       } catch (error) {
         const ob = [

@@ -31,7 +31,7 @@ module.exports.ConnectionsDailyWattsDayNight =  function(ConnectionName,dynamoDB
 module.exports.ConnectionsWeekKiloWattsDayNight =  function(ConnectionName,dynamoDBArray){
     const helper =  dailyHelperFromConnections(ConnectionName,dynamoDBArray);
     const days= helper[0].dayKhwProms;
-    const night = helper[0].NightsKhwProm;
+    const night = helper[0].nightKhwProms;
     const dataset = [{
         label: 'Consumo Diario en KiloWatts',
         backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
@@ -46,8 +46,8 @@ module.exports.ConnectionsWeekKiloWattsDayNight =  function(ConnectionName,dynam
 };
 module.exports.ConnectionsWeeklyWattsDayNight =  function(ConnectionName,dynamoDBArray){
     const helper =  dailyHelperFromConnections(ConnectionName,dynamoDBArray);
-    const days= helper[0].dayWattsProm;
-    const night = helper[0].NightWattsProm;
+    const days= helper[0].dayWattsProms;
+    const night = helper[0].nightWattsProms;
     const dataset = [{
         label: 'Consumo Diario en Watts',
         backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],

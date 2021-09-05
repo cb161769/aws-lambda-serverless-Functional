@@ -101,6 +101,10 @@ module.exports.isInCurrentWEEK = function (date) {
           registros: 0,
           Connextion: connectionName,
           Timestamp: weekTimeStamp,
+          nightKhwProms:nightKhwProms,
+          nightWattsProms:nightWattsProms,
+          dayWattsProms:dayWattsProms,
+          dayKhwProms:dayKhwProms,
           lunes: {
             registros: monday || 0,
             amperios: mondayAmps || 0,
@@ -349,6 +353,10 @@ module.exports.isInCurrentWEEK = function (date) {
             totalKwhInWeek: totalKwhInWeek,
             totalAmpsInWeek: totalAmpsInWeek,
             totalWattsInWeek: totalWattsInWeek,
+            nightKhwProms:nightKhwProms,
+            nightWattsProms:nightWattsProms,
+            dayWattsProms:dayWattsProms,
+            dayKhwProms:dayKhwProms,
             lunes: {
               registros: monday || 0,
               amperios: mondayAmps || 0,
@@ -594,6 +602,10 @@ module.exports.isInCurrentWEEK = function (date) {
             totalKwhInWeek: totalKwhInWeek,
             totalAmpsInWeek: totalAmpsInWeek,
             totalWattsInWeek: totalWattsInWeek,
+            nightKhwProms:nightKhwProms,
+            nightWattsProms:nightWattsProms,
+            dayWattsProms:dayWattsProms,
+            dayKhwProms:dayKhwProms,
             lunes: {
               registros: monday || 0,
               amperios: mondayAmps || 0,
@@ -839,6 +851,10 @@ module.exports.isInCurrentWEEK = function (date) {
             totalKwhInWeek: totalKwhInWeek,
             totalAmpsInWeek: totalAmpsInWeek,
             totalWattsInWeek: totalWattsInWeek,
+            nightKhwProms:nightKhwProms,
+            nightWattsProms:nightWattsProms,
+            dayWattsProms:dayWattsProms,
+            dayKhwProms:dayKhwProms,
             lunes: {
               registros: monday || 0,
               amperios: mondayAmps || 0,
