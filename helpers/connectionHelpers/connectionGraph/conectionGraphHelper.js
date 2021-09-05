@@ -9732,7 +9732,7 @@ module.exports.elapsedTime = function(date1,date2){
 
                 break;
             }
-            if (moth == 6) {
+            if (month == 6) {
                 JulyAmps += readings2.device_amps;
                 JulyWatts += readings2.device_watts;
                 if (weekMonth ==1) {
@@ -14051,7 +14051,7 @@ module.exports.elapsedTime = function(date1,date2){
     const ob = [
         {registros:counter,
             year:LocalDate.year(),
-            ConnectionName:config.deviceName,
+            ConnectionName: '',
             totalAmpsProm:totalAmpsProm,
             totalWattsProm:totalWAttsProm,
             kwhTimeStamps:kwhTimeStamps,
@@ -14188,7 +14188,7 @@ module.exports.elapsedTime = function(date1,date2){
     return ob;
      
       
-}
+};
 /**
  * @function getMaxConsumption()
  * @author Claudio Raul Brito Mercedes

@@ -3,8 +3,8 @@
  * @param {*} epochDate date 
  */
 module.exports.convertEpochDateToHumanDate = function(epochDate){
-    var epoch = new Date(epochDate * 1000);
-    return epoch;
+    return new Date(epochDate * 1000);
+
 }
 /**
  * This function determines if the given date is in the current year
@@ -16,8 +16,8 @@ module.exports.isInCurrentYear = function(date){
     const moment = require('moment');
     var now = moment();
     var input = moment(date);
-    var isThisYear = (now.year() == input.year());
-    return isThisYear;
+    return (now.year() == input.year());
+
 }
 /**
  * 
@@ -36,6 +36,9 @@ module.exports.isNightTarif = function(dateObj){
 	}
 
 	return false;
+}
+module.exports.determineQuater = function(date){
+    return Math.floor((date.getMonth() +3)/3);
 }
 
 /**
@@ -5315,6 +5318,26 @@ module.exports.isNightTarif = function(dateObj){
         }
 
     };
+    var firstQuater={
+        watts:0,
+        amps:0,
+        kilowatts:0
+    }
+    var secondQuater ={
+        watts:0,
+        amps:0,
+        kilowatts:0
+    };
+    var thirdQuater = {
+        watts:0,
+        amps:0,
+        kilowatts:0
+    };
+    var FourthQuater = {
+        watts:0,
+        amps:0,
+        kilowatts:0
+    };
     //Variables
     var FebruaryWatts = 0;
     var MarchWatts = 0;
@@ -5361,72 +5384,77 @@ module.exports.isNightTarif = function(dateObj){
                 totalAmps:0,
                 dayWattsProm:dayWattsProms, NightWattsProm:nightWattsProms, NightsKhwProm:nightKhwProms,
                 dayKhwProms:dayKhwProms,
-                khwProms:(dayKhwProms + nightKhwProms),
-            january:{
-                amps:januaryAmps,
-                watts:januaryWatts,
-                januaryDetail: [
-                    januaryWeekDays
-                ]
-            },
-            February:{
-                amps:FebruaryAmps,
-                watts:FebruaryWatts,
-                februaryDetails:[februaryWeekDays]
-            },
-            march:{
-                amps:MarchAmps,
-                watts:MarchWatts,
-                marchDetails: [MarchWeekDays]
-            },
-            april:{
-                amps:AprilAmps,
-                watts:AprilWatts,
-                aprilDetails:[aprilWeekDays]
-            },
-            may:{
-                amps:MayAmps,
-                watts:MayWatts,
-                mayDetails:[MayWeekDays]
-            },
-            june:{
-                amps:JuneAmps
-            },
-            july:{
-                amps:JulyAmps,
-                watts:JulyWatts,
-                julyDetails:[JulyWeekDays]                
-                
-            },
-            augustus:{
-                amps:AugustAmps,
-                watts:AugustWatts,
-                augustDetails:[AugustWeekDays]
-    
-            },
-            September:{
-                amps:SeptemberAmps,
-                watts:SeptemberAmps,
-                SeptemberDetails:[SeptemberWeekDays]
-    
-            },
-            october:{
-                amps:OctoberAmps,
-                watts:OctoberWatts,
-                OctoberDetails:[OctoberWeekDays]
-    
-            },
-            november:{
-                amps:NovemberAmps,
-                watts:NovemberWatts,
-                NovemberDetails:[NovemberWeekDays]
-    
-            },
-            december:{
-                amps:DecemberAmps,
-                watts:DecemberWatts,
-                DecemberDetails:[DecemberWeekDays]
-            }
+                khwProms:0,
+                january:{
+                    amps:januaryAmps,
+                    watts:januaryWatts,
+                    januaryDetail: [
+                        januaryWeekDays
+                    ]
+                },
+                February:{
+                    amps:FebruaryAmps,
+                    watts:FebruaryWatts,
+                    februaryDetails:[februaryWeekDays]
+                },
+                march:{
+                    amps:MarchAmps,
+                    watts:MarchWatts,
+                    marchDetails: [MarchWeekDays]
+                },
+                april:{
+                    amps:AprilAmps,
+                    watts:AprilWatts,
+                    aprilDetails:[aprilWeekDays]
+                },
+                may:{
+                    amps:MayAmps,
+                    watts:MayWatts,
+                    mayDetails:[MayWeekDays]
+                },
+                june:{
+                    amps:JuneAmps
+                },
+                july:{
+                    amps:JulyAmps,
+                    watts:JulyWatts,
+                    julyDetails:[JulyWeekDays]                
+                    
+                },
+                augustus:{
+                    amps:AugustAmps,
+                    watts:AugustWatts,
+                    augustDetails:[AugustWeekDays]
+        
+                },
+                September:{
+                    amps:SeptemberAmps,
+                    watts:SeptemberAmps,
+                    SeptemberDetails:[SeptemberWeekDays]
+        
+                },
+                october:{
+                    amps:OctoberAmps,
+                    watts:OctoberWatts,
+                    OctoberDetails:[OctoberWeekDays]
+        
+                },
+                november:{
+                    amps:NovemberAmps,
+                    watts:NovemberWatts,
+                    NovemberDetails:[NovemberWeekDays]
+        
+                },
+                december:{
+                    amps:DecemberAmps,
+                    watts:DecemberWatts,
+                    DecemberDetails:[DecemberWeekDays]
+                },
+                firstQuater:firstQuater,
+                secondQuater: secondQuater,
+                thirdQuater:thirdQuater,
+                FourthQuater: FourthQuater,
+
     
             
         }
@@ -5456,6 +5484,7 @@ module.exports.isNightTarif = function(dateObj){
             LocalDate.locale(false);
             var readings2 = params[index].readings;
             var year = module.exports.isInCurrentYear(sortKeyEpoch);
+            var quater = module.exports.determineQuater(sortKeyEpoch);
             if (year === false) {
                 break;
                 
@@ -5489,6 +5518,37 @@ module.exports.isNightTarif = function(dateObj){
                 const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
                 const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
                 KiloWattsTimeStamp.push({t:sortKeyEpoch.toISOString(),y:kwh});
+                if (quater ==1) {
+                    const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
+                    const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
+                    firstQuater.watts += readings2.device_watts;
+                    firstQuater.amps += readings2.device_amps;
+                    firstQuater.kilowatts += Math.abs(kwh);
+    
+                }
+                if (quater == 2) {
+                    const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
+                    const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
+                    secondQuater.watts += readings2.device_watts;
+                    secondQuater.amps += readings2.device_amps;
+                    secondQuater.kilowatts += Math.abs(kwh);
+
+                }
+                if (quater == 3) {
+                                        const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
+                    const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
+                    thirdQuater.watts += readings2.device_watts;
+                    thirdQuater.amps += readings2.device_amps;
+                    thirdQuater.kilowatts += Math.abs(kwh);
+                }
+                if (quater == 4) {
+                    const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
+                    const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
+                    FourthQuater.watts += readings2.device_watts;
+                    FourthQuater.amps += readings2.device_amps;
+                    FourthQuater.kilowatts += Math.abs(kwh);
+                    
+                }
                 if (month ==0) { 
     
                     januaryAmps += readings2.device_amps;
@@ -12854,7 +12914,11 @@ module.exports.isNightTarif = function(dateObj){
                 amps:DecemberAmps,
                 watts:DecemberWatts,
                 DecemberDetails:[DecemberWeekDays]
-            }
+            },
+            firstQuater:firstQuater,
+            secondQuater: secondQuater,
+            thirdQuater:thirdQuater,
+            FourthQuater: FourthQuater,
     
             
         }
@@ -12866,6 +12930,6 @@ module.exports.isNightTarif = function(dateObj){
 
      
       
-}
+};
 
 

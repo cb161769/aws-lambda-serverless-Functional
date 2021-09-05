@@ -14,7 +14,7 @@ const { dailyHelper } = require("../../helpers/dailyHelper");
 module.exports.DeviceWeeklyWattsDayNightHelper =  function (
   dynamoDBArray
 ) {
-  const helper =  getWeeklyHelper(dynamoDBArray);
+  const helper =  getMonthlyHelper(dynamoDBArray);
   const days = helper[0].dayWattsProm;
   const night = helper[0].NightWattsProm;
   const dataset = [
@@ -36,7 +36,7 @@ module.exports.DeviceWeeklyWattsDayNightHelper =  function (
  * @returns array[]
  */
 module.exports.DeviceWeeklyKiloWattsDayNightHelper = function (dynamoDBArray) {
-  const helper =  getWeeklyHelper(dynamoDBArray);
+  const helper =  getMonthlyHelper(dynamoDBArray);
   const days = helper[0].dayKhwProms;
   const night = helper[0].NightsKhwProm;
   const dataset = [

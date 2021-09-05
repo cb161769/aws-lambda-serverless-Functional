@@ -726,11 +726,6 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
       });
     }
 
-    // try {
-      
-    // } catch (error) {
-    
-    // }
   } else {
     var startDate = parseInt(req.params.start);
     var endDate = parseInt(req.params.end);
@@ -12229,8 +12224,8 @@ routes.get("/getDeviceYearly/allConfig", async (req, res) => {
   try {
     const data = getMonthlyHelper(result.Items);
     const health = healthYearlyHelper(result.Items, result.Items);
-    const dayNight = DeviceWeeklyWattsDayNightHelper(data.Items);
-    const dayNightKilowatts = DeviceWeeklyKiloWattsDayNightHelper(data.Items);
+    const dayNight = DeviceWeeklyWattsDayNightHelper(result.Items);
+    const dayNightKilowatts = DeviceWeeklyKiloWattsDayNightHelper(result.Items);
     logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
       tags: "http",
       additionalInfo: {
@@ -12243,7 +12238,7 @@ routes.get("/getDeviceYearly/allConfig", async (req, res) => {
     });
     res.status(200).json({
       usage: data,
-      health: health,
+       health: health,
       dayNight: dayNight,
       dayNightKilowatts: dayNightKilowatts,
     });
