@@ -14019,11 +14019,11 @@ routes.post(
           data.Items,
           secondData.Items
         );
-        const dayNightKilowatts = ConnectionsWeekKiloWattsDayNight(
+        const dayNightKilowatts = ConnectionsMonthlyWattsDayNight(
           ConnectionName,
           data.Items
         );
-        const dayNight = ConnectionsWeeklyWattsDayNight(
+        const dayNight = ConnectionsMonthlyKiloWattsDayNight(
           ConnectionName,
           data.Items
         );
@@ -14039,9 +14039,9 @@ routes.post(
         });
         res.status(200).json({
           usage: week,
-         health: health,
-        dayNight: dayNight,
-        dayNightKilowatts: dayNightKilowatts,
+          health: health,
+          dayNight: dayNight,
+          dayNightKilowatts: dayNightKilowatts,
         });
       } catch (error) {
         const ob = [
@@ -14102,26 +14102,22 @@ routes.post(
             table: config.dynamoBB.deviceReadings.name,
           },
         });
-        res
-          .status(200)
-          .json({
-            usage: ob,
-            health: returnObject,
-            dayNight: returnWatts,
-            dayNightKilowatts: returnKHWatts,
-          });
+        res.status(200).json({
+          usage: ob,
+          health: returnObject,
+          dayNight: returnWatts,
+          dayNightKilowatts: returnKHWatts,
+        });
       }
     }
-
-
   }
 );
 
-routes.get(
-  "/Connections/getAllDeviceReadingsByGivenMonth/:day/:ConnectionName",
+routes.post(
+  "/Connections/getAllDeviceReadingsByGivenMonth",
   async (req, res) => {
-    let day = parseInt(req.params.day);
-    var ConnectionName = req.params.ConnectionName;
+    let day = parseInt(req.body.day);
+    var ConnectionName = req.body.ConnectionName;
     let completedDay = new Date(day * 1000);
     let firstDayOfMonth = findFirstDay(
       completedDay.getFullYear(),
@@ -14182,14 +14178,30 @@ routes.get(
     };
     const data = await db.query(params).promise();
     const secondData = await db.query(secondParams).promise();
-    if (
-      (data.ScannedCount == 0 ||
-        data == null ||
-        data == undefined ||
-        !data ||
-        data.Count == 0) &&
-      (secondData.ScannedCount == 0 || secondData == undefined)
-    ) {
+    const month = getByMonthConnections(ConnectionName, data.Items);
+    const health = ConnectionsHealthMonthlyHelper(
+      ConnectionName,
+      data.Items,
+      secondData.Items
+    );
+    const dayNightKwh = ConnectionsMonthlyKiloWattsDayNight(
+      ConnectionName,
+      data.Items
+    );
+    const dayNight = ConnectionsMonthlyWattsDayNight(
+      ConnectionName,
+      data.Items
+    );
+    try {
+      res
+        .status(200)
+        .json({
+          usage: month,
+          health: health,
+          dayNight: dayNight,
+          dayNightKilowatts: dayNightKwh,
+        });
+    } catch (error) {
       var MonthInformation = {
         MonthName: "",
         allMonthAmps: 0,
@@ -14303,6 +14315,8 @@ routes.get(
               Total: 0,
             },
             totalKwhPerWeek: 0,
+            totalAmpsPerWeek: 0,
+            totalWattsPerWeek: 0,
             TimeStamp: [],
           },
           secondWeek: {
@@ -14412,6 +14426,8 @@ routes.get(
               Total: 0,
             },
             totalKwhPerWeek: 0,
+            totalAmpsPerWeek: 0,
+            totalWattsPerWeek: 0,
             TimeStamp: [],
           },
           thirdweek: {
@@ -14521,6 +14537,8 @@ routes.get(
               Total: 0,
             },
             totalKwhPerWeek: 0,
+            totalAmpsPerWeek: 0,
+            totalWattsPerWeek: 0,
             TimeStamp: [],
           },
           fourthweek: {
@@ -14630,47 +14648,49 @@ routes.get(
               Total: 0,
             },
             totalKwhPerWeek: 0,
+            totalAmpsPerWeek: 0,
+            totalWattsPerWeek: 0,
             TimeStamp: [],
           },
+          TimeStamp: [],
+          kwhTimesTamp: [],
+          ampsTimestamp: [],
         },
       };
+      const dataset = [
+        {
+          labels: "Consumo Mensual en Watts",
+          backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
+          data: [0, 0],
+        },
+      ];
+      const returnWatts = {
+        label: "Analisis de consumo",
+        datasets: dataset,
+      };
+      const Kwhdataset = [
+        {
+          labels: "Consumo Mensual en KiloWatts",
+          backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
+          data: [0, 0],
+        },
+      ];
+      const returnKHWatts = {
+        label: "Analisis de consumo",
+        datasets: Kwhdataset,
+      };
+      const ob = [{ detail: MonthInformation, count: 0 }];
       const returnObject = {
         health: 0,
-        message: "",
+        message: "no hay diferencias en el consumo",
         isError: true,
       };
-      const ob = [{ Detail: MonthInformation }];
-      logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
-        tags: "http",
-        additionalInfo: {
-          operation: "Connections/getAllDeviceReadingsByGivenMonth",
-          body: req.body,
-          headers: req.headers,
-          databaseOperation: "GET",
-          table: config.dynamoBB.deviceReadings.name,
-        },
+      res.status(200).json({
+        usage: ob,
+        health: returnObject,
+        dayNight: returnWatts,
+        dayNightKilowatts: returnKHWatts,
       });
-      res
-        .status(200)
-        .json({ usage: ob, health: returnObject, message: "Not Found" });
-    } else {
-      const month = getByMonthConnections(ConnectionName, data.Items);
-      const health = ConnectionsHealthYearlyHelper(
-        ConnectionName,
-        data.Items,
-        secondData.Items
-      );
-      logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
-        tags: "http",
-        additionalInfo: {
-          operation: "Connections/getAllDeviceReadingsByGivenMonth",
-          body: req.body,
-          headers: req.headers,
-          databaseOperation: "GET",
-          table: config.dynamoBB.deviceReadings.name,
-        },
-      });
-      res.status(200).json({ usage: month, health: health });
     }
   }
 );

@@ -223,9 +223,9 @@ module.exports.ConnectionsHealthMonthlyHelper = function (
 ) {
   const currentWeeks = getByMonthConnections(ConnectionName, currentYear);
   const nextWeek = getByMonthConnections(ConnectionName, otherYear);
-  if (currentWeeks[0].totalWatts > nextWeek[0].totalWatts) {
+  if (currentWeeks[0].detail.allMonthWatts > nextWeek[0].detail.allMonthWatts) {
     const healthPromPercentage =
-      currentWeeks[0].totalWatts / nextWeek[0].totalWatts;
+      currentWeeks[0].detail.allMonthWatts / nextWeek[0].detail.allMonthWatts
     const message =
       "el consumo del mes actual es mayor al pasado, favor considerar tu consumo";
     return {
@@ -233,18 +233,18 @@ module.exports.ConnectionsHealthMonthlyHelper = function (
       message: message,
       isBigger: true,
     };
-  } else if (currentWeeks[0].totalWatts == nextWeek[0].totalWatts) {
+  } else if (currentWeeks[0].detail.allMonthWatts == nextWeek[0].detail.allMonthWatts) {
     const healthPromPercentage =
-      currentWeeks[0].totalWatts / nextWeek[0].totalWatts;
+      currentWeeks[0].detail.allMonthWatts / nextWeek[0].detail.allMonthWatts;
     const message = "el consumo del mes actual es igual al pasado, excelente!";
     return {
       health: healthPromPercentage,
       message: message,
       isEqual: false,
     };
-  } else if (currentWeeks[0].totalWatts < nextWeek[0].totalWatts) {
+  } else if (currentWeeks[0].detail.allMonthWatt < nextWeek[0].detail.allMonthWatts) {
     const healthPromPercentage =
-      currentWeeks[0].totalWatts / nextWeek[0].totalWatts;
+      currentWeeks[0].detail.allMonthWatts / nextWeek[0].detail.allMonthWatts;
     const message = "el consumo del mes actual es menor al pasado, muy bien!";
     return {
       health: healthPromPercentage,

@@ -1,6 +1,6 @@
 const {connectionsDailyHelper} = require('../../helpers/connectionHelpers/ConnectionDailyHelper');
 const {dailyHelperFromConnections} = require('../../helpers/connectionHelpers/dailyHelper');
-
+const {getByMonthConnections} = require('../../helpers/connectionHelpers/getByMonthHelper');
 /**
  * 
  * @param {*} ConnectionName connectionName
@@ -83,11 +83,11 @@ module.exports.ConnectionsWeeklyKiloWattsDayNight =  function(ConnectionName,dyn
 };
 //monthly
 module.exports.ConnectionsMonthlyWattsDayNight =  function(ConnectionName,dynamoDBArray){
-    const helper =  dailyHelperFromConnections(ConnectionName,dynamoDBArray);
-    const days= helper[0].dayWattsProm;
-    const night = helper[0].NightWattsProm;
+    const helper =  getByMonthConnections(ConnectionName,dynamoDBArray);
+    const days= helper[0].detail.DayWatts;
+    const night = helper[0].detail.NightWatts;
     const dataset = [{
-        label: 'Consumo Diario en Watts',
+        label: 'Consumo Mensual en Watts',
         backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
         data:[days,night],
         hoverOffset: 4
@@ -104,11 +104,11 @@ module.exports.ConnectionsMonthlyWattsDayNight =  function(ConnectionName,dynamo
  * @returns Array<any>
  */
 module.exports.ConnectionsMonthlyKiloWattsDayNight =  function(ConnectionName,dynamoDBArray){
-    const helper =  dailyHelperFromConnections(ConnectionName,dynamoDBArray);
-    const days= helper[0].dayKhwProms;
-    const night = helper[0].NightsKhwProm;
+    const helper =  getByMonthConnections(ConnectionName,dynamoDBArray);
+    const days= helper[0].detail.DayKiloWatts;
+    const night = helper[0].detail.NightKiloWatts;
     const dataset = [{
-        label: 'Consumo Diario en KiloWatts',
+        label: 'Consumo Mensual en KiloWatts',
         backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
         data:[days,night],
         hoverOffset: 4
