@@ -1,6 +1,9 @@
 const {connectionsDailyHelper} = require('../../helpers/connectionHelpers/ConnectionDailyHelper');
 const {dailyHelperFromConnections} = require('../../helpers/connectionHelpers/dailyHelper');
 const {getByMonthConnections} = require('../../helpers/connectionHelpers/getByMonthHelper');
+const {
+  getMonthlyHelperConnection,
+} = require("../../helpers/connectionHelpers/monthlyHelper");
 /**
  * 
  * @param {*} ConnectionName connectionName
@@ -49,7 +52,7 @@ module.exports.ConnectionsWeeklyWattsDayNight =  function(ConnectionName,dynamoD
     const days= helper[0].dayWattsProms;
     const night = helper[0].nightWattsProms;
     const dataset = [{
-        label: 'Consumo Diario en Watts',
+        label: 'Consumo Semanal en Watts',
         backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
         data:[days,night],
         hoverOffset: 4
@@ -70,7 +73,7 @@ module.exports.ConnectionsWeeklyKiloWattsDayNight =  function(ConnectionName,dyn
     const days= helper[0].dayKhwProms;
     const night = helper[0].NightsKhwProm;
     const dataset = [{
-        label: 'Consumo Diario en KiloWatts',
+        label: 'Consumo Semanal en KiloWatts',
         backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
         data:[days,night],
         hoverOffset: 4
@@ -107,6 +110,45 @@ module.exports.ConnectionsMonthlyKiloWattsDayNight =  function(ConnectionName,dy
     const helper =  getByMonthConnections(ConnectionName,dynamoDBArray);
     const days= helper[0].detail.DayKiloWatts;
     const night = helper[0].detail.NightKiloWatts;
+    const dataset = [{
+        label: 'Consumo Mensual en KiloWatts',
+        backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
+        data:[days,night],
+        hoverOffset: 4
+    }];
+    return{
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
+        datasets:dataset
+    }
+
+};
+
+//yearly
+module.exports.ConnectionsYearlyWattsDayNight =  function(ConnectionName,dynamoDBArray){
+    const helper =  getMonthlyHelperConnection(ConnectionName,dynamoDBArray);
+    const days= helper[0].dayWattsProms || 0;
+    const night = helper[0].nightWattsProms || 0;
+    const dataset = [{
+        label: 'Consumo Mensual en Watts',
+        backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
+        data:[days,night],
+        hoverOffset: 4
+    }];
+    return{
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
+        datasets:dataset
+    }
+   
+};
+/**
+ *      
+ * @param {*} dynamoDBArray dynamoDBArray 
+ * @returns Array<any>
+ */
+module.exports.ConnectionsYearlyKiloWattsDayNight =  function(ConnectionName,dynamoDBArray){
+    const helper =  getMonthlyHelperConnection(ConnectionName,dynamoDBArray);
+    const days= helper[0].dayKhwProms || 0;
+    const night = helper[0].nightKhwProms || 0;
     const dataset = [{
         label: 'Consumo Mensual en KiloWatts',
         backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],

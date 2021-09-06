@@ -29,14 +29,14 @@ functions:
   dataArchive:
     handler: job/cron-job-handler.handler
     description: Lectura de archivos para s3
-    timeout: 30
+    timeout: 45
     events: 
      - schedule:
           description: "Archive the data generated yesterday to S3"
           rate: cron(0 2 * * ? *)
   hello:
     handler: handler.handler
-    timeout: 30
+    timeout: 45
     events:
       - http:
           path: /getAllDeviceReadings
@@ -52,7 +52,7 @@ functions:
           cors: true
   iot:
     handler: helpers/iot/iot-handler.handler
-    timeout: 30
+    timeout: 45
     events:
       - http:
           path: /iot
@@ -65,7 +65,7 @@ functions:
   sns:
     handler: job/automation-cron-handler.handler
     description: Automatizacion de consumo
-    timeout: 30
+    timeout: 45
     events:
        - schedule:
           description: "Archive the data generated yesterday to S3"
