@@ -406,7 +406,7 @@ module.exports.findDeviceToken = async function () {
         consistentRead: false,
         Limit: 1,
         ExpressionAttributeNames: {
-          "#user": "deviceId",
+          "#user": "userName",
         },
         ExpressionAttributeValues: {
           ":userName": deviceId,
@@ -429,7 +429,7 @@ module.exports.findDeviceToken = async function () {
     } else {
       return {
         success: true,
-        data: data.Items[0].token,
+        data: data.Items[0].token.value,
       };
     }
   } catch (error) {

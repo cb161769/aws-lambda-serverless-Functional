@@ -20371,18 +20371,24 @@ routes.post("/sendEmail", async (req, res) => {
     }
   });
 });
-routes.post("/verifyEmail", async (req, res) => {
-  const { templateName, subject, body, sendTo, source } = req.body;
-  const verifyEmail = email
-    .verifyEmailAddress({ EmailAddress: source })
-    .promise();
-  verifyEmail
-    .then((email) => {
-      res.status(200).send({ email: email });
-    })
-    .catch((error) => {
-      res.status(400).send({ error: error });
-    });
+routes.get("/verifytoken", async (req, res) => {
+  const deviceId = config.userNameEmail.email;
+  const data = await db
+      .query({
+        TableName: config.dynamoBB.userDevice.name,
+        KeyConditionExpression: "#user = :userName",
+        ScanIndexForward: false,
+        consistentRead: false,
+        limit:1,
+        ExpressionAttributeNames: {
+          "#user": "userName",
+        },
+        ExpressionAttributeValues: {
+          ":userName": deviceId,
+        },
+      })
+      .promise();
+      res.status(200).json({data :data.Items});
 });
 routes.post("/insertToken", async (req, res) => {
   const data = req.body;

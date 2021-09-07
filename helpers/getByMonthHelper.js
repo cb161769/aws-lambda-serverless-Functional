@@ -46,6 +46,18 @@ module.exports.findFirstDay = function(y,m){
     var epoch = new Date(epochDate * 1000);
     return epoch;
 }
+module.exports.isInCurrentMonth = function (check){
+    var now = new Date();
+    if (
+        (check.getFullYear() == now.getFullYear()) &&
+        (check.getMonth() == now.getMonth()) &&
+        (check.getDate() >= now.getDate())
+     ) {
+        return true;
+     }else{
+         return false;
+     }
+}
 /**
  * @description this Functions get all detail from a given Month
  * @function getByMonth()
@@ -558,8 +570,12 @@ module.exports.getByMonth =  function (params){
                 break;
                 
             }
-         
+            var isInCurrentMonth = module.exports.isInCurrentMonth(sortKeyEpoch);
+            if (isInCurrentMonth === false){
+                break;
+            }
             var isNight = module.exports.isNightTarif(sortKeyEpoch);
+
             for (let j = 0; j <= Object.keys(readings2).length;j++) {
                 if (isNight == true) {
                     const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
