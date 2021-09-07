@@ -3,8 +3,8 @@
  * @param {*} epochDate date 
  */
  module.exports.convertEpochDateToHumanDate = function(epochDate){
-    var epoch = new Date(epochDate * 1000);
-    return epoch;
+    return  new Date(epochDate * 1000);
+
 };
 /**
  * 

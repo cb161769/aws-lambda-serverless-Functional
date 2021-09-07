@@ -15,8 +15,8 @@ module.exports.DeviceWeeklyWattsDayNightHelper =  function (
   dynamoDBArray
 ) {
   const helper =  getMonthlyHelper(dynamoDBArray);
-  const days = helper[0].dayWattsProm;
-  const night = helper[0].NightWattsProm;
+  const days = helper[0].dayWattsProm || 0;
+  const night = helper[0].NightWattsProm || 0;
   const dataset = [
     {
       label: "Consumo semanal en Watts",
@@ -37,8 +37,8 @@ module.exports.DeviceWeeklyWattsDayNightHelper =  function (
  */
 module.exports.DeviceWeeklyKiloWattsDayNightHelper = function (dynamoDBArray) {
   const helper =  getMonthlyHelper(dynamoDBArray);
-  const days = helper[0].dayKhwProms;
-  const night = helper[0].NightsKhwProm;
+  const days = helper[0].dayKhwProms || 0;
+  const night = helper[0].NightsKhwProm || 0;
   const dataset = [
     {
       label: "Consumo semanal en KiloWatts",

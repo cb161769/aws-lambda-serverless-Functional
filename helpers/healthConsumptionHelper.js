@@ -190,7 +190,7 @@ module.exports.ConnectionsHealthYearlyHelper = function (
  
   } else if (parseInt(currentWeeks[0].totalWatts) == parseInt(nextWeek[0].totalWatts)) {
     const healthPromPercentage =
-      currentWeeks[0].totalWatts / nextWeek[0].totalWatts;
+      parseInt(currentWeeks[0].totalWatts) / parseInt(nextWeek[0].totalWatts);
     const message = "el consumo del año actual es igual al pasado, excelente!";
     return {
       health: healthPromPercentage,
@@ -200,7 +200,7 @@ module.exports.ConnectionsHealthYearlyHelper = function (
  
   } else if (parseInt(currentWeeks[0].totalWatts) < parseInt(nextWeek[0].totalWatts)) {
     const healthPromPercentage =
-      currentWeeks[0].totalWatts / nextWeek[0].totalWatts;
+      parseInt(currentWeeks[0].totalWatts) / parseInt(nextWeek[0].totalWatts);
     const message = "el consumo del año actual es menor al pasado, muy bien!";
     return {
       health: healthPromPercentage,
