@@ -1,4 +1,5 @@
 # AWS Lambda Serverless - LightArduino
+![Screenshot](infra.png)
 ## Vision general 
 EL Proyecto AWS Lambda Serverless - LightArduino, tiene como objetivo principal de ser el intermedio entre la aplicacion movil ligthArduino y el dispositivo prototipo arduino.
 ## Tecnologias Utilizadas
