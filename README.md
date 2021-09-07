@@ -47,3 +47,19 @@ const cloudwatchConfig = {
 * `handler.js`: es el archivo de inicio del proyecto
 * `job`: contiene todos los archivos relacionado a la configuracion de las tareas programadas.
 
+## Formulas Aplicadas para el calculo de Kilowatt/ Hora
+
+el calculo realizadado se efectua de la siguiente manera: 
+```javascript
+/**
+ * @author Claudio Raul Brito Mercedes
+ * @param {*} watts watts
+ * @param {*} seconds seconds
+ * @returns watts
+ */
+module.exports.calculateKwh = function (watts, seconds) {
+  const kwh = (watts * seconds * (1 / (60 * 60))) / 1000;
+  return Math.abs(kwh);
+};
+```
+en donde se realiza calculando los watts multiplicados por los segundos entre dividido en tre 3600;
