@@ -1,4 +1,5 @@
 # AWS Lambda Serverless - LightArduino
+![Screenshot](infra.png)
 ## Vision general 
 EL Proyecto AWS Lambda Serverless - LightArduino, tiene como objetivo principal de ser el intermedio entre la aplicacion movil ligthArduino y el dispositivo prototipo arduino.
 ## Tecnologias Utilizadas
@@ -45,3 +46,4 @@ const cloudwatchConfig = {
 * `tensorflow`: contiene todos los archivos relacionado a el modelo predictivo de tensorflow
 * `handler.js`: es el archivo de inicio del proyecto
 * `job`: contiene todos los archivos relacionado a la configuracion de las tareas programadas.
+
