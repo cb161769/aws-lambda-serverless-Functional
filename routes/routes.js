@@ -49,6 +49,8 @@ const {
   ConnectionsWeeklyKiloWattsDayNight,
   ConnectionsMonthlyWattsDayNight,
   ConnectionsMonthlyKiloWattsDayNight,
+  ConnectionsYearlyWattsDayNight,
+  ConnectionsYearlyKiloWattsDayNight
 } = require("../helpers/day-night/connectionsDayAndNightHelper");
 const {
   DeviceWeeklyWattsDayNightHelper,
@@ -587,27 +589,28 @@ routes.post("/configureDevice", async (req, res) => {
  * @route /getDeviceWeekly/:start/:end
  */
 routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
-  if (
-    parseInt(req.params.start) > parseInt(req.params.end) &&
-    parseInt(req.params.priorStart) > parseInt(req.params.priorEnd)
-  ) {
+  if (parseInt(req.params.start) >= parseInt(req.params.end)) {
     var startChanged = parseInt(req.params.end);
     var endChanged = parseInt(req.params.start);
     //TODO change to date :3
-    var priorStartChanged = parseInt(req.params.start);
-    var priorEndChanged = parseInt(req.params.end);
+    var priorStartChanged = parseInt(req.params.end);
+    var priorEndChanged = parseInt(req.params.start);
     const priorStartDate = new Date(priorStartChanged * 1000);
-    var pastDate = priorStartDate.getDate() - 7;
-    const setedStartDate = new Date();
-    setedStartDate.setDate(pastDate);
-    // seted final date
+    var pastWeekDay = new Date(
+      priorStartDate.getFullYear(),
+      priorStartDate.getMonth(),
+      priorStartDate.getDate() - 7
+    );
+    // steed final date
     const priorEndDate = new Date(priorEndChanged * 1000);
-    const setedFinalDate = new Date();
-    var pastFinalDate = priorEndDate.getDate() - 7;
-    setedFinalDate.setDate(pastFinalDate);
+    var pastWeekDay2 = new Date(
+      priorEndDate.getFullYear(),
+      priorEndDate.getMonth(),
+      priorEndDate.getDate() - 7
+    );
 
-    const priorEpochStart = setedStartDate / 1000;
-    const priorEpochEnd = setedFinalDate / 1000;
+    const priorEpochStart = Math.floor(pastWeekDay.getTime() / 1000);
+    const priorEpochEnd = Math.floor(pastWeekDay2.getTime() / 1000);
     const params = {
       TableName: config.dynamoBB.deviceReadings.name,
       KeyConditionExpression:
@@ -628,7 +631,7 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
       TableName: config.dynamoBB.deviceReadings.name,
       KeyConditionExpression:
         "#key = :key and #sortkey BETWEEN :start AND :end",
-      ScanIndexForward: false,
+      ScanIndexForward: true,
       ConsistentRead: false,
       ExpressionAttributeNames: {
         "#key": "primarykey",
@@ -640,15 +643,20 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
         ":end": priorEpochEnd,
       },
     };
-    const data = await db.query(params).promise();
-    const secondData = await db.query(secondParams).promise();
-    if (
-      data.ScannedCount == 0 ||
-      data == null ||
-      data == undefined ||
-      !data ||
-      data.Count == 0
-    ) {
+    try {
+      const data = await db.query(params).promise();
+      const secondData = await db.query(secondParams).promise();
+      const week = getWeeklyHelper(data.Items);
+      const health = healthWeeklyHelper(data.Items, secondData.Items);
+      const dayNight = DeviceWeeklyWattsDayNightHelper(data.Items);
+      const dayNightKilowatts = DeviceWeeklyKiloWattsDayNightHelper(data.Items);
+      res.status(200).json({
+        usage: week,
+        health: health,
+        dayNight: dayNight,
+        dayNightKilowatts: dayNightKilowatts,
+      });
+    } catch (error) {
       const ob = [
         {
           registros: 0,
@@ -684,10 +692,6 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
           hoverOffset: 4,
         },
       ];
-      const returnWatts = {
-        labels: ["Analisis de consumo de dia", "Analisis de consumo de noche"],
-        datasets: dataset,
-      };
       const Kwhdataset = [
         {
           label: "Consumo semanal en KiloWatts",
@@ -700,123 +704,33 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
         labels: ["Analisis de consumo de dia", "Analisis de consumo de noche"],
         datasets: Kwhdataset,
       };
-      logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
+      const returnWatts = {
+        labels: ["Analisis de consumo"],
+        datasets: dataset,
+      };
+      logger.log("error", `Requesting ${req.method} ${req.originalUrl}`, {
         tags: "http",
         additionalInfo: {
           operation: "getDeviceWeekly",
           body: req.body,
           headers: req.headers,
+          error: error,
           databaseOperation: "GET",
           table: config.dynamoBB.deviceReadings.name,
         },
       });
-      if (secondData.ScannedCount == 0) {
-        logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
-          tags: "http",
-          additionalInfo: {
-            operation: "getDeviceWeekly",
-            body: req.body,
-            headers: req.headers,
-            databaseOperation: "GET",
-            table: config.dynamoBB.deviceReadings.name,
-          },
-        });
-      }
       res.status(200).json({
         usage: ob,
         health: returnObject,
         dayNight: returnWatts,
         dayNightKilowatts: returnKHWatts,
+        text: "is error",
       });
-    } else {
-      try {
-        const week = await getWeeklyHelper(data.Items);
-        const health = await healthWeeklyHelper(data.Items, secondData.Items);
-        const dayNight = await DeviceWeeklyWattsDayNightHelper(data.Items);
-        const dayNightKilowatts = await DeviceWeeklyKiloWattsDayNightHelper(
-          data.Items
-        );
-        res.status(200).json({
-          usage: week,
-          health: health,
-          dayNight: dayNight,
-          dayNightKilowatts: dayNightKilowatts,
-        });
-      } catch (error) {
-        const ob = [
-          {
-            registros: 0,
-            lunes: { registros: 0, amperios: 0, watts: 0 },
-            martes: { registros: 0, amperios: 0, watts: 0 },
-            miercoles: { registros: 0, amperios: 0, watts: 0 },
-            jueves: { registros: 0, amperios: 0, watts: 0 },
-            viernes: { registros: 0, amperios: 0, watts: 0 },
-            sabado: { registros: 0, amperios: 0, watts: 0 },
-            domingo: { registros: 0, amperios: 0, watts: 0 },
-            totalWatts: 0,
-            totalAmps: 0,
-            diaConsulta: new Date().toISOString(),
-            promedioWattsSemanal: 0,
-            promedioAmpsSemanal: 0,
-            dayWattsProm: 0,
-            NightWattsProm: 0,
-            NightsKhwProm: 0,
-            dayKhwProms: 0,
-            Timestamp: [],
-          },
-        ];
-        const returnObject = {
-          health: 0,
-          message: "",
-          isError: false,
-        };
-        const dataset = [
-          {
-            label: "Consumo semanal en Watts",
-            backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
-            data: [0, 0],
-            hoverOffset: 4,
-          },
-        ];
-        const Kwhdataset = [
-          {
-            label: "Consumo semanal en KiloWatts",
-            backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
-            data: [0, 0],
-            hoverOffset: 4,
-          },
-        ];
-        const returnKHWatts = {
-          labels: [
-            "Analisis de consumo de dia",
-            "Analisis de consumo de noche",
-          ],
-          datasets: Kwhdataset,
-        };
-        const returnWatts = {
-          labels: ["Analisis de consumo"],
-          datasets: dataset,
-        };
-        logger.log("error", `Requesting ${req.method} ${req.originalUrl}`, {
-          tags: "http",
-          additionalInfo: {
-            operation: "getDeviceWeekly",
-            body: req.body,
-            headers: req.headers,
-            error: error,
-            databaseOperation: "GET",
-            table: config.dynamoBB.deviceReadings.name,
-          },
-        });
-        res.status(200).json({
-          usage: ob,
-          health: returnObject,
-          dayNight: returnWatts,
-          dayNightKilowatts: returnKHWatts,
-        });
-      }
     }
   } else {
+    var startDate = parseInt(req.params.start);
+    var endDate = parseInt(req.params.end);
+
     var priorStartChanged = parseInt(req.params.start);
     var priorEndChanged = parseInt(req.params.end);
     const priorStartDate = new Date(priorStartChanged * 1000);
@@ -837,15 +751,14 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
         "#key = :key and #sortkey BETWEEN :start AND :end",
       ScanIndexForward: false,
       ConsistentRead: false,
-      limit: 10,
       ExpressionAttributeNames: {
         "#key": "primarykey",
         "#sortkey": "sortkey",
       },
       ExpressionAttributeValues: {
         ":key": config.deviceName,
-        ":start": parseInt(req.params.start),
-        ":end": parseInt(req.params.end),
+        ":start": startDate,
+        ":end": endDate,
       },
     };
     const secondParams = {
@@ -867,18 +780,28 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
     };
     const data = await db.query(params).promise();
     const secondData = await db.query(secondParams).promise();
-    if (
-      (data.ScannedCount == 0 ||
-        data == null ||
-        data == undefined ||
-        !data ||
-        data.Count == 0) &&
-      (secondData.ScannedCount == 0 ||
-        secondData == null ||
-        secondData == undefined ||
-        !data ||
-        secondData.Count == 0)
-    ) {
+    try {
+      const week = getWeeklyHelper(data.Items, secondData.Items);
+      const health = healthWeeklyHelper(data.Items, secondData.Items);
+      const dayNight = DeviceWeeklyWattsDayNightHelper(data.Items);
+      const dayNightKilowatts = DeviceWeeklyKiloWattsDayNightHelper(data.Items);
+      res.status(200).json({
+        usage: week,
+        health: health,
+        dayNight: dayNight,
+        dayNightKilowatts: dayNightKilowatts,
+      });
+      logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
+        tags: "http",
+        additionalInfo: {
+          operation: "getDeviceWeekly",
+          body: req.body,
+          headers: req.headers,
+          databaseOperation: "GET",
+          table: config.dynamoBB.deviceReadings.name,
+        },
+      });
+    } catch (error) {
       const ob = [
         {
           registros: 0,
@@ -888,7 +811,11 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
           jueves: { registros: 0, amperios: 0, watts: 0 },
           viernes: { registros: 0, amperios: 0, watts: 0 },
           sabado: { registros: 0, amperios: 0, watts: 0 },
-          domingo: { registros: 0, amperios: 0, watts: 0 },
+          domingo: {
+            registros: 0,
+            amperios: sundayAmps || 0,
+            watts: sundayWatts || 0,
+          },
           totalWatts: 0,
           totalAmps: 0,
           diaConsulta: new Date().toISOString(),
@@ -901,6 +828,17 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
           Timestamp: [],
         },
       ];
+      logger.log("error", `Requesting ${req.method} ${req.originalUrl}`, {
+        tags: "http",
+        additionalInfo: {
+          operation: "getDeviceWeekly",
+          body: req.body,
+          headers: req.headers,
+          error: error,
+          databaseOperation: "GET",
+          table: config.dynamoBB.deviceReadings.name,
+        },
+      });
       const returnObject = {
         health: 0,
         message: "",
@@ -908,26 +846,24 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
       };
       const dataset = [
         {
-          label: "Consumo semanal en Watts",
+          labels: "Consumo semanal en Watts",
           backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
           data: [0, 0],
-          hoverOffset: 4,
         },
       ];
       const returnWatts = {
-        labels: ["Analisis de consumo de dia", "Analisis de consumo de noche"],
+        label: "Analisis de consumo",
         datasets: dataset,
       };
       const Kwhdataset = [
         {
-          label: "Consumo semanal en KiloWatts",
+          labels: "Consumo semanal en KiloWatts",
           backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
           data: [0, 0],
-          hoverOffset: 4,
         },
       ];
       const returnKHWatts = {
-        labels: ["Analisis de consumo de dia", "Analisis de consumo de noche"],
+        label: "Analisis de consumo",
         datasets: Kwhdataset,
       };
       res.status(200).json({
@@ -935,102 +871,8 @@ routes.get("/getDeviceWeekly/:start/:end", async (req, res) => {
         health: returnObject,
         dayNight: returnWatts,
         dayNightKilowatts: returnKHWatts,
+        text: "ha ocurrido un error",
       });
-    } else {
-      try {
-        const dayNight = await DeviceWeeklyWattsDayNightHelper(data.Items);
-        const dayNightKilowatts = await DeviceWeeklyKiloWattsDayNightHelper(
-          data.Items
-        );
-        res.status(200).json({
-          usage: week,
-          health: health,
-          dayNight: dayNight,
-          dayNightKilowatts: dayNightKilowatts,
-        });
-        logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
-          tags: "http",
-          additionalInfo: {
-            operation: "getDeviceWeekly",
-            body: req.body,
-            headers: req.headers,
-            databaseOperation: "GET",
-            table: config.dynamoBB.deviceReadings.name,
-          },
-        });
-        // res.status(200).json({ usage:week,health:health});
-      } catch (error) {
-        const ob = [
-          {
-            registros: 0,
-            lunes: { registros: 0, amperios: 0, watts: 0 },
-            martes: { registros: 0, amperios: 0, watts: 0 },
-            miercoles: { registros: 0, amperios: 0, watts: 0 },
-            jueves: { registros: 0, amperios: 0, watts: 0 },
-            viernes: { registros: 0, amperios: 0, watts: 0 },
-            sabado: { registros: 0, amperios: 0, watts: 0 },
-            domingo: {
-              registros: 0,
-              amperios: sundayAmps || 0,
-              watts: sundayWatts || 0,
-            },
-            totalWatts: 0,
-            totalAmps: 0,
-            diaConsulta: new Date().toISOString(),
-            promedioWattsSemanal: 0,
-            promedioAmpsSemanal: 0,
-            dayWattsProm: 0,
-            NightWattsProm: 0,
-            NightsKhwProm: 0,
-            dayKhwProms: 0,
-            Timestamp: [],
-          },
-        ];
-        logger.log("error", `Requesting ${req.method} ${req.originalUrl}`, {
-          tags: "http",
-          additionalInfo: {
-            operation: "getDeviceWeekly",
-            body: req.body,
-            headers: req.headers,
-            error: error,
-            databaseOperation: "GET",
-            table: config.dynamoBB.deviceReadings.name,
-          },
-        });
-        const returnObject = {
-          health: 0,
-          message: "",
-          isError: true,
-        };
-        const dataset = [
-          {
-            labels: "Consumo semanal en Watts",
-            backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
-            data: [0, 0],
-          },
-        ];
-        const returnWatts = {
-          label: "Analisis de consumo",
-          datasets: dataset,
-        };
-        const Kwhdataset = [
-          {
-            labels: "Consumo semanal en KiloWatts",
-            backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
-            data: [0, 0],
-          },
-        ];
-        const returnKHWatts = {
-          label: "Analisis de consumo",
-          datasets: Kwhdataset,
-        };
-        res.status(200).json({
-          usage: ob,
-          health: returnObject,
-          dayNight: returnWatts,
-          dayNightKilowatts: returnKHWatts,
-        });
-      }
     }
   }
 });
@@ -1100,538 +942,26 @@ routes.get("/getMonthly/:day", async (req, res) => {
   try {
     const data = await db.query(params).promise();
     const secondData = await db.query(secondParams).promise();
-    if (
-      (data.ScannedCount == 0 ||
-        data == null ||
-        data == undefined ||
-        !data ||
-        data.Count == 0) &&
-      (secondData.ScannedCount == 0 || secondData == undefined)
-    ) {
-      var MonthInformation = {
-        MonthName: "",
-        allMonthAmps: 0,
-        allMonthWatts: 0,
-        allMonthKiloWatts: 0,
-        MonthDetails: {
-          firstWeek: {
-            monday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            tuesday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            wednesday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            thursday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            friday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            saturday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            sunday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            totalKwhPerWeek: 0,
-            TimeStamp: [],
-          },
-          secondWeek: {
-            monday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            tuesday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            wednesday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            thursday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            friday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            saturday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            sunday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            totalKwhPerWeek: 0,
-            TimeStamp: [],
-          },
-          thirdweek: {
-            monday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            tuesday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            wednesday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            thursday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            friday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            saturday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            sunday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            totalKwhPerWeek: 0,
-            TimeStamp: [],
-          },
-          fourthweek: {
-            monday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            tuesday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            wednesday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            thursday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            friday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            saturday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            sunday: {
-              Night: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Day: {
-                count: 0,
-                kilowatts: 0,
-                watts: 0,
-                amps: 0,
-              },
-              Total: 0,
-            },
-            totalKwhPerWeek: 0,
-            TimeStamp: [],
-          },
-        },
-      };
-      const ob = [
-        {
-          detail: MonthInformation,
-          count: 0,
-          dayWattsProm: 0,
-          NightWattsProm: 0,
-          NightsKhwProm: 0,
-          dayKhwProms: 0,
-          Timestamp: [],
-        },
-      ];
-      const returnObject = {
-        health: 0,
-        message: "",
-        isError: true,
-      };
-      const dataset = [
-        {
-          labels: "Consumo Mensual en Watts",
-          backgroundColor: ["blue", "red"],
-          data: [0, 0],
-        },
-      ];
-      const returnWatts = {
-        label: "Analisis de consumo",
-        datasets: dataset,
-      };
-      const Kwhdataset = [
-        {
-          labels: "Consumo semanal en Watts",
-          backgroundColor: ["blue", "red"],
-          data: [0, 0],
-        },
-      ];
-      const returnKHWatts = {
-        label: "Analisis de consumo",
-        datasets: Kwhdataset,
-      };
-
-      logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
-        tags: "http",
-        additionalInfo: {
-          operation: "Connections/getAllDeviceReadingsByGivenMonth",
-          body: req.body,
-          headers: req.headers,
-          databaseOperation: "GET",
-          table: config.dynamoBB.deviceReadings.name,
-        },
-      });
-      res.status(200).json({
-        usage: ob,
-        health: returnObject,
-        message: "Not Found",
-        dayNight: returnWatts,
-        dayNightKilowatts: returnKHWatts,
-      });
-    } else {
-      const month = await getByMonth(data.Items);
-      const health = healthMonthlyHelper(data.Items, secondData.Items);
-      const dayNight = await DeviceMonthlyWattsDayNightHelper(data.Items);
-      const dayNightKilowatts = await DeviceMonthlyKiloWattsDayNightHelper(
-        data.Items
-      );
-      logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
-        tags: "http",
-        additionalInfo: {
-          operation: "Connections/getAllDeviceReadingsByGivenMonth",
-          body: req.body,
-          headers: req.headers,
-          databaseOperation: "GET",
-          table: config.dynamoBB.deviceReadings.name,
-        },
-      });
-      res.status(200).json({
-        usage: month,
-        health: health,
-        dayNight: dayNight,
-        dayNightKilowatts: dayNightKilowatts,
-      });
-    }
+    const month = getByMonth(data.Items);
+    const health = healthMonthlyHelper(data.Items, secondData.Items);
+    const dayNight = DeviceMonthlyWattsDayNightHelper(data.Items);
+    const dayNightKilowatts = DeviceMonthlyKiloWattsDayNightHelper(data.Items);
+    logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
+      tags: "http",
+      additionalInfo: {
+        operation: "Connections/getAllDeviceReadingsByGivenMonth",
+        body: req.body,
+        headers: req.headers,
+        databaseOperation: "GET",
+        table: config.dynamoBB.deviceReadings.name,
+      },
+    });
+    res.status(200).json({
+      usage: month,
+      health: health,
+      dayNight: dayNight,
+      dayNightKilowatts: dayNightKilowatts,
+    });
   } catch (error) {
     var MonthInformation = {
       MonthName: "",
@@ -7503,10 +6833,10 @@ routes.get("/getYearly/", async (req, res) => {
         dayNightKilowatts: returnKHWatts,
       });
     } else {
-      const response = await getMonthlyHelper(data.Items);
-      const health = await healthYearlyHelper(data.Items, data.Items);
-      const dayNight = await DeviceMonthlyYearlyWattsDayNight(data.Items);
-      const dayNightKilowatts = await DeviceMonthlyYearlyKiloWattsDayNight(
+      const response = getMonthlyHelper(data.Items);
+      const health = healthYearlyHelper(data.Items, data.Items);
+      const dayNight = DeviceMonthlyYearlyWattsDayNight(data.Items);
+      const dayNightKilowatts = DeviceMonthlyYearlyKiloWattsDayNight(
         data.Items
       );
       logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
@@ -12777,7 +12107,6 @@ routes.get("/getYearly/", async (req, res) => {
     var DecemberAmps = 0;
     var totalAmpsProm = 0;
     var TimesTamp = [];
-    var KiloWattsTimeStamp = [];
     const ob = [
       {
         registros: counter,
@@ -12890,12 +12219,10 @@ routes.get("/getDeviceYearly/allConfig", async (req, res) => {
   };
   const result = await db.scan(params).promise();
   try {
-    const data = await getMonthlyHelper(result.Items);
-    const health = await healthYearlyHelper(result.Items, result.Items);
-    const dayNight = await DeviceWeeklyWattsDayNightHelper(data.Items);
-    const dayNightKilowatts = await DeviceWeeklyKiloWattsDayNightHelper(
-      data.Items
-    );
+    const data = getMonthlyHelper(result.Items);
+    const health = healthYearlyHelper(result.Items, result.Items);
+    const dayNight = DeviceWeeklyWattsDayNightHelper(result.Items);
+    const dayNightKilowatts = DeviceWeeklyKiloWattsDayNightHelper(result.Items);
     logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
       tags: "http",
       additionalInfo: {
@@ -13050,53 +12377,6 @@ routes.get("/getDeviceRelaysTwo/:userName", async (req, res) => {
   };
   const data = await db.query(params).promise();
   res.status(200).json({ data: data });
-  // try {
-  //   if (!req.params.userName) {
-  //       return res.status(400).json({
-  //           status: 'error',
-  //           error: 'req body cannot be empty',
-  //         });
-  //   }
-  //   const result = await db.query(params).promise();
-  //   if (result.ScannedCount == 1 || result.Count == 1 || result.Items.length == 1) {
-  //     try {
-  //       var deviceName = result.Items[0].deviceName;
-  //       var time = Math.floor(Date.now()/1000)
-  //       var timeFloat = parseFloat(time);
-  //       const data = await db.query({
-  //         TableName: config.dynamoBB.deviceReadings.name,
-  //         KeyConditionExpression:'#key = :key and #sortkey <= :timestamp',
-  //         ScanIndexForward: false,
-  //         ConsistentRead: false,
-  //         Limit:1,
-  //         ExpressionAttributeNames:{
-  //           '#key': 'primarykey',
-  //           '#sortkey': 'sortkey',
-  //         },
-  //         ExpressionAttributeValues:{
-  //           ':key':deviceName,
-  //           ':timestamp': timeFloat
-  //         }
-
-  //       }).promise();
-
-  //       if (data.ScannedCount == 0 || data == null || data == undefined || !data || data.Count == 0){
-  //         res.status(404).json({notfound:'NO ROWS'});
-  //       }
-  //       logger.log('info', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceRelays',body: req.body, headers: req.headers,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name }});
-  //       res.status(200).json({data:data.Items[0].Relays});
-  //     } catch (error) {
-  //       logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceRelays',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name  }});
-  //       res.status(400).json({error: error});
-  //     }
-  //   }
-  //   else{
-  //     res.status(404).json({result:'not found'});
-  //   }
-  // } catch (error) {
-  //   logger.log('error', `Requesting ${req.method} ${req.originalUrl}`, {tags: 'http', additionalInfo: {operation: 'getDeviceRelays',body: req.body, headers: req.headers, error:error,databaseOperation:'GET', table: config.dynamoBB.deviceReadings.name  }});
-  //   res.status(400).json({error: error});
-  // }
 });
 routes.post("/addDeviceConfiguration", async (req, res) => {
   const data = req.body;
@@ -13311,7 +12591,7 @@ routes.get("/getAllDeviceReadingsByGivenDay/:day", async (req, res) => {
         countedRows: data.ScannedCount,
       });
     } else {
-      const day = await dailyHelper(data.Items);
+      const day = dailyHelper(data.Items);
       res.status(200).json({ usage: day, Items: data.Items });
     }
   } else {
@@ -13378,7 +12658,7 @@ routes.get("/getAllDeviceReadingsByGivenDay/:day", async (req, res) => {
 
       res.status(200).json({ usage: ob, message: "Not Found" });
     } else {
-      const day = await dailyHelper(data.Items);
+      const day = dailyHelper(data.Items);
       logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
         tags: "http",
         additionalInfo: {
@@ -13892,7 +13172,7 @@ routes.get("/getAllDeviceReadingsByGivenMonth/:day", async (req, res) => {
 
     res.status(200).json({ usage: ob, message: "Not Found" });
   } else {
-    const month = await getByMonth(data.Items);
+    const month = getByMonth(data.Items);
     logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
       tags: "http",
       additionalInfo: {
@@ -14413,8 +13693,8 @@ routes.get(
         .status(200)
         .json({ usage: ob, message: "Not Found", dataFound: data });
     } else {
-      const month = await DeviceGraphHelper(data.Items);
-      const elapsedT = await elapsedTime(completedDay, secondCompletedDay);
+      const month = DeviceGraphHelper(data.Items);
+      const elapsedT = elapsedTime(completedDay, secondCompletedDay);
       logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
         tags: "http",
         additionalInfo: {
@@ -14507,8 +13787,8 @@ routes.get(
 
       res.status(200).json({ usage: ob });
     } else {
-      const usage = await ConnectionGrahphHelper(ConnectionName, data.Items);
-      const elapsedT = await elapsedTime(completedDay, secondCompletedDay);
+      const usage = ConnectionGrahphHelper(ConnectionName, data.Items);
+      const elapsedT = elapsedTime(completedDay, secondCompletedDay);
       logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
         tags: "http",
         additionalInfo: {
@@ -14525,10 +13805,10 @@ routes.get(
   }
 );
 
-routes.get(
-  "/Connections/getConnectionReadingsCurrentWeek/:start/:end/:ConnectionName",
+routes.post(
+  "/Connections/getConnectionReadingsCurrentWeek",
   async (req, res) => {
-    var ConnectionName = req.params.ConnectionName;
+    var ConnectionName = req.body.ConnectionName;
     if (
       ConnectionName == "" ||
       ConnectionName == null ||
@@ -14536,7 +13816,7 @@ routes.get(
     ) {
       res.status(404).json({ error: "The name is incorrect" });
     }
-    if (parseInt(req.params.start) > parseInt(req.params.end)) {
+    if (parseInt(req.body.start) > parseInt(req.body.end)) {
       var startChanged = parseInt(req.params.end);
       var endChanged = parseInt(req.params.start);
       var priorStartChanged = parseInt(req.params.end);
@@ -14633,11 +13913,8 @@ routes.get(
         });
       } else {
         try {
-          const week = await dailyHelperFromConnections(
-            ConnectionName,
-            data.Items
-          );
-          const health = await ConnectionsHealthWeeklyHelper(
+          const week = dailyHelperFromConnections(ConnectionName, data.Items);
+          const health = ConnectionsHealthWeeklyHelper(
             ConnectionName,
             data.Items,
             secondData.Items
@@ -14699,14 +13976,14 @@ routes.get(
         },
         ExpressionAttributeValues: {
           ":key": config.deviceName,
-          ":start": parseInt(req.params.start),
-          ":end": parseInt(req.params.end),
+          ":start": parseInt(req.body.start),
+          ":end": parseInt(req.body.end),
         },
       };
-      var startChanged = parseInt(req.params.end);
-      var endChanged = parseInt(req.params.start);
-      var priorStartChanged = parseInt(req.params.end);
-      var priorEndChanged = parseInt(req.params.start);
+      var startChanged = parseInt(req.body.end);
+      var endChanged = parseInt(req.body.start);
+      var priorStartChanged = parseInt(req.body.end);
+      var priorEndChanged = parseInt(req.body.start);
       const priorStartDate = new Date(priorStartChanged * 1000);
       var pastDate = priorStartDate.getDate() - 7;
       const setedStartDate = new Date();
@@ -14737,14 +14014,38 @@ routes.get(
       };
       const data = await db.query(params).promise();
       const secondData = await db.query(secondParams).promise();
-      if (
-        (data.ScannedCount == 0 ||
-          data == null ||
-          data == undefined ||
-          !data ||
-          data.Count == 0) &&
-        (secondData.ScannedCount == 0 || secondData == undefined)
-      ) {
+      try {
+        const week = dailyHelperFromConnections(ConnectionName, data.Items);
+        const health = ConnectionsHealthWeeklyHelper(
+          ConnectionName,
+          data.Items,
+          secondData.Items
+        );
+        const dayNightKilowatts = ConnectionsWeeklyKiloWattsDayNight(
+          ConnectionName,
+          data.Items
+        );
+        const dayNight = ConnectionsWeeklyWattsDayNight(
+          ConnectionName,
+          data.Items
+        );
+        logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
+          tags: "http",
+          additionalInfo: {
+            operation: "Connections/getConnectionReadingsCurrentWeek",
+            body: req.body,
+            headers: req.headers,
+            databaseOperation: "GET",
+            table: config.dynamoBB.deviceReadings.name,
+          },
+        });
+        res.status(200).json({
+          usage: week,
+          health: health,
+          dayNight: dayNight,
+          dayNightKilowatts: dayNightKilowatts,
+        });
+      } catch (error) {
         const ob = [
           {
             registros: 0,
@@ -14763,7 +14064,6 @@ routes.get(
             promedioWattsSemanal: 0,
             promedioAmpsSemanal: 0,
             promedioKwhSemanal: 0,
-            usage: data.Items,
           },
         ];
         const returnObject = {
@@ -14771,79 +14071,55 @@ routes.get(
           message: "",
           isError: true,
         };
-        res.status(200).json({ usage: ob, health: returnObject });
-      } else {
-        try {
-          const week = await dailyHelperFromConnections(
-            ConnectionName,
-            data.Items
-          );
-          const health = await ConnectionsHealthWeeklyHelper(
-            ConnectionName,
-            data.Items,
-            secondData.Items
-          );
-          logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
-            tags: "http",
-            additionalInfo: {
-              operation: "Connections/getConnectionReadingsCurrentWeek",
-              body: req.body,
-              headers: req.headers,
-              databaseOperation: "GET",
-              table: config.dynamoBB.deviceReadings.name,
-            },
-          });
-
-          res.status(200).json({ usage: week, health: health });
-        } catch (error) {
-          const ob = [
-            {
-              registros: 0,
-              Connextion: ConnectionName,
-              Timestamp: [],
-              lunes: { registros: 0, amperios: 0, watts: 0, Timestamp: [] },
-              martes: { registros: 0, amperios: 0, watts: 0, Timestamp: [] },
-              miercoles: { registros: 0, amperios: 0, watts: 0, Timestamp: [] },
-              jueves: { registros: 0, amperios: 0, watts: 0, Timestamp: [] },
-              viernes: { registros: 0, amperios: 0, watts: 0, Timestamp: [] },
-              sabado: { registros: 0, amperios: 0, watts: 0, Timestamp: [] },
-              domingo: { registros: 0, amperios: 0, watts: 0, Timestamp: [] },
-              totalWatts: 0,
-              totalAmps: 0,
-              diaConsulta: new Date().toISOString(),
-              promedioWattsSemanal: 0,
-              promedioAmpsSemanal: 0,
-              promedioKwhSemanal: 0,
-            },
-          ];
-          const returnObject = {
-            health: 0,
-            message: "",
-            isError: true,
-          };
-          logger.log("error", `Requesting ${req.method} ${req.originalUrl}`, {
-            tags: "http",
-            additionalInfo: {
-              operation: "Connections/getConnectionReadingsCurrentWeek",
-              body: req.body,
-              headers: req.headers,
-              error: error,
-              databaseOperation: "GET",
-              table: config.dynamoBB.deviceReadings.name,
-            },
-          });
-          res.status(200).json({ usage: ob, health: returnObject });
-        }
+        const dataset = [
+          {
+            labels: "Consumo semanal en Watts",
+            backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
+            data: [0, 0],
+          },
+        ];
+        const returnWatts = {
+          label: "Analisis de consumo",
+          datasets: dataset,
+        };
+        const Kwhdataset = [
+          {
+            labels: "Consumo semanal en KiloWatts",
+            backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
+            data: [0, 0],
+          },
+        ];
+        const returnKHWatts = {
+          label: "Analisis de consumo",
+          datasets: Kwhdataset,
+        };
+        logger.log("error", `Requesting ${req.method} ${req.originalUrl}`, {
+          tags: "http",
+          additionalInfo: {
+            operation: "Connections/getConnectionReadingsCurrentWeek",
+            body: req.body,
+            headers: req.headers,
+            error: error,
+            databaseOperation: "GET",
+            table: config.dynamoBB.deviceReadings.name,
+          },
+        });
+        res.status(200).json({
+          usage: ob,
+          health: returnObject,
+          dayNight: returnWatts,
+          dayNightKilowatts: returnKHWatts,
+        });
       }
     }
   }
 );
 
-routes.get(
-  "/Connections/getAllDeviceReadingsByGivenMonth/:day/:ConnectionName",
+routes.post(
+  "/Connections/getAllDeviceReadingsByGivenMonth",
   async (req, res) => {
-    let day = parseInt(req.params.day);
-    var ConnectionName = req.params.ConnectionName;
+    let day = parseInt(req.body.day);
+    var ConnectionName = req.body.ConnectionName;
     let completedDay = new Date(day * 1000);
     let firstDayOfMonth = findFirstDay(
       completedDay.getFullYear(),
@@ -14904,14 +14180,30 @@ routes.get(
     };
     const data = await db.query(params).promise();
     const secondData = await db.query(secondParams).promise();
-    if (
-      (data.ScannedCount == 0 ||
-        data == null ||
-        data == undefined ||
-        !data ||
-        data.Count == 0) &&
-      (secondData.ScannedCount == 0 || secondData == undefined)
-    ) {
+    const month = getByMonthConnections(ConnectionName, data.Items);
+    const health = ConnectionsHealthMonthlyHelper(
+      ConnectionName,
+      data.Items,
+      secondData.Items
+    );
+    const dayNightKwh = ConnectionsMonthlyKiloWattsDayNight(
+      ConnectionName,
+      data.Items
+    );
+    const dayNight = ConnectionsMonthlyWattsDayNight(
+      ConnectionName,
+      data.Items
+    );
+    try {
+      res
+        .status(200)
+        .json({
+          usage: month,
+          health: health,
+          dayNight: dayNight,
+          dayNightKilowatts: dayNightKwh,
+        });
+    } catch (error) {
       var MonthInformation = {
         MonthName: "",
         allMonthAmps: 0,
@@ -15025,6 +14317,8 @@ routes.get(
               Total: 0,
             },
             totalKwhPerWeek: 0,
+            totalAmpsPerWeek: 0,
+            totalWattsPerWeek: 0,
             TimeStamp: [],
           },
           secondWeek: {
@@ -15134,6 +14428,8 @@ routes.get(
               Total: 0,
             },
             totalKwhPerWeek: 0,
+            totalAmpsPerWeek: 0,
+            totalWattsPerWeek: 0,
             TimeStamp: [],
           },
           thirdweek: {
@@ -15243,6 +14539,8 @@ routes.get(
               Total: 0,
             },
             totalKwhPerWeek: 0,
+            totalAmpsPerWeek: 0,
+            totalWattsPerWeek: 0,
             TimeStamp: [],
           },
           fourthweek: {
@@ -15352,67 +14650,74 @@ routes.get(
               Total: 0,
             },
             totalKwhPerWeek: 0,
+            totalAmpsPerWeek: 0,
+            totalWattsPerWeek: 0,
             TimeStamp: [],
           },
+          TimeStamp: [],
+          kwhTimesTamp: [],
+          ampsTimestamp: [],
         },
       };
+      const dataset = [
+        {
+          labels: "Consumo Mensual en Watts",
+          backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
+          data: [0, 0],
+        },
+      ];
+      const returnWatts = {
+        label: "Analisis de consumo",
+        datasets: dataset,
+      };
+      const Kwhdataset = [
+        {
+          labels: "Consumo Mensual en KiloWatts",
+          backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
+          data: [0, 0],
+        },
+      ];
+      const returnKHWatts = {
+        label: "Analisis de consumo",
+        datasets: Kwhdataset,
+      };
+      const ob = [{ detail: MonthInformation, count: 0 }];
       const returnObject = {
         health: 0,
-        message: "",
+        message: "no hay diferencias en el consumo",
         isError: true,
       };
-      const ob = [{ Detail: MonthInformation }];
-      logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
-        tags: "http",
-        additionalInfo: {
-          operation: "Connections/getAllDeviceReadingsByGivenMonth",
-          body: req.body,
-          headers: req.headers,
-          databaseOperation: "GET",
-          table: config.dynamoBB.deviceReadings.name,
-        },
+      res.status(200).json({
+        usage: ob,
+        health: returnObject,
+        dayNight: returnWatts,
+        dayNightKilowatts: returnKHWatts,
       });
-      res
-        .status(200)
-        .json({ usage: ob, health: returnObject, message: "Not Found" });
-    } else {
-      const month = await getByMonthConnections(ConnectionName, data.Items);
-      const health = await ConnectionsHealthYearlyHelper(
-        ConnectionName,
-        data.Items,
-        secondData.Items
-      );
-      logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
-        tags: "http",
-        additionalInfo: {
-          operation: "Connections/getAllDeviceReadingsByGivenMonth",
-          body: req.body,
-          headers: req.headers,
-          databaseOperation: "GET",
-          table: config.dynamoBB.deviceReadings.name,
-        },
-      });
-      res.status(200).json({ usage: month, health: health });
     }
   }
 );
 
-routes.get(
-  "/Connections/GetConnectionYearly/allConfig/:ConnectionName",
+routes.post(
+  "/Connections/GetConnectionYearly/allConfig",
   async (req, res) => {
-    let connectionName = req.params.ConnectionName;
+    let connectionName = req.body.ConnectionName;
 
     const params = {
       TableName: config.dynamoBB.deviceReadings.name,
     };
     try {
       const result = await db.scan(params).promise();
-      const health = await ConnectionsHealthMonthlyHelper(
-        ConnectionName,
-        data.Items,
-        data.Items
+      const health = ConnectionsHealthYearlyHelper(
+        connectionName,
+        result.Items,
+        result.Items
       );
-      const data = await getMonthlyHelperConnection(
+      const data = getMonthlyHelperConnection(connectionName, result.Items);
+      const dayNightKilowatts = ConnectionsWeeklyKiloWattsDayNight(
+        connectionName,
+        result.Items
+      );
+      const dayNight = ConnectionsWeeklyWattsDayNight(
         connectionName,
         result.Items
       );
@@ -15427,7 +14732,12 @@ routes.get(
         },
       });
 
-      res.status(200).json({ usage: data, health: health });
+      res.status(200).json({
+        usage: data,
+        health: health,
+        dayNight: dayNight,
+        dayNightKilowatts: dayNightKilowatts,
+      });
     } catch (error) {
       logger.log("error", `Requesting ${req.method} ${req.originalUrl}`, {
         tags: "http",
@@ -15440,7 +14750,5397 @@ routes.get(
           table: config.dynamoBB.deviceReadings.name,
         },
       });
-      res.status(400).json({ error: error });
+      let counter = 0;
+      var totalWatts = 0;
+      var januaryWatts = 0;
+      var januaryWeekDays = {
+        firstWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        secondWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        thirdweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        fourthweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+      };
+      var februaryWeekDays = {
+        firstWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        secondWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        thirdweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        fourthweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+      };
+      //March
+      var MarchWeekDays = {
+        firstWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        secondWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        thirdweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        fourthweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+      }; // April
+      var aprilWeekDays = {
+        firstWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        secondWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        thirdweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        fourthweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+      };
+      //May
+      var MayWeekDays = {
+        firstWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        secondWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        thirdweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        fourthweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+      };
+      //June
+      var JuneWeekDays = {
+        firstWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        secondWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        thirdweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        fourthweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+      };
+      // July
+      var JulyWeekDays = {
+        firstWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        secondWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        thirdweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        fourthweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+      };
+      // August
+      var AugustWeekDays = {
+        firstWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        secondWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        thirdweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        fourthweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+      };
+      //September
+      var SeptemberWeekDays = {
+        firstWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        secondWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        thirdweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        fourthweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+      };
+      //October
+      var OctoberWeekDays = {
+        firstWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        secondWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        thirdweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        fourthweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+      };
+      //November
+      var NovemberWeekDays = {
+        firstWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        secondWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        thirdweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        fourthweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+      };
+    
+      //December
+      var DecemberWeekDays = {
+        firstWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        secondWeek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        thirdweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+        fourthweek: {
+          monday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          tuesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          wednesday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          thursday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          friday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          saturday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          sunday: {
+            Night: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Day: {
+              count: 0,
+              kilowatts: 0,
+              watts: 0,
+              amps: 0,
+            },
+            Total: 0,
+          },
+          totalKwhPerWeek: 0,
+        },
+      };
+      var FebruaryWatts = 0;
+      var MarchWatts = 0;
+      var AprilWatts = 0;
+      var MayWatts = 0;
+      var JuneWatts = 0;
+      var JulyWatts = 0;
+      var AugustWatts = 0;
+      var SeptemberWatts = 0;
+      var OctoberWatts = 0;
+      var NovemberWatts = 0;
+      var DecemberWatts = 0;
+      var totalWAttsProm = 0;
+      // Amps
+      var totalAmps = 0;
+      var januaryAmps = 0;
+      var FebruaryAmps = 0;
+      var MarchAmps = 0;
+      var AprilAmps = 0;
+      var MayAmps = 0;
+      var JuneAmps = 0;
+      var JulyAmps = 0;
+      var AugustAmps = 0;
+      var SeptemberAmps = 0;
+      var OctoberAmps = 0;
+      var NovemberAmps = 0;
+      var DecemberAmps = 0;
+      var totalAmpsProm = 0;
+      var TimesTamp = [];
+      var KiloWattsTimeStamp = [];
+      var AmpsTimeStamp = [];
+      var totalKwh = 0;
+      var dayWattsProms = 0;
+      var dayKhwProms = 0;
+      var nightWattsProms = 0;
+      var nightKhwProms = 0;
+      var firstQuater = {
+        watts: 0,
+        amps: 0,
+        kilowatts: 0,
+      };
+      var secondQuater = {
+        watts: 0,
+        amps: 0,
+        kilowatts: 0,
+      };
+      var thirdQuater = {
+        watts: 0,
+        amps: 0,
+        kilowatts: 0,
+      };
+      var FourthQuater = {
+        watts: 0,
+        amps: 0,
+        kilowatts: 0,
+      };
+      const ob = [
+        {
+          registros: counter,
+          year: new Date().getFullYear(),
+          totalAmpsProm: totalAmpsProm,
+          totalWattsProm: totalWAttsProm,
+          KiloWattsTimeStamp: KiloWattsTimeStamp,
+          AmpsTimeStamp: AmpsTimeStamp,
+          timeStamp: TimesTamp,
+          totalAmps: totalAmps.toPrecision(3),
+          totalWatts: totalWatts.toPrecision(3),
+          totalKwh: totalKwh.toPrecision(3),
+          firstQuater: firstQuater,
+          secondQuater: secondQuater,
+          thirdQuater: thirdQuater,
+          FourthQuater: FourthQuater,
+          dayWattsProms:dayWattsProms,
+          dayKhwProms:dayKhwProms,
+          nightWattsProms:nightWattsProms,
+          nightKhwProms:nightKhwProms,
+          january: {
+            amps: januaryAmps,
+            watts: januaryWatts,
+            januaryDetail: [januaryWeekDays],
+          },
+          February: {
+            amps: FebruaryAmps,
+            watts: FebruaryWatts,
+            februaryDetails: [februaryWeekDays],
+          },
+          march: {
+            amps: MarchAmps,
+            watts: MarchWatts,
+            marchDetails: [MarchWeekDays],
+          },
+          april: {
+            amps: AprilAmps,
+            watts: AprilWatts,
+            aprilDetails: [aprilWeekDays],
+          },
+          may: {
+            amps: MayAmps,
+            watts: MayWatts,
+            mayDetails: [MayWeekDays],
+          },
+          june: {
+            amps: JuneAmps,
+            watts: JuneWatts,
+            juneDetails: [JuneWeekDays],
+          },
+          july: {
+            amps: JulyAmps,
+            watts: JulyWatts,
+            julyDetails: [JulyWeekDays],
+          },
+          augustus: {
+            amps: AugustAmps,
+            watts: AugustWatts,
+            augustDetails: [AugustWeekDays],
+          },
+          September: {
+            amps: SeptemberAmps,
+            watts: SeptemberWatts,
+            SeptemberDetails: [SeptemberWeekDays],
+          },
+          october: {
+            amps: OctoberAmps,
+            watts: OctoberWatts,
+            OctoberDetails: [OctoberWeekDays],
+          },
+          november: {
+            amps: NovemberAmps,
+            watts: NovemberWatts,
+            NovemberDetails: [NovemberWeekDays],
+          },
+          december: {
+            amps: DecemberAmps,
+            watts: DecemberWatts,
+            DecemberDetails: [DecemberWeekDays],
+          },
+        },
+      ];
+      const returnObject = {
+        health: 0,
+        message: "el consumo no ha tenido cambios ultimamente",
+        isError: true,
+      };
+      const dataset = [
+        {
+          labels: "Consumo anual en Watts",
+          backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
+          data: [0, 0],
+        },
+      ];
+      const returnWatts = {
+        label: "Analisis de consumo",
+        datasets: dataset,
+      };
+      const Kwhdataset = [
+        {
+          labels: "Consumo anual en KiloWatts",
+          backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
+          data: [0, 0],
+        },
+      ];
+      const returnKHWatts = {
+        label: "Analisis de consumo",
+        datasets: Kwhdataset,
+      };
+      res.status(200).json({
+        usage: ob,
+        health: returnObject,
+        dayNight: returnWatts,
+        dayNightKilowatts: returnKHWatts,
+      });
     }
   }
 );
@@ -15518,7 +20218,7 @@ routes.get(
         });
       }
     } else {
-      const day = await connectionsDailyHelper(connectionName, data.Items);
+      const day = connectionsDailyHelper(connectionName, data.Items);
       logger.log("info", `Requesting ${req.method} ${req.originalUrl}`, {
         tags: "http",
         additionalInfo: {
@@ -15653,15 +20353,8 @@ routes.post("/createTemplate", async (req, res) => {
   });
 });
 routes.post("/sendEmail", async (req, res) => {
-  const { templateName, subject, body, sendTo, source } = req.body;
+  const { templateName, sendTo, source } = req.body;
 
-  // var params = {
-  //   Template: {
-  //     TemplateName: templateName,
-  //     HtmlPart: body,
-  //     SubjectPart: subject,
-  //   }
-  // };
   const params2 = {
     Template: templateName,
     Destination: {
@@ -15698,7 +20391,7 @@ routes.post("/insertToken", async (req, res) => {
   const params = {
     TableName: config.dynamoBB.userDevice.name,
     Item: {
-      userName: 'claudioraulmercedes@gmail.com',
+      userName: "claudioraulmercedes@gmail.com",
       token: data.token,
       registeredAt: createdDate.toString(),
     },
@@ -15715,7 +20408,9 @@ routes.post("/insertToken", async (req, res) => {
         table: config.dynamoBB.userDevice.name,
       },
     });
-    res.status(201).json({status:true,message: "token insertado correctamente"});
+    res
+      .status(201)
+      .json({ status: true, message: "token insertado correctamente" });
   } catch (error) {
     logger.log("error", `Requesting ${req.method} ${req.originalUrl}`, {
       tags: "http",
@@ -15728,7 +20423,7 @@ routes.post("/insertToken", async (req, res) => {
         table: config.dynamoBB.deviceTable.name,
       },
     });
-    res.status(201).json({status:false,error: error});
+    res.status(201).json({ status: false, error: error });
   }
 });
 

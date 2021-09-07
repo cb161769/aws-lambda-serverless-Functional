@@ -25,7 +25,7 @@
 	return false;
 };
 
-module.exports.connectionsDailyHelper = async function(connectionName,params){
+module.exports.connectionsDailyHelper =  function(connectionName,params){
     const moment = require('moment');
     var dayInformation = {
         AlldayName:'',

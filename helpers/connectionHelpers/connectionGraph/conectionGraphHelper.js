@@ -70,7 +70,7 @@ module.exports.elapsedTime = function(date1,date2){
  * @function getMonthlyHelper
  * @author Claudio Raul Brito Mercedes
  */
- module.exports.DeviceGraphHelper = async function (params){
+ module.exports.DeviceGraphHelper =  function (params){
     const moment = require('moment');
     let counter = 0;
     let CountAtNight =0;
@@ -5447,13 +5447,13 @@ module.exports.elapsedTime = function(date1,date2){
             const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
             // to do
 
-            const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/590;
+            const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
             kwhTimeStamps.push({t:sortKeyEpoch.toISOString(),x:kwh * (-1)});
             ampsTimeStamp.push({t:sortKeyEpoch.toISOString(),x:readings2.device_amps});
             wattsTimeStamp.push({t:sortKeyEpoch.toISOString(),x:readings2.device_watts});
             if (isNight == true) {
                 const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
-                const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/590;
+                const kwh = (readings2.device_watts * seconds * (1/(60*60)) )/1000;
                 NightKwhTimeStamps.push({t:sortKeyEpoch.toISOString,x:kwh * (-1)});
                 NightAmpsTimeStamp.push({t:sortKeyEpoch.toISOString,x:readings2.device_amps});
                 NightWattsTimeStamp.push({t:sortKeyEpoch.toISOString,x:readings2.device_watts});
@@ -9732,7 +9732,7 @@ module.exports.elapsedTime = function(date1,date2){
 
                 break;
             }
-            if (moth == 6) {
+            if (month == 6) {
                 JulyAmps += readings2.device_amps;
                 JulyWatts += readings2.device_watts;
                 if (weekMonth ==1) {
@@ -14051,7 +14051,7 @@ module.exports.elapsedTime = function(date1,date2){
     const ob = [
         {registros:counter,
             year:LocalDate.year(),
-            ConnectionName:config.deviceName,
+            ConnectionName: '',
             totalAmpsProm:totalAmpsProm,
             totalWattsProm:totalWAttsProm,
             kwhTimeStamps:kwhTimeStamps,
@@ -14188,7 +14188,7 @@ module.exports.elapsedTime = function(date1,date2){
     return ob;
      
       
-}
+};
 /**
  * @function getMaxConsumption()
  * @author Claudio Raul Brito Mercedes
@@ -14247,7 +14247,7 @@ module.exports.getMinConsumption = function(arr, prop) {
  * @author Claudio Raul Brito Mercedes
  * @function ConnectionGrahphHelper
  */
-module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
+module.exports.ConnectionGrahphHelper =  function (ConnectionName,Params){
     const moment = require('moment');
     let counter = 0;
     var totalWatts = 0;
@@ -19628,7 +19628,7 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
             //january
             const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
             // to do
-            const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/590;
+            const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
             wattsTimeStamp.push({t:sortKeyEpoch.toISOString(),y:filteredReadings[0].CT1_Watts});
             KiloWattsTimeStamp.push({t:sortKeyEpoch.toISOString(),y:kwh});
             AmpsTimeStamp.push({t:sortKeyEpoch.toISOString(),y:filteredReadings[0].CT1_Amps});
@@ -28204,7 +28204,7 @@ module.exports.ConnectionGrahphHelper = async function (ConnectionName,Params){
         }
         const seconds = (secondSortKeyEpoch.getTime() - sortKeyEpoch.getTime()) / 1000;
         // to do
-        const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/590;
+        const kwh = (filteredReadings[0].CT1_Watts * seconds * (1/(60*60)) )/1000;
         counter++;
         totalAmps += filteredReadings[0].CT1_Amps;
         totalWatts += filteredReadings[0].CT1_Watts;

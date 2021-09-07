@@ -1,14 +1,17 @@
 const {connectionsDailyHelper} = require('../../helpers/connectionHelpers/ConnectionDailyHelper');
 const {dailyHelperFromConnections} = require('../../helpers/connectionHelpers/dailyHelper');
-
+const {getByMonthConnections} = require('../../helpers/connectionHelpers/getByMonthHelper');
+const {
+  getMonthlyHelperConnection,
+} = require("../../helpers/connectionHelpers/monthlyHelper");
 /**
  * 
  * @param {*} ConnectionName connectionName
  * @param {*} dynamoDBArray data to be processed
  * @returns 
  */
-module.exports.ConnectionsDailyWattsDayNight = async function(ConnectionName,dynamoDBArray){
-    const helper = await connectionsDailyHelper(ConnectionName,dynamoDBArray);
+module.exports.ConnectionsDailyWattsDayNight =  function(ConnectionName,dynamoDBArray){
+    const helper =  connectionsDailyHelper(ConnectionName,dynamoDBArray);
     const days= helper[0].dayWattsProm;
     const night = helper[0].NightWattsProm;
     const dataset = [{
@@ -17,105 +20,144 @@ module.exports.ConnectionsDailyWattsDayNight = async function(ConnectionName,dyn
         data:[days,night],
         hoverOffset: 4
     }];
-    const returnObject ={
+    return{
         labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
-    return returnObject;
+   
 };
 /**
  * @function ConnectionsWeekKiloWattsDayNight     
  * @param {*} dynamoDBArray dynamoDBArray 
  * @returns Array<any>
  */
-module.exports.ConnectionsWeekKiloWattsDayNight = async function(ConnectionName,dynamoDBArray){
-    const helper = await dailyHelperFromConnections(ConnectionName,dynamoDBArray);
+module.exports.ConnectionsWeekKiloWattsDayNight =  function(ConnectionName,dynamoDBArray){
+    const helper =  dailyHelperFromConnections(ConnectionName,dynamoDBArray);
     const days= helper[0].dayKhwProms;
-    const night = helper[0].NightsKhwProm;
+    const night = helper[0].nightKhwProms;
     const dataset = [{
         label: 'Consumo Diario en KiloWatts',
         backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
         data:[days,night],
         hoverOffset: 4
     }];
-    const returnObject ={
+    return{
         labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
-    return returnObject;
+
 };
-module.exports.ConnectionsWeeklyWattsDayNight = async function(ConnectionName,dynamoDBArray){
-    const helper = await dailyHelperFromConnections(ConnectionName,dynamoDBArray);
-    const days= helper[0].dayWattsProm;
-    const night = helper[0].NightWattsProm;
+module.exports.ConnectionsWeeklyWattsDayNight =  function(ConnectionName,dynamoDBArray){
+    const helper =  dailyHelperFromConnections(ConnectionName,dynamoDBArray);
+    const days= helper[0].dayWattsProms;
+    const night = helper[0].nightWattsProms;
     const dataset = [{
-        label: 'Consumo Diario en Watts',
+        label: 'Consumo Semanal en Watts',
         backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
         data:[days,night],
         hoverOffset: 4
     }];
-    const returnObject ={
+    return{
         labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
-    return returnObject;
+
 };
 /**
  *      
  * @param {*} dynamoDBArray dynamoDBArray 
  * @returns Array<any>
  */
-module.exports.ConnectionsWeeklyKiloWattsDayNight = async function(ConnectionName,dynamoDBArray){
-    const helper = await dailyHelperFromConnections(ConnectionName,dynamoDBArray);
+module.exports.ConnectionsWeeklyKiloWattsDayNight =  function(ConnectionName,dynamoDBArray){
+    const helper =  dailyHelperFromConnections(ConnectionName,dynamoDBArray);
     const days= helper[0].dayKhwProms;
     const night = helper[0].NightsKhwProm;
     const dataset = [{
-        label: 'Consumo Diario en KiloWatts',
+        label: 'Consumo Semanal en KiloWatts',
         backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
         data:[days,night],
         hoverOffset: 4
     }];
-    const returnObject ={
+    return{
         labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
-    return returnObject;
+ 
 };
 //monthly
-module.exports.ConnectionsMonthlyWattsDayNight = async function(ConnectionName,dynamoDBArray){
-    const helper = await dailyHelperFromConnections(ConnectionName,dynamoDBArray);
-    const days= helper[0].dayWattsProm;
-    const night = helper[0].NightWattsProm;
+module.exports.ConnectionsMonthlyWattsDayNight =  function(ConnectionName,dynamoDBArray){
+    const helper =  getByMonthConnections(ConnectionName,dynamoDBArray);
+    const days= helper[0].detail.DayWatts;
+    const night = helper[0].detail.NightWatts;
     const dataset = [{
-        label: 'Consumo Diario en Watts',
+        label: 'Consumo Mensual en Watts',
         backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
         data:[days,night],
         hoverOffset: 4
     }];
-    const returnObject ={
+    return{
         labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
-    return returnObject;
+   
 };
 /**
  *      
  * @param {*} dynamoDBArray dynamoDBArray 
  * @returns Array<any>
  */
-module.exports.ConnectionsMonthlyKiloWattsDayNight = async function(ConnectionName,dynamoDBArray){
-    const helper = await dailyHelperFromConnections(ConnectionName,dynamoDBArray);
-    const days= helper[0].dayKhwProms;
-    const night = helper[0].NightsKhwProm;
+module.exports.ConnectionsMonthlyKiloWattsDayNight =  function(ConnectionName,dynamoDBArray){
+    const helper =  getByMonthConnections(ConnectionName,dynamoDBArray);
+    const days= helper[0].detail.DayKiloWatts;
+    const night = helper[0].detail.NightKiloWatts;
     const dataset = [{
-        label: 'Consumo Diario en KiloWatts',
+        label: 'Consumo Mensual en KiloWatts',
         backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
         data:[days,night],
         hoverOffset: 4
     }];
-    const returnObject ={
+    return{
         labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
         datasets:dataset
     }
-    return returnObject;
+
+};
+
+//yearly
+module.exports.ConnectionsYearlyWattsDayNight =  function(ConnectionName,dynamoDBArray){
+    const helper =  getMonthlyHelperConnection(ConnectionName,dynamoDBArray);
+    const days= helper[0].dayWattsProms || 0;
+    const night = helper[0].nightWattsProms || 0;
+    const dataset = [{
+        label: 'Consumo Mensual en Watts',
+        backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
+        data:[days,night],
+        hoverOffset: 4
+    }];
+    return{
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
+        datasets:dataset
+    }
+   
+};
+/**
+ *      
+ * @param {*} dynamoDBArray dynamoDBArray 
+ * @returns Array<any>
+ */
+module.exports.ConnectionsYearlyKiloWattsDayNight =  function(ConnectionName,dynamoDBArray){
+    const helper =  getMonthlyHelperConnection(ConnectionName,dynamoDBArray);
+    const days= helper[0].dayKhwProms || 0;
+    const night = helper[0].nightKhwProms || 0;
+    const dataset = [{
+        label: 'Consumo Mensual en KiloWatts',
+        backgroundColor:['rgb(255, 99, 132)','rgb(54, 162, 235)'],
+        data:[days,night],
+        hoverOffset: 4
+    }];
+    return{
+        labels: ['Analisis de consumo de dia','Analisis de consumo de noche'],
+        datasets:dataset
+    }
+
 };

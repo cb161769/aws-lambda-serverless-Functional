@@ -3,8 +3,8 @@
  * @param {*} epochDate date 
  */
  module.exports.convertEpochDateToHumanDate = function(epochDate){
-    var epoch = new Date(epochDate * 1000);
-    return epoch;
+    return new Date(epochDate * 1000);
+
 }
 
 /**
@@ -27,7 +27,7 @@
 }
 
 
-module.exports.dailyHelper = async function (params){
+module.exports.dailyHelper =  function (params){
     const moment = require('moment');
     var dayInformation = {
         AlldayName:'',
@@ -54,6 +54,7 @@ module.exports.dailyHelper = async function (params){
     var nightWattsProms = 0;
     var dayKhwProms = 0;
     var nightKhwProms = 0;
+    let totalWAttsProm = 0;
     const fixedParams = params.filter(x => x.sortkey != undefined);
     for (let index = 0; index <= fixedParams.length; index++) {
         var dataElement = fixedParams[index];
